@@ -32,13 +32,13 @@ export default function Home() {
       </div>
       <div className="flex flex-col h-full md:h-screen items-center justify-center bg-gradient-to-t from-blue-400 to-indigo-200">
         <div className="flex flex-col text-center items-center justify-center mt-6 md:mt-0">
-          <h1 className="text-3xl text-center items-center md:text-left lg:text-6xl md:text-5xl sm:text-3xl font-serif">
+          <h1 className="text-3xl text-center items-center md:text-left lg:text-5xl md:text-5xl sm:text-3xl font-serif">
             One Stop Solution
           </h1>
         </div>
-        <div className="flex flex-col text-center items-center">
-          <span className=" mt-8">
-            Design and order your own solar system, roof, and HVAC.
+        <div className="flex flex-col text-left items-center">
+          <span className=" mt-2">
+            Design, customize, and order your own <br/>solar system, roof, and HVAC.
           </span>
         </div>
         <div className="flex flex-col items-center -mt-24 -mb-36">
