@@ -1,11 +1,9 @@
-import Image from "next/image";
+import LandingPage from "@/components/LandingPage/LandingPage";
 
 export default function Home() {
   return (
-    <>
-      <h1 className="text-3xl font-bold underline text-center top-10">
-        Home Page
-      </h1>
-    </>
+    <div>
+      <LandingPage />
+    </div>
   );
 }
