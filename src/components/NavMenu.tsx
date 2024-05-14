@@ -63,12 +63,6 @@ const NavMenu = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger className="bg-transparent">
-            FAQ
-          </NavigationMenuTrigger>
-          <NavigationMenuContent></NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent">
             Mission
           </NavigationMenuTrigger>
           <NavigationMenuContent></NavigationMenuContent>
