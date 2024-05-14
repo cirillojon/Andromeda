@@ -5,8 +5,8 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-const content = [
-    {
+const content = [ 
+  {
       title: "Solar Systems",
       description:
         "Design your own solar system and get it installed for $0 down. ",
