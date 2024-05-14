@@ -48,7 +48,7 @@ const NavMenu = () => {
             Services
           </NavigationMenuTrigger>
           <NavigationMenuContent className="">
-            <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+            <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
               {services.map((service) => (
                 <ListItem
                   key={service.title}
