@@ -1,11 +1,11 @@
 "use client";
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { Asterisk } from "lucide-react";
 
-export default function ContactPage() {
+const ContactPage = () => {
   const [isFormValid, setIsFormValid] = useState(false);
   const [firstNameAestrisk, setFirstNameAestrisk] = useState(true);
   const [lastNameAestrisk, setLastNameAestrisk] = useState(true);
@@ -139,6 +139,8 @@ export default function ContactPage() {
     </div>
   );
 }
+
+export default ContactPage;
 
 const BottomGradient = () => {
   return (
