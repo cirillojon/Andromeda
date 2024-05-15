@@ -79,10 +79,10 @@ export const StickyScroll = () => {
   });
 
   const backgroundColors = [
-    `url(/Solar-showcase.jpeg)`,
-    `url(/HVAC-showcase.png)`,
-    `url(/roof-showcase.avif)`,
-    `url(/batteries-showcase.webp)`,
+    `url(/assets/services/Solar-showcase.jpeg)`,
+    `url(/assets/services/HVAC-showcase.png)`,
+    `url(/assets/services/roof-showcase.avif)`,
+    `url(/assets/services/batteries-showcase.webp)`,
   ];
   return (
     <motion.div
