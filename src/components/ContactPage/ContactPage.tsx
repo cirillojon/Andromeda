@@ -45,7 +45,7 @@ export default function ContactPage() {
     setIsFormValid(
       firstName.value.length != 0 &&
         lastName.value.length != 0 &&
-        email.value.length != 0
+        emailRegex.test(email.value)
     );
   };
 
