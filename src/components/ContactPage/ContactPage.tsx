@@ -15,7 +15,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
-      <div className="max-w-md w-full mx-auto rounded-md md:rounded-2xl p-4 md:p-8 shadow-input bg-gray-50 dark:bg-black border-2 drop-shadow-lg">
+      <div className="max-w-md w-full mx-auto rounded-2xl p-4 md:p-8 shadow-input bg-gray-50 dark:bg-black border-2 drop-shadow-lg">
         <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Contact Us
         </h2>
