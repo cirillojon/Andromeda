@@ -27,6 +27,7 @@ export default function ContactPage() {
                 placeholder="John"
                 type="text"
                 name="firstname"
+                required
               />
             </LabelInputContainer>
             <LabelInputContainer>
@@ -36,6 +37,7 @@ export default function ContactPage() {
                 placeholder="Doe"
                 type="text"
                 name="lastname"
+                required
               />
             </LabelInputContainer>
           </div>
@@ -47,6 +49,7 @@ export default function ContactPage() {
                 placeholder="N/A"
                 type="text"
                 name="message"
+                required
               />
             </LabelInputContainer>
           </div>
@@ -57,6 +60,7 @@ export default function ContactPage() {
               placeholder="homeimprovement@test.com"
               type="email"
               name="email"
+              required
             />
           </LabelInputContainer>
           <button
