@@ -22,24 +22,21 @@ const ContactPage = () => {
     const firstName = document.getElementById("firstname") as HTMLInputElement;
     if (firstName.value.length != 0) {
       setFirstNameAestrisk(false);
-    }
-    else{
-      setFirstNameAestrisk(true)
+    } else {
+      setFirstNameAestrisk(true);
     }
     const lastName = document.getElementById("lastname") as HTMLInputElement;
     if (lastName.value.length != 0) {
       setLastNameAestrisk(false);
-    }
-    else {
-      setLastNameAestrisk(true)
+    } else {
+      setLastNameAestrisk(true);
     }
     const email = document.getElementById("email") as HTMLInputElement;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (emailRegex.test(email.value)) {
       setEmailAestrisk(false);
-    }
-    else{
-      setEmailAestrisk(true)
+    } else {
+      setEmailAestrisk(true);
     }
 
     setIsFormValid(
@@ -138,7 +135,7 @@ const ContactPage = () => {
       </div>
     </div>
   );
-}
+};
 
 export default ContactPage;
 
