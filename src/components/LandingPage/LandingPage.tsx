@@ -49,7 +49,7 @@ const LandingPage = () => {
           <div className="flex flex-col items-center -mt-32 -mb-36">
             <div className="flex items-center">
               <Image
-                src="/Hero-House.png"
+                src="/assets/hero/Hero-House.png"
                 alt="House"
                 width={500}
                 height={20}

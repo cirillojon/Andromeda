@@ -9,7 +9,7 @@ const Navbar = () => {
     <nav className="absolute z-[100] h-14 inset-x-0 top-0 w-full transition-all">
       <div className="flex h-14 justify-between px-8 pt-4 space-x-4">
         <div className="flex items-center">
-          <Image src="/Logo.png" alt="logo" width={40} height={40} />
+          <Image src="/assets/Logo.png" alt="logo" width={40} height={40} />
           <Link href="/" className="font-semibold text-3xl">
             <span>romeo</span>
           </Link>
