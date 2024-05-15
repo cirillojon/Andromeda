@@ -1,16 +1,52 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
+import { Asterisk } from "lucide-react";
 
 export default function ContactPage() {
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [firstNameAestrisk, setFirstNameAestrisk] = useState(true);
+  const [lastNameAestrisk, setLastNameAestrisk] = useState(true);
+  const [emailAestrisk, setEmailAestrisk] = useState(true);
   const textareaRef = useRef(null);
 
   const handleInput = (e: any) => {
     const target = e.target as HTMLTextAreaElement;
     target.style.height = "10px";
     target.style.height = `${Math.min(target.scrollHeight, 96)}px`;
+  };
+
+  const checkFormValidity = () => {
+    const firstName = document.getElementById("firstname") as HTMLInputElement;
+    if (firstName.value.length != 0) {
+      setFirstNameAestrisk(false);
+    }
+    else{
+      setFirstNameAestrisk(true)
+    }
+    const lastName = document.getElementById("lastname") as HTMLInputElement;
+    if (lastName.value.length != 0) {
+      setLastNameAestrisk(false);
+    }
+    else {
+      setLastNameAestrisk(true)
+    }
+    const email = document.getElementById("email") as HTMLInputElement;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRegex.test(email.value)) {
+      setEmailAestrisk(false);
+    }
+    else{
+      setEmailAestrisk(true)
+    }
+
+    setIsFormValid(
+      firstName.value.length != 0 &&
+        lastName.value.length != 0 &&
+        email.value.length != 0
+    );
   };
 
   return (
@@ -29,23 +65,33 @@ export default function ContactPage() {
         >
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
             <LabelInputContainer>
-              <Label htmlFor="firstname">First name</Label>
+              <div className="flex items-center">
+                <Label htmlFor="firstname">First name</Label>
+                <div hidden={!firstNameAestrisk}>
+                  <Asterisk className="text-red-500 h-4 w-4" />
+                </div>
+              </div>
               <Input
                 id="firstname"
                 placeholder="John"
                 type="text"
                 name="firstname"
-                required
+                onInput={checkFormValidity}
               />
             </LabelInputContainer>
             <LabelInputContainer>
-              <Label htmlFor="lastname">Last name</Label>
+              <div className="flex items-center">
+                <Label htmlFor="lastname">Last name</Label>
+                <div hidden={!lastNameAestrisk}>
+                  <Asterisk className="text-red-500 h-4 w-4 " />
+                </div>
+              </div>
               <Input
                 id="lastname"
                 placeholder="Doe"
                 type="text"
                 name="lastname"
-                required
+                onInput={checkFormValidity}
               />
             </LabelInputContainer>
           </div>
@@ -64,18 +110,25 @@ export default function ContactPage() {
             </LabelInputContainer>
           </div>
           <LabelInputContainer className="mb-4">
-            <Label htmlFor="email">Email Address</Label>
+            <div className="flex items-center">
+              <Label htmlFor="email">Email Address</Label>
+              <div hidden={!emailAestrisk}>
+                <Asterisk className="text-red-500 h-4 w-4 " />
+              </div>
+            </div>
             <Input
               id="email"
               placeholder="homeimprovement@test.com"
               type="email"
               name="email"
-              required
+              onInput={checkFormValidity}
+              onEmptied={() => setEmailAestrisk(true)}
             />
           </LabelInputContainer>
           <button
-            className="bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
+            className=" disabled:opacity-50 disabled:cursor-not-allowed bg-gradient-to-br relative group/btn from-black dark:from-zinc-900 dark:to-zinc-900 to-neutral-600 block dark:bg-zinc-800 w-full text-white rounded-md h-10 font-medium shadow-[0px_1px_0px_0px_#ffffff40_inset,0px_-1px_0px_0px_#ffffff40_inset] dark:shadow-[0px_1px_0px_0px_var(--zinc-800)_inset,0px_-1px_0px_0px_var(--zinc-800)_inset]"
             type="submit"
+            disabled={!isFormValid}
           >
             Submit &rarr;
             <BottomGradient />
