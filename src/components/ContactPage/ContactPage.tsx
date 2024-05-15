@@ -1,10 +1,18 @@
 "use client";
-import React from "react";
+import React, { useRef } from "react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 
 export default function ContactPage() {
+  const textareaRef = useRef(null);
+
+  const handleInput = (e: any) => {
+    const target = e.target as HTMLTextAreaElement;
+    target.style.height = "auto";
+    target.style.height = `${Math.min(target.scrollHeight, 96)}px`;
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
       <div className="max-w-md w-full mx-auto rounded-md md:rounded-2xl p-4 md:p-8 shadow-input bg-gray-50 dark:bg-black border-2 drop-shadow-lg">
@@ -44,12 +52,14 @@ export default function ContactPage() {
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
             <LabelInputContainer>
               <Label htmlFor="message">Message</Label>
-              <Input
+              <textarea
                 id="message"
                 placeholder="N/A"
-                type="text"
                 name="message"
-                required
+                className="overflow-auto resize-none h-10 min-h-10 max-h-24 flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                onInput={handleInput}
+                ref={textareaRef}
+                style={{ overflowY: "hidden" }}
               />
             </LabelInputContainer>
           </div>
