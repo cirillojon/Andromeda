@@ -9,7 +9,7 @@ export default function ContactPage() {
 
   const handleInput = (e: any) => {
     const target = e.target as HTMLTextAreaElement;
-    target.style.height = "auto";
+    target.style.height = "10px";
     target.style.height = `${Math.min(target.scrollHeight, 96)}px`;
   };
 
