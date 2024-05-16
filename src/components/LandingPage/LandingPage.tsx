@@ -58,8 +58,66 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <StickyScroll/>
+      <StickyScroll 
+        content={content} 
+        parentDiv={"h-screen flex relative space-x-10 p-10 bg-center bg-no-repeat"} 
+        cardDiv={"max-w-2xl text-center drop-shadow-2xl items-center"}
+      />
     </div>
   );
 };
 export default LandingPage;
+
+
+const content = [ 
+  {
+      title: "Solar Systems",
+      description:
+        "Design your own solar system and get it installed for $0 down. ",
+      content: (
+        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
+          Collaborative Editing
+        </div>
+      ),
+      backgroundUrl: `url(/assets/services/Solar-showcase.jpeg)`,
+    },
+    {
+      title: "HVAC",
+      description:
+        "Upgrade your air conditioning unit today!",
+      content: (
+        <div className="h-full w-full  flex items-center justify-center text-white">
+          <Image
+            src="/linear.webp"
+            width={300}
+            height={300}
+            className="h-full w-full object-cover"
+            alt="linear board demo"
+          />
+        </div>
+      ),
+      backgroundUrl: `url(/assets/services/HVAC-showcase.png)`,
+    },
+    {
+      title: "Roofing",
+      description:
+        "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch.",
+      content: (
+        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
+          Version control
+        </div>
+      ),
+      backgroundUrl: `url(/assets/services/roof-showcase.avif)`,
+    },
+    {
+      title: "Batteries",
+      description:
+        "Backup your entire house with batteries that will keep you running for days.",
+      content: (
+        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
+          Version control
+        </div>
+      ),
+      backgroundUrl: `url(/assets/services/batteries-showcase.webp)`,
+    },
+  ];
