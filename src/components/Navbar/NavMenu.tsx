@@ -44,13 +44,16 @@ const NavMenu = () => {
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent">
+          <NavigationMenuTrigger onPointerMove={(event) => event.preventDefault()}
+            onPointerLeave={(event) => event.preventDefault()}
+            className="bg-transparent">
             Services
           </NavigationMenuTrigger>
-          <NavigationMenuContent className="">
+          <NavigationMenuContent onPointerMove={(event) => event.preventDefault()}
+                onPointerLeave={(event) => event.preventDefault()}className="">
             <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
               {services.map((service) => (
-                <ListItem
+                <ListItem 
                   key={service.title}
                   title={service.title}
                   href={service.href}
