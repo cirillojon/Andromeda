@@ -5,6 +5,7 @@ import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { Asterisk } from "lucide-react";
+import { toast } from "sonner";
 
 const ContactPage = () => {
   const router = useRouter();
@@ -48,9 +49,10 @@ const ContactPage = () => {
       });
 
       if (response.ok) {
+        toast.success("Thank you for your message!");
         router.push("/");
       } else {
-        console.error("Submission failed");
+        toast.error("Something went wrong. Please try again later.");
       }
     }
   };
