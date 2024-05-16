@@ -55,8 +55,6 @@ const NavMenu = () => {
             Services
           </NavigationMenuTrigger>
           <NavigationMenuContent 
-            onPointerMove={handlePointerEvents}
-            onPointerLeave={handlePointerEvents}
             className="">
             <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
               {services.map((service) => (
@@ -78,9 +76,7 @@ const NavMenu = () => {
             className="bg-transparent">
             Mission
           </NavigationMenuTrigger>
-          <NavigationMenuContent
-          onPointerMove={handlePointerEvents}
-          onPointerLeave={handlePointerEvents}></NavigationMenuContent>
+          <NavigationMenuContent></NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/contact" legacyBehavior passHref>
