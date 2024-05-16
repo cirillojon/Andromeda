@@ -39,18 +39,25 @@ const services: { title: string; href: string; description: string }[] = [
   },
 ];
 
+const handlePointerEvents = (event: { preventDefault: () => void; }) => {
+  event.preventDefault();
+};
+
 const NavMenu = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger onPointerMove={(event) => event.preventDefault()}
-            onPointerLeave={(event) => event.preventDefault()}
+          <NavigationMenuTrigger 
+            onPointerMove={handlePointerEvents}
+            onPointerLeave={handlePointerEvents}
             className="bg-transparent">
             Services
           </NavigationMenuTrigger>
-          <NavigationMenuContent onPointerMove={(event) => event.preventDefault()}
-                onPointerLeave={(event) => event.preventDefault()}className="">
+          <NavigationMenuContent 
+            onPointerMove={handlePointerEvents}
+            onPointerLeave={handlePointerEvents}
+            className="">
             <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
               {services.map((service) => (
                 <ListItem 
@@ -65,10 +72,15 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger className="bg-transparent">
+          <NavigationMenuTrigger 
+            onPointerMove={handlePointerEvents}
+            onPointerLeave={handlePointerEvents}
+            className="bg-transparent">
             Mission
           </NavigationMenuTrigger>
-          <NavigationMenuContent></NavigationMenuContent>
+          <NavigationMenuContent
+          onPointerMove={handlePointerEvents}
+          onPointerLeave={handlePointerEvents}></NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/contact" legacyBehavior passHref>
