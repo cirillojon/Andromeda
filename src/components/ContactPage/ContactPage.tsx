@@ -1,49 +1,58 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { cn } from "@/lib/utils";
 import { Asterisk } from "lucide-react";
 
 const ContactPage = () => {
+  const router = useRouter();
   const [isFormValid, setIsFormValid] = useState(false);
   const [firstNameAestrisk, setFirstNameAestrisk] = useState(true);
   const [lastNameAestrisk, setLastNameAestrisk] = useState(true);
   const [emailAestrisk, setEmailAestrisk] = useState(true);
-  const textareaRef = useRef(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const handleInput = (e: any) => {
-    const target = e.target as HTMLTextAreaElement;
+  const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const target = e.target;
     target.style.height = "10px";
     target.style.height = `${Math.min(target.scrollHeight, 96)}px`;
   };
 
   const checkFormValidity = () => {
     const firstName = document.getElementById("firstname") as HTMLInputElement;
-    if (firstName.value.length != 0) {
-      setFirstNameAestrisk(false);
-    } else {
-      setFirstNameAestrisk(true);
-    }
     const lastName = document.getElementById("lastname") as HTMLInputElement;
-    if (lastName.value.length != 0) {
-      setLastNameAestrisk(false);
-    } else {
-      setLastNameAestrisk(true);
-    }
     const email = document.getElementById("email") as HTMLInputElement;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (emailRegex.test(email.value)) {
-      setEmailAestrisk(false);
-    } else {
-      setEmailAestrisk(true);
-    }
+
+    setFirstNameAestrisk(!firstName.value);
+    setLastNameAestrisk(!lastName.value);
+    setEmailAestrisk(!emailRegex.test(email.value));
 
     setIsFormValid(
-      firstName.value.length != 0 &&
-        lastName.value.length != 0 &&
+      firstName.value.length > 0 &&
+        lastName.value.length > 0 &&
         emailRegex.test(email.value)
     );
+  };
+
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
+    if (isFormValid) {
+      const formData = new FormData(event.target as HTMLFormElement);
+
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        router.push("/");
+      } else {
+        console.error("Submission failed");
+      }
+    }
   };
 
   return (
@@ -55,11 +64,12 @@ const ContactPage = () => {
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
           Send us a message!
         </p>
-        <form
-          className="my-8"
-          action="https://formspree.io/f/mjvnzjyz"
-          method="POST"
-        >
+        <form onSubmit={handleSubmit} className="my-8">
+          <input
+            type="hidden"
+            name="access_key"
+            value="cf9ccc3d-7946-43c5-90cc-ec9f30fca388"
+          />
           <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-2 mb-4">
             <LabelInputContainer>
               <div className="flex items-center">
