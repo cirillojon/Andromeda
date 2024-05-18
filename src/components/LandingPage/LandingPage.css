@@ -4,13 +4,19 @@
 	border-radius: 10px;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	padding: 20px;
-	margin-bottom: 50%;
+	margin-top: 50vh;
 	margin-left: 5%;
 	z-index: 1;
-	width: 25%;
+	width: 25vh;
+	min-width: 300px;
 	height: auto;
 	min-height: auto;
 	position: relative;
+	transform: translateY(-100vh);
+	-webkit-transform: translateY(-100vh);
+	-moz-transform: translateY(-100vh);
+	-ms-transform: translateY(-100vh);
+	-o-transform: translateY(-100vh);
 }
   
   .scrolling-content h1 {
@@ -26,8 +32,9 @@
   }
 
   .full-screen-image {
-    width: 100vw; /* 100% viewport width */
-    height: 100vh; /* 100% viewport height */
+	margin-top: 5vh;
+    width: 100vw;
+    height: 100vh;
     object-fit: cover; /* Ensure the image covers the entire space */
     z-index: -1;
   }
