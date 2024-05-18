@@ -1,10 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import MessageComponent from "@/components/MessageComponent/MessageComponent";
 
 const LandingPage = () => {
   return (
     <div>
+      <MessageComponent /> {/* Flask API Testing */}
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
         <div className="flex flex-col w-full mt-24 md:mt-0 mb-14 md:mb-0">
           <div className="flex flex-col text-center items-center">
@@ -66,58 +70,58 @@ const LandingPage = () => {
     </div>
   );
 };
-export default LandingPage;
 
+export default LandingPage;
 
 const content = [ 
   {
-      title: "Solar Systems",
-      description:
-        "Design your own solar system and get it installed for $0 down. ",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
-          Collaborative Editing
-        </div>
-      ),
-      backgroundUrl: `url(/assets/services/Solar-showcase.jpeg)`,
-    },
-    {
-      title: "HVAC",
-      description:
-        "Upgrade your air conditioning unit today!",
-      content: (
-        <div className="h-full w-full  flex items-center justify-center text-white">
-          <Image
-            src="/linear.webp"
-            width={300}
-            height={300}
-            className="h-full w-full object-cover"
-            alt="linear board demo"
-          />
-        </div>
-      ),
-      backgroundUrl: `url(/assets/services/HVAC-showcase.png)`,
-    },
-    {
-      title: "Roofing",
-      description:
-        "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-          Version control
-        </div>
-      ),
-      backgroundUrl: `url(/assets/services/roof-showcase.avif)`,
-    },
-    {
-      title: "Batteries",
-      description:
-        "Backup your entire house with batteries that will keep you running for days.",
-      content: (
-        <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-          Version control
-        </div>
-      ),
-      backgroundUrl: `url(/assets/services/batteries-showcase.webp)`,
-    },
-  ];
+    title: "Solar Systems",
+    description:
+      "Design your own solar system and get it installed for $0 down.",
+    content: (
+      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
+        Collaborative Editing
+      </div>
+    ),
+    backgroundUrl: `url(/assets/services/Solar-showcase.jpeg)`,
+  },
+  {
+    title: "HVAC",
+    description:
+      "Upgrade your air conditioning unit today!",
+    content: (
+      <div className="h-full w-full flex items-center justify-center text-white">
+        <Image
+          src="/linear.webp"
+          width={300}
+          height={300}
+          className="h-full w-full object-cover"
+          alt="linear board demo"
+        />
+      </div>
+    ),
+    backgroundUrl: `url(/assets/services/HVAC-showcase.png)`,
+  },
+  {
+    title: "Roofing",
+    description:
+      "Combine a roof renovation with a solar system and get a bigger discount. Or design your roof from scratch.",
+    content: (
+      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
+        Version control
+      </div>
+    ),
+    backgroundUrl: `url(/assets/services/roof-showcase.avif)`,
+  },
+  {
+    title: "Batteries",
+    description:
+      "Backup your entire house with batteries that will keep you running for days.",
+    content: (
+      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
+        Version control
+      </div>
+    ),
+    backgroundUrl: `url(/assets/services/batteries-showcase.webp)`,
+  },
+];
