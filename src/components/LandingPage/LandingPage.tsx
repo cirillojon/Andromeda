@@ -1,8 +1,40 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import React, { useEffect, useRef, useState } from 'react';
+import useIntersectionObserver from "./useIntersectionObserver";
+import StickyImage from "./StickyImage"
+import ScrollingContent from "./ScrollingContent"
 
-const LandingPage = () => {
+function LandingPage() {
+  // IntersectionObserver
+  // const containerRef = useRef(null)
+
+  // const [isSticky, setIsSticky] = useState(false);
+  // const imageRef = useRef<HTMLImageElement | null>(null);
+
+  // const { setElements } = useIntersectionObserver((entries) => {
+  //   entries.forEach((entry) => {
+  //     if (entry.isIntersecting) {
+  //       setIsSticky(true);
+  //     } else {
+  //       setIsSticky(false);
+  //     }
+  //   });
+  // });
+
+  // useEffect(() => {
+  //   if (imageRef.current) {
+  //     setElements([imageRef.current]);
+  //   }
+  // }, [setElements]);
+  const sections = [
+    'Section 1: Lorem ipsum dolor sit amet...',
+    'Section 2: Consectetur adipiscing elit...',
+    'Section 3: Integer nec odio...',
+    // Add as many sections as you need
+  ];
+  
   return (
     <div>
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
@@ -58,11 +90,15 @@ const LandingPage = () => {
           </div>
         </div>
       </div>
-      <StickyScroll 
+      <div className="App" >
+        <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" />
+        <ScrollingContent sections={sections} />
+      </div>
+      {/* <StickyScroll 
         content={content} 
         parentDiv={"h-screen flex relative space-x-10 p-10 bg-center bg-no-repeat"} 
         cardDiv={"max-w-2xl text-center drop-shadow-2xl items-center"}
-      />
+      /> */}
     </div>
   );
 };

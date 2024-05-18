@@ -85,3 +85,9 @@
         scrollbar-width: none;  /* Firefox */
     }
   }
+
+  .full-screen-image {
+    width: 100vw; /* 100% viewport width */
+    height: 100vh; /* 100% viewport height */
+    object-fit: cover; /* Ensure the image covers the entire space */
+  }

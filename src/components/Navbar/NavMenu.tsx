@@ -50,7 +50,6 @@ const NavMenu = () => {
         <NavigationMenuItem>
           <NavigationMenuTrigger 
             onPointerMove={handlePointerEvents}
-            onPointerLeave={handlePointerEvents}
             className="bg-transparent">
             Services
           </NavigationMenuTrigger>
