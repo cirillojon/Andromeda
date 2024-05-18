@@ -65,7 +65,7 @@ function LandingPage() {
         </div>
       </div>
       <div className="App" >
-        <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" />
+        {/* <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" /> */}
         <ScrollingContent sections={sections} />
       </div>
       {/* <div className="sticky-panel-wrapper">
@@ -81,9 +81,10 @@ function LandingPage() {
 export default LandingPage;
 
 
-const sections = [["Solar Systems", "Design your own solar system and get it installed for $0 down."],
-                  ["HVAC", "Upgrade your air conditioning unit today!"],
-                  ["Roofing", "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch."]];
+const sections = [["/assets/services/Solar-showcase.jpeg", "Solar Systems", "Design your own solar system and get it installed for $0 down."],
+                  ["/assets/services/HVAC-showcase.png", "HVAC", "Upgrade your air conditioning unit today!"],
+                  ["/assets/services/roof-showcase.avif", "Roofing", "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch."],
+                  ["/assets/services/batteries-showcase.webp", "Batteries", "Backup your entire house with batteries that will keep you running for days."]];
 
 const content = [ 
   {
