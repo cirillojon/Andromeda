@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import useIntersectionObserver from './useIntersectionObserver';
+import './LandingPage.css';
 
 interface StickyImageProps {
   src: string;

@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
@@ -7,33 +8,6 @@ import StickyImage from "./StickyImage"
 import ScrollingContent from "./ScrollingContent"
 
 function LandingPage() {
-  // IntersectionObserver
-  // const containerRef = useRef(null)
-
-  // const [isSticky, setIsSticky] = useState(false);
-  // const imageRef = useRef<HTMLImageElement | null>(null);
-
-  // const { setElements } = useIntersectionObserver((entries) => {
-  //   entries.forEach((entry) => {
-  //     if (entry.isIntersecting) {
-  //       setIsSticky(true);
-  //     } else {
-  //       setIsSticky(false);
-  //     }
-  //   });
-  // });
-
-  // useEffect(() => {
-  //   if (imageRef.current) {
-  //     setElements([imageRef.current]);
-  //   }
-  // }, [setElements]);
-  const sections = [
-    'Section 1: Lorem ipsum dolor sit amet...',
-    'Section 2: Consectetur adipiscing elit...',
-    'Section 3: Integer nec odio...',
-    // Add as many sections as you need
-  ];
   
   return (
     <div>
@@ -94,16 +68,22 @@ function LandingPage() {
         <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" />
         <ScrollingContent sections={sections} />
       </div>
-      {/* <StickyScroll 
-        content={content} 
-        parentDiv={"h-screen flex relative space-x-10 p-10 bg-center bg-no-repeat"} 
-        cardDiv={"max-w-2xl text-center drop-shadow-2xl items-center"}
-      /> */}
+      {/* <div className="sticky-panel-wrapper">
+        <StickyScroll 
+          content={content} 
+          parentDiv={"sticky-panel-content h-screen flex relative space-x-10 p-10 bg-center bg-no-repeat"} 
+          cardDiv={"max-w-2xl text-center drop-shadow-2xl items-center"}
+        />
+      </div> */}
     </div>
   );
 };
 export default LandingPage;
 
+
+const sections = [["Solar Systems", "Design your own solar system and get it installed for $0 down."],
+                  ["HVAC", "Upgrade your air conditioning unit today!"],
+                  ["Roofing", "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch."]];
 
 const content = [ 
   {

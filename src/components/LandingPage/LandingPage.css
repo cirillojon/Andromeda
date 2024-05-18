@@ -1,0 +1,33 @@
+/* ScrollingContent.css */
+.scrolling-content {
+	background-color: #ffffff;
+	border-radius: 10px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	padding: 20px;
+	margin-bottom: 50%;
+	margin-left: 5%;
+	z-index: 1;
+	width: 25%;
+	height: auto;
+	min-height: auto;
+	position: relative;
+}
+  
+  .scrolling-content h1 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 36px;
+	font-weight: bold;
+	margin-left: 7%;
+  }
+  
+  .scrolling-content p {
+	margin-bottom: 0;
+  }
+
+  .full-screen-image {
+    width: 100vw; /* 100% viewport width */
+    height: 100vh; /* 100% viewport height */
+    object-fit: cover; /* Ensure the image covers the entire space */
+    z-index: -1;
+  }
