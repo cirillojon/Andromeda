@@ -11,25 +11,18 @@ interface ScrollingContentProps {
 }
 
 const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
-
   const [activeCard, setActiveCard] = React.useState(0);
-  
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    container: ref,
-    offset: ["start start", "end start"],
-  });
-
-  const cardLength = screen.availHeight / 25;
-  const cardsBreakpoints = sections.map((_: any, index: number) => index / cardLength);
-
-
   const [scrollY, setScrollY] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
 
   const handleScroll = () => {
-    setScrollY(window.scrollY || document.documentElement.scrollTop);
-    console.log(window.scrollY);
-    console.log(ref.current?.offsetTop);
+    const currentScrollHeight = (window.scrollY - ref.current!.offsetTop);
+    const maxScrollHeight = (ref.current!.clientHeight - ref.current!.offsetTop);
+    const val = Math.floor((currentScrollHeight - (ref.current!.offsetTop / 5)) / (maxScrollHeight / sections.length));
+    if (val >= 0 && val < sections.length) {
+      setActiveCard(val)
+    }
   };
 
   useEffect(() => {
@@ -40,25 +33,6 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-  // console.log(ref)
-  // console.log(scrollYProgress)
-  // console.log(activeCard);
-  // console.log(cardsBreakpoints);
-
-  // useMotionValueEvent(scrollYProgress, "change", (latest: number) => {
-  //   const closestBreakpointIndex = cardsBreakpoints.reduce(
-  //     (acc: number, breakpoint: number, index: any) => {
-  //       const distance = Math.abs(latest - breakpoint);
-  //       if (distance < Math.abs(latest - cardsBreakpoints[acc])) {
-  //         return index;
-  //       }
-  //       return acc;
-  //     },
-  //     0
-  //   );
-  //   setActiveCard(closestBreakpointIndex);
-  // });
 
   return (
     <div ref = {ref}>
