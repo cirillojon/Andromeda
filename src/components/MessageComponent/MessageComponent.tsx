@@ -22,9 +22,13 @@ const MessageComponent = () => {
       });
   }, []);
 
+  // Example of adding resp into ui
+  // return <div>{!loading ? message : "Loading.."}</div>;
+
+  // Currently dont display anything
   return (
     <div>
-        <p>{!loading ? message : "Loading.."}</p>
+      {/* Flask API Testing */}
     </div>
   );
 };
