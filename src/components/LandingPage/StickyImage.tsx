@@ -10,7 +10,7 @@ interface StickyImageProps {
   stickyClass: string;
 }
 
-const StickyImage: React.FC<StickyImageProps> = ({ src, alt, stickyClass }) => {
+const StickyImage: React.FC<StickyImageProps> = ({ src, alt, stickyClass}) => {
   const [isSticky, setIsSticky] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
 

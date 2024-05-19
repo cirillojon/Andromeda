@@ -64,7 +64,7 @@ function LandingPage() {
           </div>
         </div>
       </div>
-      <div className="App" >
+      <div>
         {/* <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" /> */}
         <ScrollingContent sections={sections} />
       </div>
