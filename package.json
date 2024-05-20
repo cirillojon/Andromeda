@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "setup": "python setup.py",
-    "dev": "concurrently \"npm run dev:next\" \"npm run dev:flask\"",
     "dev:next": "next dev",
     "dev:flask": "python backend/app.py",
     "build": "next build",
