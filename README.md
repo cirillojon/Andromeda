@@ -1,3 +1,5 @@
+# Romeo
+
 ## Getting Started
 
 ### Prerequisites
@@ -20,11 +22,6 @@
     npm run setup
     ```
 
-    This command will:
-    - Create a virtual environment in the `env` directory (if it doesn't already exist)
-    - Install Python dependencies from `requirements.txt`
-    - Start the Flask server
-
 3. **Install Node.js dependencies:**
 
     ```sh
@@ -45,15 +42,30 @@
       .\env\Scripts\activate
       ```
 
-5. **Run the development server:**
+5. **Start the Flask server:**
+
+    With the virtual environment activated, run:
 
     ```sh
-    npm run dev
+    npm run dev:flask
     ```
 
-    This command will start the Next.js development server. Make sure the Flask server is running as well (it should be started by the setup script).
+6. **Run the development server:**
 
-6. **When finished, deactivate the virtual environment by running:**
+    In another terminal (or tab), run:
+
+    ```sh
+    npm run dev:next
+    ```
+
+7. **When finished, deactivate the virtual environment by running:**
 
     ```sh
     deactivate
+    ```
+
+### Notes
+
+- The Flask server runs on port 5000.
+- The Next.js development server runs on port 3000.
+- Make sure the Flask server is running before starting the Next.js development server to avoid API request issues.

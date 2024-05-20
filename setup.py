@@ -35,15 +35,7 @@ def install_python_dependencies():
         print("Please ensure that the virtual environment was created correctly.")
         sys.exit(1)
 
-def start_flask_server():
-    print("Starting Flask server...")
-    if os.name == 'nt':
-        subprocess.Popen(['env\\Scripts\\python', 'backend/app.py'], creationflags=subprocess.CREATE_NEW_CONSOLE)
-    else:
-        subprocess.Popen(['env/bin/python', 'backend/app.py'])
-    print("Flask server started.")
-
 if __name__ == '__main__':
     create_virtualenv()
     install_python_dependencies()
-    start_flask_server()
+    print("Setup complete. Please activate the virtual environment and start the Flask server manually.")
