@@ -1,15 +1,15 @@
 "use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import ScrollingContent from "./ScrollingContent"
+import MessageComponent from "@/components/MessageComponent/MessageComponent";
 
 function LandingPage() {
   
   const handleImageLoad = () => {
     console.log(document.documentElement.attributes);
     document.documentElement.classList.add('loaded')
-    // setIsLoaded(true);
   };
 
   return (
