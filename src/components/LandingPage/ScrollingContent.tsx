@@ -50,7 +50,6 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
         className={`${sticky ? "sticky" : ''} full-screen-image`}
         style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }} 
       />
-      {/* <StickyImage src={sections[activeCard][0]} alt={sections[activeCard][1]} stickyClass="sticky"></StickyImage> */}
       {sections.map((section, index) => (
         <div>
           <div className="scrolling-barrier"></div>
