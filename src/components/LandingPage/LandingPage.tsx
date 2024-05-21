@@ -14,6 +14,7 @@ function LandingPage() {
 
   return (
     <div>
+      <MessageComponent /> {/* Flask API Testing */}
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
         <div className="flex flex-col w-full mt-24 md:mt-0 mb-14 md:mb-0">
             <h1 className="header-text">
@@ -72,8 +73,8 @@ function LandingPage() {
     </div>
   );
 };
-export default LandingPage;
 
+export default LandingPage;
 
 const sections = [["/assets/services/Solar-showcase.jpeg", "Solar Systems", "Design your own solar system and get it installed for $0 down."],
                   ["/assets/services/HVAC-showcase.png", "HVAC", "Upgrade your air conditioning unit today!"],
