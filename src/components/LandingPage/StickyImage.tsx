@@ -10,7 +10,7 @@ interface StickyImageProps {
   stickyClass: string;
 }
 
-const StickyImage: React.FC<StickyImageProps> = ({ src, alt, stickyClass}) => {
+const StickyImage: React.FC<StickyImageProps> = ({ src, alt, stickyClass }) => {
   const [isSticky, setIsSticky] = useState(false);
   const imageRef = useRef<HTMLImageElement | null>(null);
 
@@ -38,7 +38,7 @@ const StickyImage: React.FC<StickyImageProps> = ({ src, alt, stickyClass}) => {
       src={src}
       alt={alt}
       className={`${isSticky ? stickyClass : ''} full-screen-image`}
-      style={{ position: isSticky ? 'sticky' : 'static', top: isSticky ? '0' : 'auto' }}
+      style={{ position: isSticky ? 'sticky' : 'static', top: isSticky ? '0' : 'auto' }} 
     />
   );
 };

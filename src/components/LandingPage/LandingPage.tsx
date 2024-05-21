@@ -1,14 +1,17 @@
 "use client";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
 import React, { useEffect, useRef, useState } from 'react';
-import useIntersectionObserver from "./useIntersectionObserver";
-import StickyImage from "./StickyImage"
 import ScrollingContent from "./ScrollingContent"
 
 function LandingPage() {
   
+  const handleImageLoad = () => {
+    console.log(document.documentElement.attributes);
+    document.documentElement.classList.add('loaded')
+    // setIsLoaded(true);
+  };
+
   return (
     <div>
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
@@ -59,6 +62,7 @@ function LandingPage() {
                 alt="House"
                 width={500}
                 height={20}
+                onLoad={handleImageLoad}
               />
             </div>
           </div>
@@ -66,7 +70,7 @@ function LandingPage() {
       </div>
       <div>
         {/* <StickyImage src="/assets/services/Solar-showcase.jpeg" alt="Sticky Image" stickyClass="sticky" /> */}
-        <ScrollingContent sections={sections} />
+        <ScrollingContent sections={sections}/>
       </div>
       {/* <div className="sticky-panel-wrapper">
         <StickyScroll 

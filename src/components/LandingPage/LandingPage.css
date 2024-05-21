@@ -1,4 +1,12 @@
 /* ScrollingContent.css */
+html {
+	overflow: hidden;
+}
+
+.loaded {
+	overflow: visible;
+}
+
 .scrolling-content {
 	background-color: #ffffff;
 	border-radius: 10px;

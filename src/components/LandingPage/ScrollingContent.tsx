@@ -3,7 +3,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './LandingPage.css';
 import StickyImage from './StickyImage';
-import { useMotionValueEvent, useScroll } from "framer-motion";
 import { motion } from "framer-motion";
 
 interface ScrollingContentProps {
@@ -19,7 +18,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
   const handleScroll = () => {
     const currentScrollHeight = (window.scrollY - ref.current!.offsetTop);
     const maxScrollHeight = (ref.current!.clientHeight - ref.current!.offsetTop);
-    const val = Math.floor((currentScrollHeight - (ref.current!.offsetTop / 5)) / (maxScrollHeight / sections.length));
+    const val = Math.floor((currentScrollHeight) / (maxScrollHeight / sections.length));
     if (val >= 0 && val < sections.length) {
       setActiveCard(val)
     }
