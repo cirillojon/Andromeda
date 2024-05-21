@@ -2,7 +2,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import './LandingPage.css';
-import StickyImage from './StickyImage';
 import { motion } from "framer-motion";
 
 interface ScrollingContentProps {
@@ -11,16 +10,26 @@ interface ScrollingContentProps {
 
 const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
   const [activeCard, setActiveCard] = React.useState(0);
-  const [scrollY, setScrollY] = useState(0);
+  const [sticky, setSticky] = React.useState(true);
   const ref = useRef<HTMLDivElement>(null);
 
 
   const handleScroll = () => {
     const currentScrollHeight = (window.scrollY - ref.current!.offsetTop);
     const maxScrollHeight = (ref.current!.clientHeight - ref.current!.offsetTop);
+    if (currentScrollHeight > -20) {
+      setSticky(true);
+    } else {
+      setSticky(false);
+    }
     const val = Math.floor((currentScrollHeight) / (maxScrollHeight / sections.length));
-    if (val >= 0 && val < sections.length) {
-      setActiveCard(val)
+    if (val >= 0) {
+      if (val >= sections.length) {
+        setActiveCard(sections.length - 1);
+      }
+      else {
+        setActiveCard(val);
+      }
     }
   };
 
@@ -35,7 +44,13 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
 
   return (
     <div ref = {ref}>
-      <StickyImage src={sections[activeCard][0]} alt={sections[activeCard][1]} stickyClass="sticky"></StickyImage>
+      <img
+        src={sections[activeCard][0]}
+        alt={sections[activeCard][1]}
+        className={`${sticky ? "sticky" : ''} full-screen-image`}
+        style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }} 
+      />
+      {/* <StickyImage src={sections[activeCard][0]} alt={sections[activeCard][1]} stickyClass="sticky"></StickyImage> */}
       {sections.map((section, index) => (
         <div>
           <div className="scrolling-barrier"></div>

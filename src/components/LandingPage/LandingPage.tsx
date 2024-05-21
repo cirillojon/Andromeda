@@ -48,7 +48,7 @@ function LandingPage() {
             </h1>
           </div>
           <div className="flex flex-col text-center items-center">
-            <span className="mt-2">
+            <span className="mt-2 blatant">
               Design, customize, and order your own <br />
               solar system, roof, and HVAC.
             </span>
@@ -60,7 +60,7 @@ function LandingPage() {
                 alt="House"
                 width={500}
                 height={20}
-                onLoad={handleImageLoad}
+                onLoad={handleImageLoad} /* Prevent scrolling until image loads */
               />
             </div>
           </div>
