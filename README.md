@@ -4,68 +4,63 @@
 
 ### Prerequisites
 
-- Python 3.x
-- Node.js (version 18.17 or higher required for Next)
+- Docker
+- Docker Compose
+- Node.js (optional, only if running frontend locally outside Docker)
 
 ### Setup
 
 1. **Clone the repository:**
 
-    ```sh
+    ```bash
     git clone https://github.com/cirillojon/Romeo
     cd Romeo
     ```
 
-2. **Run the setup script to install Python dependencies:**
+2. **Optional: Set up local development environment:**
 
-    ```sh
-    npm run setup
-    ```
+    If you plan to run or develop the frontend locally outside of Docker, you can follow these steps:
 
-3. **Install Node.js dependencies:**
-
-    ```sh
+    ```bash
+    cd frontend
     npm install
+    npm run dev
     ```
 
-4. **Activate the virtual environment:**
+    It is not necessary to npm install in frontend unless you want to develop outside of docker.
+    
 
-    - On macOS and Linux:
+3. **Build the Docker containers:**
 
-      ```sh
-      source env/bin/activate
-      ```
+    Build all containers using the following command from the root directory:
 
-    - On Windows:
-
-      ```sh
-      .\env\Scripts\activate
-      ```
-
-5. **Start the Flask server:**
-
-    With the virtual environment activated, run:
-
-    ```sh
-    npm run dev:flask
+    ```bash
+    docker-compose build
     ```
 
-6. **Run the development server:**
+    This command builds both the frontend and backend containers based on their respective Dockerfiles.
 
-    In another terminal (or tab), run:
+4. **Run the application:**
 
-    ```sh
-    npm run dev:next
+    Start the application using Docker with the following command:
+
+    ```bash
+    docker-compose up
     ```
 
-7. **When finished, deactivate the virtual environment by running:**
+    This command starts both the frontend and backend services, defined in the `docker-compose.yml`. The frontend serves the Next.js app, and the backend runs the Flask server.
 
-    ```sh
-    deactivate
+5. **Stop the application:**
+
+    To stop all running containers, use:
+
+    ```bash
+    docker-compose down
     ```
 
 ### Notes
 
-- The Flask server runs on port 5000.
-- The Next.js development server runs on port 3000.
-- Make sure the Flask server is running before starting the Next.js development server to avoid API request issues.
+- The Flask server runs on port 5000 and is accessible at `http://backend:5000` from other Docker services.
+- The Next.js development server runs on port 3000 and is accessible at `http://localhost:3000`.
+- Ensure your Docker environment is set up correctly before executing commands.
+- Use `docker-compose logs` for logging and debugging.
