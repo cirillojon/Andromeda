@@ -73,6 +73,15 @@ const NavMenu = () => {
             onPointerMove={handlePointerEvents}
             onPointerLeave={handlePointerEvents}
             className="bg-transparent">
+            FAQ
+          </NavigationMenuTrigger>
+          <NavigationMenuContent></NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger 
+            onPointerMove={handlePointerEvents}
+            onPointerLeave={handlePointerEvents}
+            className="bg-transparent">
             Mission
           </NavigationMenuTrigger>
           <NavigationMenuContent></NavigationMenuContent>
