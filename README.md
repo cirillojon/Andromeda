@@ -76,3 +76,29 @@
     ```bash
     docker-compose down
     ```
+
+## Application Structure
+
+### Frontend
+
+The frontend is currently built using **Next.js** and **TypeScript**
+
+Notable libraries:
+
+- **Tailwind CSS**
+- **Radix UI**
+- **shadcn/ui**
+
+### Backend
+
+Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a digital ocean droplet
+
+- **Python** - Language
+- **Flask** - Web framework
+- **NGINX** - Reverse proxy
+- **Gunicorn** Serves the Flask application on the droplet
+
+### Upcoming Features
+
+- **PostgreSQL**: Database
+- **Vercel**: May use for hosting frontend
