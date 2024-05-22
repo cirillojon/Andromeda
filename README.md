@@ -51,6 +51,16 @@
         destination: "http://167.71.165.9/api/user",
     },
     ```
+    To test that the api is working properly, you can simply do: 
+
+    ```bash
+    curl http://167.71.165.9/api/hello
+    ```
+    and verify that you get a valid response:
+
+    ```bash
+    {"message": "Hello World"}
+    ```
 
 4. **Optional: Local Backend Development**
     To run the backend locally, update the `next.config.mjs` file to point to `http://backend:5000` instead of the server IP.
