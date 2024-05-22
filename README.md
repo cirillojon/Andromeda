@@ -40,12 +40,15 @@
     source venv/bin/activate
     ```
 
-    Navigate to the backend directory. Note that the server should already be running. Restart the server only if you are making changes:
+    Navigate to the backend directory.
+    (Note that the flask server should already be running via gunicorn on port 8000.)
+    (Starting the server *should* be un-needed unless the server is offline for some reason)
+
+   To start the server:
     ```bash
     gunicorn --workers 3 --bind localhost:8000 app:app
     ```
-    
-    How to restart server:
+    How to restart server: (Restart the server only if you are making changes)
 
     ```bash
     To get the running gunicorn process:
@@ -106,7 +109,7 @@
     reload nginx once ready:
     sudo systemctl reload nginx
     ```
-4. **Optional: Local Backend Development**
+5. **Optional: Local Backend Development**
     To run the backend locally, update the `next.config.mjs` file to point to `http://backend:5000` instead of the server IP.
 
     Build and start all containers from the root directory:
