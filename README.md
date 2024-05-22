@@ -26,6 +26,9 @@
     - The Next.js development server runs on port 3000 and is accessible at `http://localhost:3000`.
 
 3. **Backend Development:**
+
+    For backend development, it is HIGHLY recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server.
+
     The backend is hosted on a Digital Ocean droplet. To access the server:
     ```bash
     ssh root@167.71.165.9
@@ -41,8 +44,6 @@
     ```bash
     gunicorn --workers 3 --bind localhost:8000 app:app
     ```
-
-    For backend development, it is highly recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server.
 
     To make a new API endpoint accessible by the frontend, update the `next.config.mjs` file with the new endpoint, for example:
     ```javascript
