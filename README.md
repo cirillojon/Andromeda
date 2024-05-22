@@ -59,8 +59,85 @@
 
     To completely stop: 
     kill <pid>
-    
     ```
+
+    Adding a New API Endpoint to `app.py`
+
+    Create a new resource class to handle the API logic. For instance, if you want to add a Task endpoint with GET and POST options:
+    ```python
+    class Task(Resource):
+        def get(self):
+            return {"tasks": "List of tasks"}
+    
+        def post(self):
+                data = request.get_json()  # Parses the JSON data
+                if not data or 'task' not in data:
+                    return {"message": "No task provided"}, 400
+                task_description = data['task']
+                return {"message": f"Task added: {task_description}"}, 201
+    ```
+
+    Add the new resource to your API by updating the api.add_resource() calls:
+    ```python
+    # Registering the new Task resource
+    api.add_resource(Task, '/api/task')
+    ```
+    
+    To test that the api is working properly, you can simply do: 
+
+    For a get request:
+    ```bash
+    curl http://167.71.165.9/api/task
+    ```
+    and verify that you get a valid response:
+    ```bash
+    {
+        "tasks": "List of tasks"
+    }
+    ```
+
+    However for api testing, I highly reccomend using postman
+    For example, to test this PUT request in postman:
+    in the url field put: `http://167.71.165.9/api/task`
+    make it a `PUT` request
+    Then in the body, select `raw`, and `json`, and add this:
+    ```bash
+    {
+        "task" : "Test"
+    }
+    ```
+    The correct response for this api should look like:
+    ```bash
+    {
+        "message": "Task added: Test"
+    }
+    ```
+
+    You can go to the console in postman to see the full details of your request:
+    ```bash
+    POST /api/task HTTP/1.1
+    Content-Type: application/json
+    User-Agent: PostmanRuntime/7.37.3
+    Accept: */*
+    Postman-Token: 7ed648e7-dcb6-47ed-9ae4-5cfa29ef98b3
+    Host: 167.71.165.9
+    Accept-Encoding: gzip, deflate, br
+    Connection: keep-alive
+    Content-Length: 27
+     
+    {
+    "task" : "Test"
+    }
+     
+    HTTP/1.1 201 CREATED
+    Server: nginx/1.24.0 (Ubuntu)
+    Date: Wed, 22 May 2024 23:19:14 GMT
+    Content-Type: application/json
+    Content-Length: 32
+    Connection: keep-alive
+     
+    {"message": "Task added: Test"}
+    ```   
 
     To make a new API endpoint accessible by the frontend, update the `next.config.mjs` file with the new endpoint, for example:
     ```javascript
@@ -68,16 +145,6 @@
         source: "/api/user",
         destination: "http://167.71.165.9/api/user",
     },
-    ```
-    To test that the api is working properly, you can simply do: 
-
-    ```bash
-    curl http://167.71.165.9/api/hello
-    ```
-    and verify that you get a valid response:
-
-    ```bash
-    {"message": "Hello World"}
     ```
 
     nginx notes: 
