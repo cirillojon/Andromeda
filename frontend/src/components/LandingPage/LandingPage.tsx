@@ -1,30 +1,34 @@
 "use client";
-
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { StickyScroll } from "@/components/ui/sticky-scroll-reveal";
+import React from 'react';
+import ScrollingContent from "./ScrollingContent"
 import MessageComponent from "@/components/MessageComponent/MessageComponent";
 
-const LandingPage = () => {
+function LandingPage() {
+  
+  const handleImageLoad = () => {
+    console.log(document.documentElement.attributes);
+    document.documentElement.classList.add('loaded')
+  };
+
   return (
     <div>
       <MessageComponent /> {/* Flask API Testing */}
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
         <div className="flex flex-col w-full mt-24 md:mt-0 mb-14 md:mb-0">
-          <div className="flex flex-col text-center items-center">
-            <h1 className="text-3xl lg:text-6xl md:text-5xl sm:text-3xl w-2/3 ">
+            <h1 className="header-text">
               Empowering{" "}
               <span className="text-gradient text-green-600">You</span>
             </h1>
-            <h1 className="text-3xl lg:text-6xl md:text-5xl sm:text-3xl w-2/3 ">
+            <h1 className="header-text">
               To Take{" "}
               <span className="text-gradient text-blue-400">Control</span>
             </h1>
-            <h1 className="text-3xl lg:text-6xl md:text-5xl sm:text-3xl w-2/3 ">
-              Of <span className="text-gradient text-yellow-500">Your</span>{" "}
+            <h1 className="header-text">
+              Of Your{" "}
               <span className="text-gradient text-purple-600">Home</span>
             </h1>
-          </div>
           <div className="flex flex-col items-center text-center">
             <span className="w-2/3 mt-8">
               Tech-driven approach that focuses on delivering a seamless,
@@ -39,13 +43,13 @@ const LandingPage = () => {
           </div>
         </div>
         <div className="flex flex-col h-full md:h-screen items-center justify-center bg-gradient-to-t from-transparent to-indigo-200 mb-20 md:mb-0">
-          <div className="flex flex-col text-center items-center justify-center mt-6 md:mt-0 mb-6">
-            <h1 className="text-3xl text-center items-center md:text-left lg:text-6xl md:text-5xl sm:text-3xl ">
+          <div>
+            <h1 className="header-text blatant">
               One Stop Solution
             </h1>
           </div>
           <div className="flex flex-col text-center items-center">
-            <span className="mt-2">
+            <span className="mt-2 blatant">
               Design, customize, and order your own <br />
               solar system, roof, and HVAC.
             </span>
@@ -57,72 +61,22 @@ const LandingPage = () => {
                 alt="House"
                 width={500}
                 height={20}
+                onLoad={handleImageLoad} /* Prevent scrolling until image loads */
               />
             </div>
           </div>
         </div>
       </div>
-      <StickyScroll
-        content={content}
-        parentDiv={
-          "h-screen flex relative space-x-10 p-10 bg-center bg-no-repeat"
-        }
-        cardDiv={"max-w-2xl text-center drop-shadow-2xl items-center"}
-      />
+      <div>
+        <ScrollingContent sections={sections}/>
+      </div>
     </div>
   );
 };
 
 export default LandingPage;
 
-const content = [
-  {
-    title: "Solar Systems",
-    description:
-      "Design your own solar system and get it installed for $0 down.",
-    content: (
-      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--cyan-500),var(--emerald-500))] flex items-center justify-center text-white">
-        Collaborative Editing
-      </div>
-    ),
-    backgroundUrl: `url(/assets/services/Solar-showcase.jpeg)`,
-  },
-  {
-    title: "HVAC",
-    description: "Upgrade your air conditioning unit today!",
-    content: (
-      <div className="h-full w-full flex items-center justify-center text-white">
-        <Image
-          src="/linear.webp"
-          width={300}
-          height={300}
-          className="h-full w-full object-cover"
-          alt="linear board demo"
-        />
-      </div>
-    ),
-    backgroundUrl: `url(/assets/services/HVAC-showcase.png)`,
-  },
-  {
-    title: "Roofing",
-    description:
-      "Combine a roof renovation with a solar system and get a bigger discount. Or design your roof from scratch.",
-    content: (
-      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-        Version control
-      </div>
-    ),
-    backgroundUrl: `url(/assets/services/roof-showcase.avif)`,
-  },
-  {
-    title: "Batteries",
-    description:
-      "Backup your entire house with batteries that will keep you running for days.",
-    content: (
-      <div className="h-full w-full bg-[linear-gradient(to_bottom_right,var(--orange-500),var(--yellow-500))] flex items-center justify-center text-white">
-        Version control
-      </div>
-    ),
-    backgroundUrl: `url(/assets/services/batteries-showcase.webp)`,
-  },
-];
+const sections = [["/assets/services/Solar-showcase.jpeg", "Solar Systems", "Design your own solar system and get it installed for $0 down."],
+                  ["/assets/services/HVAC-showcase.png", "HVAC", "Upgrade your air conditioning unit today!"],
+                  ["/assets/services/roof-showcase.avif", "Roofing", "Combine a roof rennovation with a solar system and get a bigger discount. Or design your roof from scratch."],
+                  ["/assets/services/batteries-showcase.webp", "Batteries", "Backup your entire house with batteries that will keep you running for days."]];
