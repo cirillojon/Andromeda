@@ -12,7 +12,7 @@ const nextConfig = {
     return [
       {
         source: "/api/hello",
-        destination: "http://backend:5000/api/hello",
+        destination: "http://167.71.165.9/api/hello",
       },
     ];
   },

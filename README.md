@@ -4,63 +4,64 @@
 
 ### Prerequisites
 
-- Docker
-- Docker Compose
-- Node.js (optional, only if running frontend locally outside Docker)
+- Node.js
+- Docker (optional, only if running backend locally)
 
 ### Setup
 
 1. **Clone the repository:**
-
     ```bash
     git clone https://github.com/cirillojon/Romeo
     cd Romeo
     ```
 
-2. **Optional: Set up local development environment:**
-
-    If you plan to run or develop the frontend locally outside of Docker, you can follow these steps:
-
+2. **Frontend Development:**
+    Navigate to the frontend directory, install dependencies, and start the development server:
     ```bash
     cd frontend
     npm install
     npm run dev
     ```
 
-    It is not necessary to npm install in frontend unless you want to develop outside of docker.
-    
+    - The Next.js development server runs on port 3000 and is accessible at `http://localhost:3000`.
 
-3. **Build the Docker containers:**
-
-    Build all containers using the following command from the root directory:
-
+3. **Backend Development:**
+    The backend is hosted on a Digital Ocean droplet. To access the server:
     ```bash
-    docker-compose build
+    ssh root@167.71.165.9
+    ```
+    The password is shared in the Discord `important-info` channel.
+
+    Once logged in, activate the Python virtual environment:
+    ```bash
+    source venv/bin/activate
     ```
 
-    This command builds both the frontend and backend containers based on their respective Dockerfiles.
-
-4. **Run the application:**
-
-    Start the application using Docker with the following command:
-
+    Navigate to the backend directory. Note that the server should already be running. Restart the server only if you are making changes:
     ```bash
+    gunicorn --workers 3 --bind localhost:8000 app:app
+    ```
+
+    For backend development, it is highly recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server.
+
+    To make a new API endpoint accessible by the frontend, update the `next.config.mjs` file with the new endpoint, for example:
+    ```javascript
+    {
+        source: "/api/user",
+        destination: "http://167.71.165.9/api/user",
+    },
+    ```
+
+4. **Optional: Local Backend Development**
+    To run the backend locally, update the `next.config.mjs` file to point to `http://backend:5000` instead of the server IP.
+
+    Build and start all containers from the root directory:
+    ```bash
+    docker-compose build
     docker-compose up
     ```
 
-    This command starts both the frontend and backend services, defined in the `docker-compose.yml`. The frontend serves the Next.js app, and the backend runs the Flask server.
-
-5. **Stop the application:**
-
-    To stop all running containers, use:
-
+    To stop all running containers:
     ```bash
     docker-compose down
     ```
-
-### Notes
-
-- The Flask server runs on port 5000 and is accessible at `http://backend:5000` from other Docker services.
-- The Next.js development server runs on port 3000 and is accessible at `http://localhost:3000`.
-- Ensure your Docker environment is set up correctly before executing commands.
-- Use `docker-compose logs` for logging and debugging.
