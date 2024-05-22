@@ -77,6 +77,35 @@
     {"message": "Hello World"}
     ```
 
+    nginx notes: 
+
+    create file in /etc/nginx/sites-enabled/ called {project-name}
+    containing:
+    ```javascript
+        server {
+            listen 80;
+            server_name 167.71.165.9;   <--- this will eventually be changed to hold our domain
+
+            location / {
+                proxy_pass http://localhost:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    ```
+    nginx commands:
+    ```bash
+    check nginx conf file syntax:
+    sudo nginx -t
+
+    create link to sites-enabled:
+    sudo ln -s /etc/nginx/sites-available/home-improvement /etc/nginx/sites-enabled/
+
+    reload nginx once ready:
+    sudo systemctl reload nginx
+    ```
 4. **Optional: Local Backend Development**
     To run the backend locally, update the `next.config.mjs` file to point to `http://backend:5000` instead of the server IP.
 
