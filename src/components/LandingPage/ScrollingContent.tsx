@@ -23,13 +23,11 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
       setSticky(false);
     }
     const val = Math.floor((currentScrollHeight) / (maxScrollHeight / sections.length));
-    if (val >= 0) {
-      if (val >= sections.length) {
-        setActiveCard(sections.length - 1);
-      }
-      else {
-        setActiveCard(val);
-      }
+    if (val >= sections.length) {
+      setActiveCard(sections.length - 1);
+    }
+    else if (val >= 0) {
+      setActiveCard(val);
     }
   };
 
