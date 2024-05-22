@@ -44,6 +44,20 @@
     ```bash
     gunicorn --workers 3 --bind localhost:8000 app:app
     ```
+    
+    How to restart server:
+
+    ```bash
+    To get the running gunicorn process:
+    ps aux | grep gunicorn
+
+    To gracefully restart: (Recommended to propogate changes without taking down server)
+    kill -HUP <pid>
+
+    To completely stop: 
+    kill <pid>
+    
+    ```
 
     To make a new API endpoint accessible by the frontend, update the `next.config.mjs` file with the new endpoint, for example:
     ```javascript
