@@ -1,9 +1,9 @@
-import LandingPage from "@/components/LandingPage/LandingPage";
+import ContactPage from "@/components/ContactPage/ContactPage";
 
 export default function Home() {
   return (
     <div>
-      <LandingPage />
+      <ContactPage />
     </div>
   );
 }
