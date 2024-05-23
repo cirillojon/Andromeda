@@ -147,7 +147,7 @@
     },
     ```
 
-    nginx notes: 
+    nginx notes: (this is already done this is just for documentation)
 
     create file in /etc/nginx/sites-enabled/ called {project-name}
     containing:
