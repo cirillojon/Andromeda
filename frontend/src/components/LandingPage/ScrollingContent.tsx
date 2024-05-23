@@ -49,7 +49,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
         style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }} 
       />
       {sections.map((section, index) => (
-        <div>
+        <div key={index}>
           <div className="scrolling-barrier"></div>
           <motion.div 
           initial={{
