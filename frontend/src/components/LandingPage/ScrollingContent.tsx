@@ -15,23 +15,27 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
 
 
   const handleScroll = () => {
-    const currentScrollHeight = (window.scrollY - ref.current!.offsetTop);
-    const maxScrollHeight = (ref.current!.clientHeight - ref.current!.offsetTop);
-    if (currentScrollHeight > -20) {
-      setSticky(true);
-    } else {
-      setSticky(false);
-    }
-    const val = Math.floor((currentScrollHeight) / (maxScrollHeight / sections.length));
-    if (val >= sections.length) {
-      setActiveCard(sections.length - 1);
-    }
-    else if (val >= 0) {
-      setActiveCard(val);
+    if (ref.current) {
+      const currentScrollHeight = (window.scrollY - ref.current.offsetTop);
+      if (currentScrollHeight > -20) {
+        setSticky(true);
+      } else {
+        setSticky(false);
+      }
+
+      const cards = ref.current.querySelectorAll('.card');
+      cards.forEach((card, index) => {
+        const rect = card.getBoundingClientRect();
+        if (rect.top + rect.height < window.innerHeight) {
+          setActiveCard(index);
+        }
+      });
     }
   };
 
   useEffect(() => {
+    handleScroll();
+
     window.addEventListener('scroll', handleScroll);
 
     // Clean up the event listener on component unmount
@@ -40,16 +44,17 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
     };
   }, []);
 
+
   return (
     <div ref = {ref}>
       <img
         src={sections[activeCard][0]}
         alt={sections[activeCard][1]}
         className={`${sticky ? "sticky" : ''} full-screen-image`}
-        style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }} 
+        style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }}
       />
       {sections.map((section, index) => (
-        <div>
+        <div key={index}>
           <div className="scrolling-barrier"></div>
           <motion.div 
           initial={{
@@ -58,7 +63,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
           animate={{
             opacity: activeCard == index ? 1 : 0.7,
           }}
-          className="scrolling-content" key={index}>
+          className="scrolling-content card" key={index}>
             <h1>{section[1]}</h1>
             <p>{section[2]}</p>
           </motion.div>
