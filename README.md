@@ -1,6 +1,8 @@
 # Romeo
 Current URL: [https://romeo-kappa.vercel.app/](https://romeo-kappa.vercel.app/)
 
+Currently whenever a push is made to version/1.0.0, the website will be redployed at this url with the latest changes.
+
 ## Getting Started
 
 ### Prerequisites
