@@ -47,9 +47,9 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     (Note that the flask server should already be running via gunicorn on port 8000.)
     (Starting the server *should* be un-needed unless the server is offline for some reason)
 
-   To start the server:
+   To start the server (with logging enabled):
     ```bash
-    gunicorn --workers 3 --bind localhost:8000 app:app
+    gunicorn --workers=2 --bind=0.0.0.0:8000 --log-level=debug app:app
     ```
     How to restart server: (Restart the server only if you are making changes)
 
