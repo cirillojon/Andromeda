@@ -148,7 +148,141 @@ Current URL: [https://romeo-kappa.vercel.app/](https://romeo-kappa.vercel.app/)
     },
     ```
 
-    nginx notes: (this is already done this is just for documentation)
+    ### Postgres notes:
+    
+    enter postgres shell:
+    ```bash
+    venvroot@ubuntu-s-1vcpu-1gb-nyc3-01:~/romeo# sudo -i -u postgres
+    ```
+
+    enter home_improvement db as db_user:
+    ```bash
+    postgres@ubuntu-s-1vcpu-1gb-nyc3-01:~$ psql -d home_improvement -U db_user
+    ```
+
+    list info about this db
+    ```sql
+    home_improvement=> \dt
+            List of relations
+    Schema | Name | Type  |  Owner   
+    --------+------+-------+----------
+    public | task | table | postgres
+    (1 row)
+    ```
+
+    select contents from a table
+    ```sql
+    home_improvement=> SELECT * FROM task;
+    id | description 
+    ----+-------------
+    3 | test
+    4 | test
+    5 | test
+    6 | test
+    7 | test
+    8 | test
+    9 | test
+    10 | test
+    (8 rows)
+
+    home_improvement=>
+    ```
+
+    restart/start/stop postgres:
+    ```bash
+    sudo systemctl restart postgresql
+    sudo systemctl start postgresql
+    sudo systemctl stop postgresql
+    ```
+
+    log into super user shell
+    ```bash
+    psql
+    ```
+
+    create a new db and user:
+    ```bash
+    CREATE DATABASE home_improvement;
+    CREATE USER db_user WITH PASSWORD 'your_password';
+    GRANT ALL PRIVILEGES ON DATABASE home_improvement TO db_user;
+    ```
+
+    grant perms to our use everywhere:
+    ```bash
+    GRANT ALL PRIVILEGES ON SCHEMA public TO db_user;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO db_user;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO db_user;
+    ```
+
+    edit conf file:
+    ```bash
+    sudo nano /etc/postgresql/12/main/pg_hba.conf
+    ```
+
+    In our flask app, we connect to our db using sqlAlachemy:
+    ```python
+    # Configure the SQLAlchemy part of the app instance using environment variables
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+
+    # Create the SQLAlchemy db instance
+    db = SQLAlchemy(app)
+    ```
+
+    We should see this output if we succeeded: 
+    ```bash
+    [2024-05-24 19:14:16 +0000] [8389] [INFO] Connected to: postgresql://db_user:password@localhost/home_improvement
+    ```
+
+    We can use this db session to create tables, and make changes to them
+
+    For example, 
+
+    We can define a tabel model as a python class
+    ```python
+    # Define a new model
+    # give it a name and relevant columns
+    class Task(db.Model):
+        __tablename__ = 'task'
+        __table_args__ = {'schema': 'public'}
+        id = db.Column(db.Integer, primary_key=True)
+        description = db.Column(db.String(200), nullable=False)
+    ```
+
+    When we initialize our flask app, any models that we define that don't yet exist
+    in the db we connected to, will be created using:
+    ```python
+    db.create_all()
+    ```
+
+    We can now refer to this model in our code to access and edit its contents:
+    ```python
+    # Get contents
+    Task.query.all()
+    ```
+    Exampe output:
+    ```bash
+     [{'id': 3, 'description': 'test'}, {'id': 4, 'description': 'test'},
+     ```
+
+    We can also reference specific elements:
+
+    ```python
+    Task.query.get(task_id)
+    ```
+
+    We can add elements to this table, using our db session:
+    ```python
+    db.session.add(Task(description="description string"))
+    db.session.commit()
+    ```
+
+    We can also delete similarly
+    ```python
+    db.session.delete(Task.query.get({an id number goes here}))
+    db.session.commit()
+    ```
+
+    ### nginx notes: (this is already done this is just for documentation)
 
     create file in /etc/nginx/sites-enabled/ called {project-name}
     containing:
