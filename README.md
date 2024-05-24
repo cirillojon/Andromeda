@@ -4,7 +4,7 @@ Current URL: [https://romeo-kappa.vercel.app/](https://romeo-kappa.vercel.app/)
 
 Currently whenever a push is made to version/1.0.0, the website will be redployed at this url with the latest changes.
 
-[![Vercel Status](https://vercel.com/jons-projects-59d50e55/romeo/badges/)](https://vercel.com/jons-projects-59d50e55/romeo)
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=romeo)
 
 ## Getting Started
 
