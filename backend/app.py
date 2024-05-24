@@ -91,6 +91,30 @@ class TaskResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
+    def put(self, task_id):
+        task = Task.query.get(task_id)
+        if task is None:
+            return {"message": "Task not found"}, 404
+        data = request.get_json()
+        if not data or "task" not in data:
+            return {"message": "No task provided"}, 400
+        task_description = data["task"]
+        try:
+            task.description = task_description
+            db.session.commit()
+            app.logger.info(f"Task updated: {task_id} - {task_description}")
+
+            # Log the contents of the database
+            tasks = Task.query.all()
+            tasks_info = [{"id": task.id, "description": task.description} for task in tasks]
+            app.logger.info(f"Current tasks in the database: {tasks_info}")
+
+            return {"message": f"Task updated: {task_id}"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating a task.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
 api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
