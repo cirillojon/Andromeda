@@ -224,7 +224,7 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     sudo nano /etc/postgresql/12/main/pg_hba.conf
     ```
 
-    In our flask app, we connect to our db using sqlAlachemy:
+    In our flask app, we connect to our db using SQLAlchemy:
     ```python
     # Configure the SQLAlchemy part of the app instance using environment variables
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
