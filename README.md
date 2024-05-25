@@ -1,4 +1,4 @@
-# Romeo
+# Andromeda
 
 Current URL: [https://romeo-kappa.vercel.app/](https://romeo-kappa.vercel.app/)
 
