@@ -212,7 +212,7 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     GRANT ALL PRIVILEGES ON DATABASE home_improvement TO db_user;
     ```
 
-    grant perms to our use everywhere:
+    grant perms to our user everywhere:
     ```bash
     GRANT ALL PRIVILEGES ON SCHEMA public TO db_user;
     GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO db_user;
