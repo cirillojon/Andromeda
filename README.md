@@ -17,8 +17,8 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
 
 1. **Clone the repository:**
     ```bash
-    git clone https://github.com/cirillojon/Romeo
-    cd Romeo
+    git clone https://github.com/cirillojon/Andromeda
+    cd Andromeda
     ```
 
 2. **Frontend Development:**
