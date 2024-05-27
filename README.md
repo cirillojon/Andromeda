@@ -105,7 +105,7 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     However for api testing, I highly reccomend using postman
     For example, to test this POST request in postman:
     in the url field put: `http://167.71.165.9/api/task`
-    make it a `PUT` request
+    make it a `POST` request
     Then in the body, select `raw`, and `json`, and add this:
     ```bash
     {
