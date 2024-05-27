@@ -342,6 +342,8 @@ Notable libraries:
 - **Radix UI**
 - **shadcn/ui**
 
+**Vercel** is currently being used for hosting the frontend
+
 ### Backend
 
 Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a digital ocean droplet
@@ -350,8 +352,6 @@ Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a d
 - **Flask** - Web framework
 - **NGINX** - Reverse proxy
 - **Gunicorn** Serves the Flask application on the droplet
-
-### Upcoming Features
-
 - **PostgreSQL**: Database
-- **Vercel**: May use for hosting frontend
+
+
