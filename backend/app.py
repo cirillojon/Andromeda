@@ -228,9 +228,9 @@ class UserResource(Resource):
 class FormResource(Resource):
     def post(self):
         data = request.get_json()
-        if not data or "user_id" not in data:
+        if not data or 'user_id' not in data:
             return {"message": "Invalid data"}, 400
-        new_form = Form(user_id=data["user_id"])
+        new_form = Form(user_id=data['user_id'])
         try:
             db.session.add(new_form)
             db.session.commit()
@@ -240,18 +240,30 @@ class FormResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def get(self, form_id):
-        form = Form.query.get(form_id)
-        if not form:
-            return {"message": "Form not found"}, 404
-        return {
-            "id": form.id,
-            "user_id": form.user_id,
-            "status": form.status,
-            "last_modified": json_serial(form.last_modified),
-            "created_at": json_serial(form.created_at),
-        }
-
+    def get(self, form_id=None, user_id=None):
+        if form_id:
+            form = Form.query.get(form_id)
+            if not form:
+                return {"message": "Form not found"}, 404
+            return {
+                "id": form.id,
+                "user_id": form.user_id,
+                "status": form.status,
+                "last_modified": json_serial(form.last_modified),
+                "created_at": json_serial(form.created_at)
+            }
+        elif user_id:
+            forms = Form.query.filter_by(user_id=user_id).all()
+            if not forms:
+                return {"message": "No forms found for user"}, 404
+            return [{
+                "id": form.id,
+                "status": form.status,
+                "last_modified": json_serial(form.last_modified),
+                "created_at": json_serial(form.created_at)
+            } for form in forms]
+        else:
+            return {"message": "Invalid request"}, 400
 
 # Define a resource for interacting with the FormData model
 class FormDataResource(Resource):
@@ -300,7 +312,7 @@ class FormDataResource(Resource):
 api.add_resource(Message, "/api/hello")
 api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
 api.add_resource(UserResource, "/api/user", "/api/user/<int:user_id>")
-api.add_resource(FormResource, "/api/form", "/api/form/<int:form_id>")
+api.add_resource(FormResource, "/api/form", "/api/form/<int:form_id>", "/api/forms/user/<int:user_id>")
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
 
 # Log all incoming requests
