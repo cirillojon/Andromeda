@@ -55,6 +55,12 @@ def json_serial(obj):
         return obj.isoformat()
     raise TypeError("Type %s not serializable" % type(obj))
 
+# Define the Task model
+class Task(db.Model):
+    __tablename__ = 'task'
+    __table_args__ = {'schema': 'public'}
+    id = db.Column(db.Integer, primary_key=True)
+    description = db.Column(db.String(200), nullable=False)
 
 # Define a resource for interacting with the Task model
 class TaskResource(Resource):
