@@ -7,6 +7,7 @@ import MessageComponent from "@/components/MessageComponent/MessageComponent";
 import UserComponent from "../UserComponent/UserComponent";
 import FormComponent from "../FormComponent/FormComponent";
 import UserFormsComponent from "../UserFormsComponent/UserFormsComponent";
+import FormDataComponent from "../FormDataComponent/FormDataComponent";
 
 function LandingPage() {
   
@@ -21,6 +22,7 @@ function LandingPage() {
       <UserComponent /> {/* Flask API Testing - User */}
       <FormComponent /> {/* Flask API Testing - Form */}
       <UserFormsComponent /> {/* Flask API Testing - User Forms */}
+      <FormDataComponent /> {/* Flask API Testing - Form Data */}
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
         <div className="flex flex-col w-full mt-24 md:mt-0 mb-14 md:mb-0">
             <h1 className="header-text">
