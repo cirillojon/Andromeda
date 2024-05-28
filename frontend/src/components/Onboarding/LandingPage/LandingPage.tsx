@@ -40,7 +40,7 @@ const LandingPage = () => {
           </div>
           <div className="flex flex-col items-center mb-6 md:mb-0">
             <RegisterLink 
-              postLoginRedirectURL="/welcome"
+              postLoginRedirectURL="/dashboard"
               className={cn(buttonVariants({ variant: "default" }), "")}
             >
               Get Started
