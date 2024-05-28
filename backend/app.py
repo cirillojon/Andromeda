@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 import logging
@@ -20,6 +21,9 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Create the SQLAlchemy db instance
 db = SQLAlchemy(app)
+
+# Initialize migrate
+migrate = Migrate(app, db)
 
 # Set up logging for the application
 if __name__ != "__main__":
@@ -145,13 +149,13 @@ class TaskResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
-# Define the User model
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    sso_token = db.Column(db.String(255), unique=True, nullable=True)  # nullable initially to handle existing users
 
 
 # Define the Form model
@@ -200,13 +204,13 @@ class Message(Resource):
 class UserResource(Resource):
     def post(self):
         data = request.get_json()
-        if not data or "email" not in data or "name" not in data:
+        if not data or "email" not in data or "name" not in data or "sso_token" not in data:
             return {"message": "Invalid data"}, 400
-        new_user = User(email=data["email"], name=data["name"])
+        new_user = User(email=data["email"], name=data["name"], sso_token=data["sso_token"])
         try:
             db.session.add(new_user)
             db.session.commit()
-            return {"message": "User created", "user_id": new_user.id}, 201
+            return {"message": "User created with SSO", "user_id": new_user.id}, 201
         except Exception as e:
             app.logger.exception("Error occurred while creating a user.")
             db.session.rollback()
