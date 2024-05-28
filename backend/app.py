@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
 import logging
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect
 import time
 from dotenv import load_dotenv
 import os
@@ -28,45 +28,12 @@ if __name__ != '__main__':
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-# Define the PostgreSQL enum type for status
-def create_status_enum():
-    with db.engine.connect() as conn:
-        # Check if the enum type exists
-        result = conn.execute(text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")).fetchone()
-        if not result:
-            # Only create the enum type if it does not exist
-            try:
-                conn.execute(text("CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"))
-            except Exception as e:
-                app.logger.error("Error creating enum type: %s", e)
-
-# Define the User model
-class User(db.Model):
-    __tablename__ = 'users'
+# Define the Task model
+class Task(db.Model):
+    __tablename__ = 'task'
+    __table_args__ = {'schema': 'public'}
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    name = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-# Define the Form model
-class Form(db.Model):
-    __tablename__ = 'forms'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    status = db.Column(db.Enum('Pending', 'Approved', 'Rejected', name='status_type'), default='Pending')
-    last_modified = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-# Define the FormData model
-class FormData(db.Model):
-    __tablename__ = 'form_data'
-    id = db.Column(db.Integer, primary_key=True)
-    form_id = db.Column(db.Integer, db.ForeignKey('forms.id'), nullable=False)
-    field_name = db.Column(db.String(255), nullable=False)
-    field_value = db.Column(db.Text, nullable=False)
-    created_by = db.Column(db.Integer, db.ForeignKey('users.id'))
-    last_modified = db.Column(db.DateTime, default=db.func.current_timestamp(), onupdate=db.func.current_timestamp())
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    description = db.Column(db.String(200), nullable=False)
 
 # Initialize Flask-RESTful API
 api = Api(app)
@@ -76,88 +43,81 @@ class Message(Resource):
     def get(self):
         return {"message": "Hello World!"}
 
-# Define a resource for interacting with the User model
-class UserResource(Resource):
+# Define a resource for interacting with the Task model
+class TaskResource(Resource):
+    def get(self):
+        tasks = Task.query.all()
+        return {"tasks": [{"id": task.id, "description": task.description} for task in tasks]}
+
     def post(self):
         data = request.get_json()
-        if not data or 'email' not in data or 'name' not in data:
-            return {"message": "Invalid data"}, 400
-        new_user = User(email=data['email'], name=data['name'])
+        if not data or "task" not in data:
+            return {"message": "No task provided"}, 400
+        task_description = data["task"]
+        new_task = Task(description=task_description)
         try:
-            db.session.add(new_user)
+            db.session.add(new_task)
             db.session.commit()
-            return {"message": "User created", "user_id": new_user.id}, 201
+            app.logger.info(f"Task added: {task_description}")
+
+            # Log the contents of the database
+            tasks = Task.query.all()
+            tasks_info = [{"id": task.id, "description": task.description} for task in tasks]
+            app.logger.info(f"Current tasks in the database: {tasks_info}")
+
+            return {"message": f"Task added: {task_description}"}, 201
         except Exception as e:
-            app.logger.exception("Error occurred while creating a user.")
+            app.logger.exception("Error occurred while adding a task.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def get(self, user_id):
-        user = User.query.get(user_id)
-        if not user:
-            return {"message": "User not found"}, 404
-        return {"id": user.id, "email": user.email, "name": user.name, "created_at": user.created_at}
-
-# Define a resource for interacting with the Form model
-class FormResource(Resource):
-    def post(self):
-        data = request.get_json()
-        if not data or 'user_id' not in data:
-            return {"message": "Invalid data"}, 400
-        new_form = Form(user_id=data['user_id'])
+    def delete(self, task_id):
+        task = Task.query.get(task_id)
+        if task is None:
+            return {"message": "Task not found"}, 404
         try:
-            db.session.add(new_form)
+            db.session.delete(task)
             db.session.commit()
-            return {"message": "Form created", "form_id": new_form.id}, 201
+            app.logger.info(f"Task deleted: {task_id}")
+
+            # Log the contents of the database
+            tasks = Task.query.all()
+            tasks_info = [{"id": task.id, "description": task.description} for task in tasks]
+            app.logger.info(f"Current tasks in the database: {tasks_info}")
+
+            return {"message": f"Task deleted: {task_id}"}, 200
         except Exception as e:
-            app.logger.exception("Error occurred while creating a form.")
+            app.logger.exception("Error occurred while deleting a task.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def get(self, form_id):
-        form = Form.query.get(form_id)
-        if not form:
-            return {"message": "Form not found"}, 404
-        return {
-            "id": form.id,
-            "user_id": form.user_id,
-            "status": form.status,
-            "last_modified": form.last_modified,
-            "created_at": form.created_at
-        }
-
-# Define a resource for interacting with the FormData model
-class FormDataResource(Resource):
-    def post(self):
+    def put(self, task_id):
+        task = Task.query.get(task_id)
+        if task is None:
+            return {"message": "Task not found"}, 404
         data = request.get_json()
-        if not data or 'form_id' not in data or 'field_name' not in data or 'field_value' not in data:
-            return {"message": "Invalid data"}, 400
-        new_form_data = FormData(
-            form_id=data['form_id'],
-            field_name=data['field_name'],
-            field_value=data['field_value'],
-            created_by=data.get('created_by')
-        )
+        if not data or "task" not in data:
+            return {"message": "No task provided"}, 400
+        task_description = data["task"]
         try:
-            db.session.add(new_form_data)
+            task.description = task_description
             db.session.commit()
-            return {"message": "Form data added", "form_data_id": new_form_data.id}, 201
+            app.logger.info(f"Task updated: {task_id} - {task_description}")
+
+            # Log the contents of the database
+            tasks = Task.query.all()
+            tasks_info = [{"id": task.id, "description": task.description} for task in tasks]
+            app.logger.info(f"Current tasks in the database: {tasks_info}")
+
+            return {"message": f"Task updated: {task_id}"}, 200
         except Exception as e:
-            app.logger.exception("Error occurred while adding form data.")
+            app.logger.exception("Error occurred while updating a task.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
-    def get(self, form_id):
-        form_data = FormData.query.filter_by(form_id=form_id).all()
-        if not form_data:
-            return {"message": "No form data found"}, 404
-        return [{"id": data.id, "field_name": data.field_name, "field_value": data.field_value, "created_by": data.created_by, "last_modified": data.last_modified, "created_at": data.created_at} for data in form_data]
 
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
-api.add_resource(UserResource, "/api/user", "/api/user/<int:user_id>")
-api.add_resource(FormResource, "/api/form", "/api/form/<int:form_id>")
-api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
+api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
 
 # Log all incoming requests
 @app.before_request
@@ -179,8 +139,6 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
-            # Create status enum type
-            create_status_enum()
             # Create database tables for all models
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
