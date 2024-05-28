@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from sqlalchemy import inspect, text
 import time
+from datetime import datetime
 from dotenv import load_dotenv
 import os
 
@@ -31,7 +32,21 @@ else:
 # Define the PostgreSQL enum type for status
 def create_status_enum():
     with db.engine.connect() as conn:
-        conn.execute(text("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'status_type') THEN CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected'); END IF; END $$"))
+        # Check if the enum type exists
+        result = conn.execute(text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")).fetchone()
+        if not result:
+            # Only create the enum type if it does not exist
+            try:
+                conn.execute(text("CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"))
+            except Exception as e:
+                app.logger.error("Error creating enum type: %s", e)
+
+# Define a helper function for JSON serialization
+def json_serial(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, (datetime,)):
+        return obj.isoformat()
+    raise TypeError ("Type %s not serializable" % type(obj))
 
 # Define the User model
 class User(db.Model):
@@ -89,7 +104,12 @@ class UserResource(Resource):
         user = User.query.get(user_id)
         if not user:
             return {"message": "User not found"}, 404
-        return {"id": user.id, "email": user.email, "name": user.name, "created_at": user.created_at}
+        return {
+            "id": user.id,
+            "email": user.email,
+            "name": user.name,
+            "created_at": json_serial(user.created_at)
+        }
 
 # Define a resource for interacting with the Form model
 class FormResource(Resource):
@@ -115,8 +135,8 @@ class FormResource(Resource):
             "id": form.id,
             "user_id": form.user_id,
             "status": form.status,
-            "last_modified": form.last_modified,
-            "created_at": form.created_at
+            "last_modified": json_serial(form.last_modified),
+            "created_at": json_serial(form.created_at)
         }
 
 # Define a resource for interacting with the FormData model
@@ -144,7 +164,17 @@ class FormDataResource(Resource):
         form_data = FormData.query.filter_by(form_id=form_id).all()
         if not form_data:
             return {"message": "No form data found"}, 404
-        return [{"id": data.id, "field_name": data.field_name, "field_value": data.field_value, "created_by": data.created_by, "last_modified": data.last_modified, "created_at": data.created_at} for data in form_data]
+        return [
+            {
+                "id": data.id,
+                "field_name": data.field_name,
+                "field_value": data.field_value,
+                "created_by": data.created_by,
+                "last_modified": json_serial(data.last_modified),
+                "created_at": json_serial(data.created_at)
+            }
+            for data in form_data
+        ]
 
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
