@@ -265,6 +265,22 @@ class FormResource(Resource):
         else:
             return {"message": "Invalid request"}, 400
 
+    def put(self, form_id):
+        data = request.get_json()
+        if not data or 'status' not in data:
+            return {"message": "Invalid data"}, 400
+        form = Form.query.get(form_id)
+        if not form:
+            return {"message": "Form not found"}, 404
+        try:
+            form.status = data['status']
+            db.session.commit()
+            return {"message": f"Form status updated to {form.status}"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating form status.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
 # Define a resource for interacting with the FormData model
 class FormDataResource(Resource):
     def post(self):
