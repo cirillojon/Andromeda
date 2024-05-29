@@ -25,6 +25,9 @@ db = SQLAlchemy(app)
 # Initialize migrate
 migrate = Migrate(app, db)
 
+# Initialize Flask-RESTful API
+api = Api(app)
+
 # Set up logging for the application
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -190,9 +193,6 @@ class FormData(db.Model):
     )
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
-
-# Initialize Flask-RESTful API
-api = Api(app)
 
 # Define a simple message resource
 class Message(Resource):
