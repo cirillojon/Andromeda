@@ -1,15 +1,17 @@
 "use client";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import React from 'react';
 import ScrollingContent from "./ScrollingContent"
 import MessageComponent from "@/components/MessageComponent/MessageComponent";
-import UserComponent from "../UserComponent/UserComponent";
-import FormComponent from "../FormComponent/FormComponent";
-import UserFormsComponent from "../UserFormsComponent/UserFormsComponent";
-import FormDataComponent from "../FormDataComponent/FormDataComponent";
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { cn } from "@/lib/utils";
+import UserComponent from "@/components/UserComponent/UserComponent";
+import FormComponent from "@/components/FormComponent/FormComponent";
+import UserFormsComponent from "@/components/UserFormsComponent/UserFormsComponent";
+import FormDataComponent from "@/components/FormDataComponent/FormDataComponent";
 
-function LandingPage() {
+const LandingPage = () => {
   
   const handleImageLoad = () => {
     console.log(document.documentElement.attributes);
@@ -45,9 +47,12 @@ function LandingPage() {
             </span>
           </div>
           <div className="flex flex-col items-center mb-6 md:mb-0">
-            <Button className="mt-6 hover:bg-opacity-50 drop-shadow-2xl">
+            <RegisterLink 
+              postLoginRedirectURL="/dashboard"
+              className={cn(buttonVariants({ variant: "default" }), "")}
+            >
               Get Started
-            </Button>
+            </RegisterLink>
           </div>
         </div>
         <div className="flex flex-col h-full md:h-screen items-center justify-center bg-gradient-to-t from-transparent to-indigo-200 mb-20 md:mb-0">
