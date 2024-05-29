@@ -8,6 +8,7 @@ interface User {
   email: string;
   name: string;
   created_at: string;
+  sso_token: string;
 }
 
 const UserComponent: React.FC = () => {
