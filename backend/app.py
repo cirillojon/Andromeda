@@ -216,7 +216,7 @@ class UserResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def get(self, sso_token):
+    def get(self, sso_token=None):
         if not sso_token:
             return {"message": "SSO token not provided"}, 400
         user = User.query.filter_by(sso_token=sso_token).first()
