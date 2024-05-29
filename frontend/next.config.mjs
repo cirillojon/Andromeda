@@ -14,6 +14,34 @@ const nextConfig = {
         source: "/api/hello",
         destination: "http://167.71.165.9/api/hello",
       },
+      {
+        source: "/api/user",
+        destination: "http://167.71.165.9/api/user",
+      },
+      {
+        source: "/api/user/:user_id",
+        destination: "http://167.71.165.9/api/user/:user_id",
+      },
+      {
+        source: "/api/form",
+        destination: "http://167.71.165.9/api/form",
+      },
+      {
+        source: "/api/form/:form_id",
+        destination: "http://167.71.165.9/api/form/:form_id",
+      },
+      {
+        source: "/api/forms/user/:user_id",
+        destination: "http://167.71.165.9/api/forms/user/:user_id",
+      },
+      {
+        source: "/api/form_data",
+        destination: "http://167.71.165.9/api/form_data",
+      },
+      {
+        source: "/api/form_data/:form_id",
+        destination: "http://167.71.165.9/api/form_data/:form_id",
+      }
     ];
   },
 };

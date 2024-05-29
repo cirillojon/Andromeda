@@ -287,6 +287,22 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     db.session.commit()
     ```
 
+    Migrations:
+
+    ```bash
+    pip install Flask-Migrate
+
+    # import 
+    from flask_migrate import Migrate
+
+    # Initialize migrate
+    migrate = Migrate(app, db)
+
+    flask db init
+    flask db migrate -m "Added sso_token to users"
+    flask db upgrade
+    ```
+
     ### nginx notes: (this is already done this is just for documentation)
 
     create file in /etc/nginx/sites-enabled/ called {project-name}
