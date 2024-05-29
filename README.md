@@ -103,9 +103,9 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     ```
 
     However for api testing, I highly reccomend using postman
-    For example, to test this PUT request in postman:
+    For example, to test this POST request in postman:
     in the url field put: `http://167.71.165.9/api/task`
-    make it a `PUT` request
+    make it a `POST` request
     Then in the body, select `raw`, and `json`, and add this:
     ```bash
     {
@@ -287,6 +287,22 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     db.session.commit()
     ```
 
+    Migrations:
+
+    ```bash
+    pip install Flask-Migrate
+
+    # import 
+    from flask_migrate import Migrate
+
+    # Initialize migrate
+    migrate = Migrate(app, db)
+
+    flask db init
+    flask db migrate -m "Added sso_token to users"
+    flask db upgrade
+    ```
+
     ### nginx notes: (this is already done this is just for documentation)
 
     create file in /etc/nginx/sites-enabled/ called {project-name}
@@ -342,6 +358,8 @@ Notable libraries:
 - **Radix UI**
 - **shadcn/ui**
 
+**Vercel** is currently being used for hosting the frontend
+
 ### Backend
 
 Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a digital ocean droplet
@@ -350,8 +368,6 @@ Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a d
 - **Flask** - Web framework
 - **NGINX** - Reverse proxy
 - **Gunicorn** Serves the Flask application on the droplet
-
-### Upcoming Features
-
 - **PostgreSQL**: Database
-- **Vercel**: May use for hosting frontend
+
+
