@@ -15,12 +15,13 @@ export async function middleware(req: NextRequest) {
   const currentUser = await user.getUser();
 
   //protect the route and redirect unauthorized users
+  /*
   if (!isLoggedIn || !currentUser) {
     return NextResponse.redirect(new URL("/", req.url));
-  }
+  }*/
 
   //check to see if the user exists
-  const response = await fetch(`/api/user/${currentUser.id}`);
+  const response = await fetch(`/api/user/`);
   
   //might need to handle specific response on no user returned
   if (!response.ok) {
