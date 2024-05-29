@@ -217,6 +217,8 @@ class UserResource(Resource):
             return {"message": "Internal server error"}, 500
 
     def get(self, sso_token):
+        if not sso_token:
+            return {"message": "SSO token not provided"}, 400
         user = User.query.filter_by(sso_token=sso_token).first()
         if not user:
             return {"message": "User not found"}, 404
