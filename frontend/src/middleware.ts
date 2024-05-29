@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { json } from "stream/consumers";
 
 interface User {
   id: string,
@@ -10,31 +11,26 @@ interface User {
 }
 
 export async function middleware(req: NextRequest) {
+  
   console.log(req)
   const user = await getKindeServerSession();
   const isLoggedIn = await user.isAuthenticated();
   const currentUser = await user.getUser();
 
   //protect the route and redirect unauthorized users
-  /*
   if (!isLoggedIn || !currentUser) {
     return NextResponse.redirect(new URL("/", req.url));
-  }*/
+  }
 
   //check to see if the user exists
   const getUrl = new URL(`/api/user/${currentUser?.id}`, req.url);
   console.log("URL: " + req.url)
+  console.log("GET URL: " + getUrl.toString())
   const response = await fetch(getUrl.toString());
-  
+  const jsonData = await response.json();
+  console.log(jsonData)
   //might need to handle specific response on no user returned
-  if (!response.ok) {
-    return NextResponse.error(); 
-  }
-
-  const data: User = await response.json();
-
-  //create a new user if it doesnt exist
-  if (!data || !data.id) {
+  if (jsonData.message && jsonData.message === "User not found") {
     console.log("USER DOESNT EXIST")
     const postUrl = new URL(`/api/user`, req.url);
     const response = await fetch(postUrl.toString(), {
@@ -48,10 +44,8 @@ export async function middleware(req: NextRequest) {
         sso_token: currentUser?.id,
       })
     });
-
-    if (!response.ok) {
-      return NextResponse.error(); 
-    }
+    const newJsonData = await response.json();
+    console.log(newJsonData.message)
   }
 
   return NextResponse.next();
