@@ -10,7 +10,8 @@ interface User {
 }
 
 export async function middleware(req: NextRequest) {
-  const user = await getKindeServerSession(req);
+  console.log(req)
+  const user = await getKindeServerSession();
   const isLoggedIn = await user.isAuthenticated();
   const currentUser = await user.getUser();
 
@@ -21,11 +22,12 @@ export async function middleware(req: NextRequest) {
   }*/
 
   //check to see if the user exists
-  const response = await fetch(`/api/user/`);
+  const getUrl = new URL(`/api/user/${currentUser?.id}`, req.url);
+  console.log("URL: " + req.url)
+  const response = await fetch(getUrl.toString());
   
   //might need to handle specific response on no user returned
   if (!response.ok) {
-    console.log(response.statusText);
     return NextResponse.error(); 
   }
 
@@ -33,15 +35,17 @@ export async function middleware(req: NextRequest) {
 
   //create a new user if it doesnt exist
   if (!data || !data.id) {
-    const response = await fetch(`/api/user`, {
+    console.log("USER DOESNT EXIST")
+    const postUrl = new URL(`/api/user`, req.url);
+    const response = await fetch(postUrl.toString(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        email: currentUser.email,
-        name: currentUser.given_name,
-        sso_token: currentUser.id,
+        email: currentUser?.email,
+        name: currentUser?.given_name,
+        sso_token: currentUser?.id,
       })
     });
 
