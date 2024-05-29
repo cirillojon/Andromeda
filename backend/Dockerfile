@@ -17,4 +17,4 @@ COPY . .
 EXPOSE 5000
 
 # Command to run the application
-CMD ["python", "app.py"]
+CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload", "app:app"]
