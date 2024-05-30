@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" className={roboto.className}>
       <body>
         <Navbar/>
-        <main>
+        <main className="md:-mt-16">
           {children}
         </main>
         <Toaster richColors/>
