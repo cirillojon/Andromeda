@@ -13,7 +13,13 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetClose,
+} from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const services = [
   {
@@ -25,7 +31,8 @@ const services = [
   {
     title: "HVAC",
     href: "/",
-    description: "For sighted users to preview content available behind a link.",
+    description:
+      "For sighted users to preview content available behind a link.",
   },
   {
     title: "Roofing",
@@ -45,115 +52,45 @@ const handlePointerEvents = (event: any) => {
 };
 
 const NavMenu = () => {
-  const [menuOpen, setMenuOpen] = React.useState(false);
-
   return (
-    <div>
-      <div className="block md:hidden">
-        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-          <SheetTrigger asChild>
-            <button
-              className={`p-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 ${
-                menuOpen ? 'hidden' : 'block'
-              }`}
+      <NavigationMenu>
+        <NavigationMenuList className="gap-3 lg:gap-6">
+          <NavigationMenuItem>
+            <NavigationMenuTrigger
+              onPointerMove={handlePointerEvents}
+              className="bg-transparent"
             >
-              <Menu className="w-6 h-6" />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="right" className="w-56">
-            <div className="py-1">
-              {services.map((service) => (
-                <SheetClose asChild key={service.title}>
-                  <Link
+              Services
+            </NavigationMenuTrigger>
+            <NavigationMenuContent>
+              <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
+                {services.map((service) => (
+                  <ListItem
+                    key={service.title}
+                    title={service.title}
                     href={service.href}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    {service.title}
-                  </Link>
-                </SheetClose>
-              ))}
-            </div>
-            <div className="py-1">
-              <SheetClose asChild>
-                <Link
-                  href="/faq"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  FAQ
-                </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link
-                  href="/mission"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Mission
-                </Link>
-              </SheetClose>
-              <SheetClose asChild>
-                <Link
-                  href="/contact"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  Contact
-                </Link>
-              </SheetClose>
-            </div>
-          </SheetContent>
-        </Sheet>
-      </div>
-      <div className="hidden md:block">
-        <DesktopNav />
-      </div>
-    </div>
-  );
-};
-
-const DesktopNav = () => {
-  return (
-    <NavigationMenu>
-      <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger onPointerMove={handlePointerEvents} className="bg-transparent">
-            Services
-          </NavigationMenuTrigger>
-          <NavigationMenuContent>
-            <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
-              {services.map((service) => (
-                <ListItem key={service.title} title={service.title} href={service.href}>
-                  {service.description}
-                </ListItem>
-              ))}
-            </ul>
-          </NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger
-            onPointerMove={handlePointerEvents}
-            onPointerLeave={handlePointerEvents}
-            className="bg-transparent"
-          >
-            FAQ
-          </NavigationMenuTrigger>
-          <NavigationMenuContent></NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger
-            onPointerMove={handlePointerEvents}
-            onPointerLeave={handlePointerEvents}
-            className="bg-transparent"
-          >
-            Mission
-          </NavigationMenuTrigger>
-          <NavigationMenuContent></NavigationMenuContent>
-        </NavigationMenuItem>
-        <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Contact</NavigationMenuLink>
-          </Link>
-        </NavigationMenuItem>
-      </NavigationMenuList>
-    </NavigationMenu>
+                    {service.description}
+                  </ListItem>
+                ))}
+              </ul>
+            </NavigationMenuContent>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Button variant={"ghost"}>FAQ</Button>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Button variant={"ghost"}>Mission</Button>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <Link href="/contact" legacyBehavior passHref>
+              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                Contact
+              </NavigationMenuLink>
+            </Link>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
   );
 };
 
@@ -178,7 +115,9 @@ const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
             {...props}
           >
             <div className="text-sm font-medium leading-none">{title}</div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+              {children}
+            </p>
           </a>
         </NavigationMenuLink>
       </li>
