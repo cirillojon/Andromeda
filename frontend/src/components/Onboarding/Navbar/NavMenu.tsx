@@ -13,6 +13,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
+import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 
 const services = [
   {
@@ -49,47 +50,57 @@ const NavMenu = () => {
   return (
     <div>
       <div className="block md:hidden">
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="p-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
-        >
-          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-        {menuOpen && (
-          <div className="absolute right-0 w-56 mt-2 bg-white divide-y divide-gray-100 rounded-md shadow-lg">
+        <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+          <SheetTrigger asChild>
+            <button
+              className={`p-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 ${
+                menuOpen ? 'hidden' : 'block'
+              }`}
+            >
+              <Menu className="w-6 h-6" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-56">
             <div className="py-1">
               {services.map((service) => (
-                <Link
-                  key={service.title}
-                  href={service.href}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  {service.title}
-                </Link>
+                <SheetClose asChild key={service.title}>
+                  <Link
+                    href={service.href}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    {service.title}
+                  </Link>
+                </SheetClose>
               ))}
             </div>
             <div className="py-1">
-              <Link
-                href="/faq"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                FAQ
-              </Link>
-              <Link
-                href="/mission"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Mission
-              </Link>
-              <Link
-                href="/contact"
-                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Contact
-              </Link>
+              <SheetClose asChild>
+                <Link
+                  href="/faq"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  FAQ
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/mission"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Mission
+                </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <Link
+                  href="/contact"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Contact
+                </Link>
+              </SheetClose>
             </div>
-          </div>
-        )}
+          </SheetContent>
+        </Sheet>
       </div>
       <div className="hidden md:block">
         <DesktopNav />
