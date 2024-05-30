@@ -7,13 +7,30 @@ html {
 	overflow: visible;
 }
 
-.header-text {
+.scaling-header-text {
 	display: inline-block;
 	max-width: 100%;
 	font-size: 5vw;
 	text-align: center;
-	margin-bottom: -1vh;
 }
+
+@media only screen and (max-width: 767px) {
+	.scaling-text {
+		display: inline-block;
+		max-width: 100%;
+		font-size: 2.5vw;
+		text-align: center;
+	}
+  }
+  
+@media only screen and (min-width: 768px) {
+	.scaling-text {
+		display: inline-block;
+		max-width: 100%;
+		font-size: 1.4vw;
+		text-align: center;
+	}
+  }
 
 .scrolling-content {
 	background-color: #ffffff;
