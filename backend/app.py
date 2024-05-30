@@ -216,8 +216,10 @@ class UserResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def get(self, user_id):
-        user = User.query.get(user_id)
+    def get(self, sso_token=None):
+        if not sso_token:
+            return {"message": "SSO token not provided"}, 400
+        user = User.query.filter_by(sso_token=sso_token).first()
         if not user:
             return {"message": "User not found"}, 404
         return {
@@ -331,7 +333,7 @@ class FormDataResource(Resource):
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
 api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
-api.add_resource(UserResource, "/api/user", "/api/user/<int:user_id>")
+api.add_resource(UserResource, "/api/user", "/api/user/<string:sso_token>")
 api.add_resource(FormResource, "/api/form", "/api/form/<int:form_id>", "/api/forms/user/<int:user_id>")
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
 

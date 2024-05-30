@@ -2,8 +2,6 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { Roboto } from "@next/font/google";
 import { Toaster } from "@/components/ui/sonner";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { redirect } from "next/navigation";
 
 const roboto = Roboto({
   subsets: ["latin"],
@@ -19,10 +17,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const { isAuthenticated } = getKindeServerSession();
-  const isLoggedIn = await isAuthenticated();
-
-  if (!isLoggedIn) redirect("/");
 
   return (
     <html lang="en" className={roboto.className}>
