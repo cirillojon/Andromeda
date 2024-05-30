@@ -6,7 +6,7 @@ import { Libre_Franklin } from "next/font/google";
 import { Rubik } from "next/font/google";
 import "./styles.css";
 import DashboardNavBar from "@/components/Dashboard/DashboardNavBar";
-import CustomerSupportChat from "@/components/Dashboard/CustomerSupportChat";
+import CustomerSupportChat from "@/components/Dashboard/Support/CustomerSupportChat";
 
 const libre_franklin = Libre_Franklin({
   subsets: ["latin"],
