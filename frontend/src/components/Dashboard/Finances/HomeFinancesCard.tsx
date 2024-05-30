@@ -23,28 +23,28 @@ const HomeFinancesCard = () => {
             <div>
               <p className="text-lg font-medium">Monthly Expense</p>
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Out of pocket cost
+                Solar Panel Array
               </p>
             </div>
             <div className="text-2xl font-bold">$154.30</div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-lg font-medium">Total Contribution</p>
+              <p className="text-lg font-medium">Monthly Expense</p>
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                All time contributions
+                Roof Replacement
               </p>
             </div>
-            <div className="text-2xl font-bold">$12,345.67</div>
+            <div className="text-2xl font-bold">$280.67</div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-lg font-medium">Remaining Balance</p>
+              <p className="text-lg font-medium">Monthly Expense</p>
               <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Outstanding cost
+                Battery Installation
               </p>
             </div>
-            <div className="text-2xl font-bold">$32,886.22</div>
+            <div className="text-2xl font-bold">$88.43</div>
           </div>
         </div>
       </CardContent>
