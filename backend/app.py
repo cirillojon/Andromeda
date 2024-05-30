@@ -152,6 +152,54 @@ class TaskResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
+class Project(db.Model):
+    __tablename__ = "projects"
+    id = db.Column(db.Integer, primary_key=True)
+    project_name = db.Column(db.String(255), nullable=False)
+    project_address = db.Column(db.String(255))
+    start_date = db.Column(db.Date)
+    end_date = db.Column(db.Date)
+    status = db.Column(db.String(50))
+    project_type = db.Column(db.String(50), nullable=False)
+    financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+class FinancingOption(db.Model):
+    __tablename__ = "financing_options"
+    id = db.Column(db.Integer, primary_key=True)
+    option_name = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+
+class FinancingDetail(db.Model):
+    __tablename__ = "financing_details"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    monthly_cost = db.Column(db.Numeric(10, 2))
+    total_contribution = db.Column(db.Numeric(10, 2))
+    remaining_balance = db.Column(db.Numeric(10, 2))
+    interest_rate = db.Column(db.Numeric(5, 2))
+    duration = db.Column(db.Integer)  # duration in months or years
+
+class Installer(db.Model):
+    __tablename__ = "installers"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False)
+    contact_email = db.Column(db.String(255), nullable=False)
+    contact_phone = db.Column(db.String(20))
+    contact_agent = db.Column(db.String(255))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+
+class InstallerStep(db.Model):
+    __tablename__ = "installer_steps"
+    id = db.Column(db.Integer, primary_key=True)
+    installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
+    progress_step = db.Column(db.String(255), nullable=False)
+    step_date = db.Column(db.Date)
+
+
 class User(db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
