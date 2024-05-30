@@ -2,7 +2,20 @@ import type { Metadata } from "next";
 import "../globals.css";
 import { Roboto } from "@next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { Libre_Franklin } from "next/font/google";
+import { Rubik } from "next/font/google";
+import "./styles.css";
 
+const libre_franklin = Libre_Franklin({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-libre_franklin",
+});
+const rubik = Rubik({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-rubik",
+});
 const roboto = Roboto({
   subsets: ["latin"],
   weight: ["400", "700"],
@@ -17,10 +30,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
-    <html lang="en" className={roboto.className}>
-      <body>
+    <html lang="en">
+      <body className={libre_franklin.variable + " " + rubik.variable}>
         <main>{children}</main>
         <Toaster richColors />
       </body>
