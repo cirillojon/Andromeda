@@ -8,6 +8,7 @@ interface Form {
   status: string;
   last_modified: string;
   created_at: string;
+  sso_token: string;
 }
 
 const UserFormsComponent: React.FC = () => {

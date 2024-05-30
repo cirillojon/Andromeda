@@ -8,6 +8,7 @@ interface User {
   email: string;
   name: string;
   created_at: string;
+  sso_token: string;
 }
 
 const UserComponent: React.FC = () => {
@@ -15,8 +16,8 @@ const UserComponent: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("Fetching data from /api/user/1");
-    fetch('/api/user/1')
+    console.log("Fetching data from /api/user/x");
+    fetch('/api/user/x')
       .then(res => res.json())
       .then(data => {
         console.log("Data received:", data);

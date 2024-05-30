@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import "./globals.css";
-import Navbar from "@/components/Navbar/Navbar";
+import "../globals.css";
+import Navbar from "@/components/Onboarding/Navbar/Navbar";
 import { Roboto } from "@next/font/google"
 import { Toaster } from "@/components/ui/sonner";
 
@@ -10,7 +10,7 @@ const roboto = Roboto({
 })
 
 export const metadata: Metadata = {
-  title: "romeo",
+  title: "andromeda",
   description: "",
 };
 
@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="en" className={roboto.className}>
       <body>
         <Navbar/>
-        <main>
+        <main className="md:-mt-16">
           {children}
         </main>
         <Toaster richColors/>

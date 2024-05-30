@@ -1,15 +1,17 @@
 "use client";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import React from 'react';
 import ScrollingContent from "./ScrollingContent"
 import MessageComponent from "@/components/MessageComponent/MessageComponent";
-import UserComponent from "../UserComponent/UserComponent";
-import FormComponent from "../FormComponent/FormComponent";
-import UserFormsComponent from "../UserFormsComponent/UserFormsComponent";
-import FormDataComponent from "../FormDataComponent/FormDataComponent";
+import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { cn } from "@/lib/utils";
+import UserComponent from "@/components/UserComponent/UserComponent";
+import FormComponent from "@/components/FormComponent/FormComponent";
+import UserFormsComponent from "@/components/UserFormsComponent/UserFormsComponent";
+import FormDataComponent from "@/components/FormDataComponent/FormDataComponent";
 
-function LandingPage() {
+const LandingPage = () => {
   
   const handleImageLoad = () => {
     console.log(document.documentElement.attributes);
@@ -24,7 +26,7 @@ function LandingPage() {
       <UserFormsComponent /> {/* Flask API Testing - User Forms */}
       <FormDataComponent /> {/* Flask API Testing - Form Data */}
       <div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl">
-        <div className="flex flex-col w-full mt-24 md:mt-0 mb-14 md:mb-0">
+        <div className="flex flex-col w-full mt-0 mb-14 md:mb-0">
             <h1 className="header-text">
               Empowering{" "}
               <span className="text-gradient text-green-600">You</span>
@@ -45,9 +47,11 @@ function LandingPage() {
             </span>
           </div>
           <div className="flex flex-col items-center mb-6 md:mb-0">
-            <Button className="mt-6 hover:bg-opacity-50 drop-shadow-2xl">
+            <RegisterLink
+              className={cn(buttonVariants({ variant: "default" }), "")}
+            >
               Get Started
-            </Button>
+            </RegisterLink>
           </div>
         </div>
         <div className="flex flex-col h-full md:h-screen items-center justify-center bg-gradient-to-t from-transparent to-indigo-200 mb-20 md:mb-0">
