@@ -16,5 +16,7 @@ COPY . .
 # Expose the port the app runs on
 EXPOSE 5000
 
+ENTRYPOINT [ "gunicorn", "app:app" ]
+
 # Command to run the application
-CMD ["gunicorn", "--workers=2", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload", "app:app"]
+CMD ["--workers=3", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload"]

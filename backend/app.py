@@ -36,24 +36,6 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-# Define the PostgreSQL enum type for status
-def create_status_enum():
-    with db.engine.connect() as conn:
-        # Check if the enum type exists
-        result = conn.execute(
-            text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")
-        ).fetchone()
-        if not result:
-            # Only create the enum type if it does not exist
-            try:
-                conn.execute(
-                    text(
-                        "CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"
-                    )
-                )
-            except Exception as e:
-                app.logger.error("Error creating enum type: %s", e)
-
 
 # Define a helper function for JSON serialization
 def json_serial(obj):
@@ -68,6 +50,49 @@ class Task(db.Model):
     __table_args__ = {'schema': 'public'}
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
+
+
+class User(db.Model):
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    name = db.Column(db.String(255))
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+    sso_token = db.Column(db.String(255), unique=True, nullable=True)  # nullable initially to handle existing users
+
+
+# Define the Form model
+class Form(db.Model):
+    __tablename__ = "forms"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    status = db.Column(
+        db.Enum("Pending", "Approved", "Rejected", name="status_type"),
+        default="Pending",
+    )
+    last_modified = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp(),
+    )
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
+
+# Define the FormData model
+class FormData(db.Model):
+    __tablename__ = "form_data"
+    id = db.Column(db.Integer, primary_key=True)
+    form_id = db.Column(db.Integer, db.ForeignKey("forms.id"), nullable=False)
+    field_name = db.Column(db.String(255), nullable=False)
+    field_value = db.Column(db.Text, nullable=False)
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
+    last_modified = db.Column(
+        db.DateTime,
+        default=db.func.current_timestamp(),
+        onupdate=db.func.current_timestamp(),
+    )
+    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
+
 
 # Define a resource for interacting with the Task model
 class TaskResource(Resource):
@@ -150,48 +175,6 @@ class TaskResource(Resource):
             app.logger.exception("Error occurred while updating a task.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
-
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    name = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    sso_token = db.Column(db.String(255), unique=True, nullable=True)  # nullable initially to handle existing users
-
-
-# Define the Form model
-class Form(db.Model):
-    __tablename__ = "forms"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    status = db.Column(
-        db.Enum("Pending", "Approved", "Rejected", name="status_type"),
-        default="Pending",
-    )
-    last_modified = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp(),
-    )
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-
-# Define the FormData model
-class FormData(db.Model):
-    __tablename__ = "form_data"
-    id = db.Column(db.Integer, primary_key=True)
-    form_id = db.Column(db.Integer, db.ForeignKey("forms.id"), nullable=False)
-    field_name = db.Column(db.String(255), nullable=False)
-    field_value = db.Column(db.Text, nullable=False)
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
-    last_modified = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp(),
-    )
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 
 # Define a simple message resource
@@ -361,21 +344,23 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
-            # Create status enum type
-            create_status_enum()
             # Create database tables for all models
+            time.sleep(0.05)
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
             inspector = inspect(db.engine)
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
+            app.logger.info(f"Finished creating all {os.getpid()}")
         except Exception as e:
+            app.logger.error(f"Failed trying to creating all {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
-
+            
 
 # Call the initialize_app function to set up the database
 initialize_app()
 
 # Run the Flask development server (only if running this script directly)
 if __name__ == "__main__":
+    app.logger.info(f"Process {os.getpid()} running server")
     app.run(host="0.0.0.0", debug=True)

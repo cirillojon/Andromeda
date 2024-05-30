@@ -11,13 +11,15 @@ services:
     networks:
       - default
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    command: ["--workers=3", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload"]
 
   frontend:
     build: ./frontend
     volumes:
       - ./frontend:/app # Ensure local changes are reflected in the container
-      - /app/node_modules # Keep node_modules on the container
+      - node_modules:/app/node_modules # Keep node_modules on the container
     ports:
       - "3000:3000"
     environment:
@@ -31,8 +33,9 @@ services:
     build:
       context: postgres
       dockerfile: Dockerfile
-    # volumes:
-    # - ./postgres/data:/var/lib/postgresql/data # delete ./postgres/data for wiping data
+    volumes:
+      # - ./postgres/data:/var/lib/postgresql/data # delete ./postgres/data for wiping data
+      - pg_data:/var/lib/postgresql/data # aliased volume
     ports:
       - "5432:5432"
     environment:
@@ -54,7 +57,9 @@ services:
   #   depends_on:
   #     - backend
 
-# volumes:
+volumes:
+  node_modules:
+  pg_data:
 networks:
   default:
     driver: bridge
