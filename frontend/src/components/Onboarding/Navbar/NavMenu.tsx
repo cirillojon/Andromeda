@@ -1,6 +1,7 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -13,7 +14,7 @@ import {
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
 
-const services: { title: string; href: string; description: string }[] = [
+const services = [
   {
     title: "Solar",
     href: "/",
@@ -23,8 +24,7 @@ const services: { title: string; href: string; description: string }[] = [
   {
     title: "HVAC",
     href: "/",
-    description:
-      "For sighted users to preview content available behind a link.",
+    description: "For sighted users to preview content available behind a link.",
   },
   {
     title: "Roofing",
@@ -39,29 +39,77 @@ const services: { title: string; href: string; description: string }[] = [
   },
 ];
 
-const handlePointerEvents = (event: { preventDefault: () => void; }) => {
+const handlePointerEvents = (event: any) => {
   event.preventDefault();
 };
 
 const NavMenu = () => {
+  const [menuOpen, setMenuOpen] = React.useState(false);
+
+  return (
+    <div>
+      <div className="block md:hidden">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="p-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200"
+        >
+          {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 w-56 mt-2 bg-white divide-y divide-gray-100 rounded-md shadow-lg">
+            <div className="py-1">
+              {services.map((service) => (
+                <Link
+                  key={service.title}
+                  href={service.href}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  {service.title}
+                </Link>
+              ))}
+            </div>
+            <div className="py-1">
+              <Link
+                href="/faq"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                FAQ
+              </Link>
+              <Link
+                href="/mission"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Mission
+              </Link>
+              <Link
+                href="/contact"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Contact
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+      <div className="hidden md:block">
+        <DesktopNav />
+      </div>
+    </div>
+  );
+};
+
+const DesktopNav = () => {
   return (
     <NavigationMenu>
       <NavigationMenuList>
         <NavigationMenuItem>
-          <NavigationMenuTrigger 
-            onPointerMove={handlePointerEvents}
-            className="bg-transparent">
+          <NavigationMenuTrigger onPointerMove={handlePointerEvents} className="bg-transparent">
             Services
           </NavigationMenuTrigger>
-          <NavigationMenuContent 
-            className="">
+          <NavigationMenuContent>
             <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
               {services.map((service) => (
-                <ListItem 
-                  key={service.title}
-                  title={service.title}
-                  href={service.href}
-                >
+                <ListItem key={service.title} title={service.title} href={service.href}>
                   {service.description}
                 </ListItem>
               ))}
@@ -69,28 +117,28 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger 
+          <NavigationMenuTrigger
             onPointerMove={handlePointerEvents}
             onPointerLeave={handlePointerEvents}
-            className="bg-transparent">
+            className="bg-transparent"
+          >
             FAQ
           </NavigationMenuTrigger>
           <NavigationMenuContent></NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger 
+          <NavigationMenuTrigger
             onPointerMove={handlePointerEvents}
             onPointerLeave={handlePointerEvents}
-            className="bg-transparent">
+            className="bg-transparent"
+          >
             Mission
           </NavigationMenuTrigger>
           <NavigationMenuContent></NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <Link href="/contact" legacyBehavior passHref>
-            <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-              Contact
-            </NavigationMenuLink>
+            <NavigationMenuLink className={navigationMenuTriggerStyle()}>Contact</NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
       </NavigationMenuList>
@@ -98,30 +146,34 @@ const NavMenu = () => {
   );
 };
 
-const ListItem = React.forwardRef<
-  React.ElementRef<"a">,
-  React.ComponentPropsWithoutRef<"a">
->(({ className, title, children, ...props }, ref) => {
-  return (
-    <li>
-      <NavigationMenuLink asChild>
-        <a
-          ref={ref}
-          className={cn(
-            "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
-            className
-          )}
-          {...props}
-        >
-          <div className="text-sm font-medium leading-none">{title}</div>
-          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-            {children}
-          </p>
-        </a>
-      </NavigationMenuLink>
-    </li>
-  );
-});
+interface ListItemProps {
+  className?: string;
+  title: string;
+  href: string;
+  children: React.ReactNode;
+}
+
+const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
+  ({ className, title, children, ...props }, ref) => {
+    return (
+      <li>
+        <NavigationMenuLink asChild>
+          <a
+            ref={ref}
+            className={cn(
+              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+              className
+            )}
+            {...props}
+          >
+            <div className="text-sm font-medium leading-none">{title}</div>
+            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">{children}</p>
+          </a>
+        </NavigationMenuLink>
+      </li>
+    );
+  }
+);
 ListItem.displayName = "ListItem";
 
 export default NavMenu;
