@@ -62,12 +62,14 @@ def json_serial(obj):
         return obj.isoformat()
     raise TypeError("Type %s not serializable" % type(obj))
 
+
 # Define the Task model
 class Task(db.Model):
-    __tablename__ = 'task'
-    __table_args__ = {'schema': 'public'}
+    __tablename__ = "task"
+    __table_args__ = {"schema": "public"}
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(200), nullable=False)
+
 
 # Define a resource for interacting with the Task model
 class TaskResource(Resource):
@@ -164,11 +166,13 @@ class Project(db.Model):
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
 
+
 class FinancingOption(db.Model):
     __tablename__ = "financing_options"
     id = db.Column(db.Integer, primary_key=True)
     option_name = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text)
+
 
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
@@ -182,6 +186,7 @@ class FinancingDetail(db.Model):
     interest_rate = db.Column(db.Numeric(5, 2))
     duration = db.Column(db.Integer)  # duration in months or years
 
+
 class Installer(db.Model):
     __tablename__ = "installers"
     id = db.Column(db.Integer, primary_key=True)
@@ -191,6 +196,7 @@ class Installer(db.Model):
     contact_agent = db.Column(db.String(255))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+
 
 class InstallerStep(db.Model):
     __tablename__ = "installer_steps"
@@ -206,7 +212,9 @@ class User(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     name = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    sso_token = db.Column(db.String(255), unique=True, nullable=True)  # nullable initially to handle existing users
+    sso_token = db.Column(
+        db.String(255), unique=True, nullable=True
+    )  # nullable initially to handle existing users
 
 
 # Define the Form model
@@ -252,9 +260,16 @@ class Message(Resource):
 class UserResource(Resource):
     def post(self):
         data = request.get_json()
-        if not data or "email" not in data or "name" not in data or "sso_token" not in data:
+        if (
+            not data
+            or "email" not in data
+            or "name" not in data
+            or "sso_token" not in data
+        ):
             return {"message": "Invalid data"}, 400
-        new_user = User(email=data["email"], name=data["name"], sso_token=data["sso_token"])
+        new_user = User(
+            email=data["email"], name=data["name"], sso_token=data["sso_token"]
+        )
         try:
             db.session.add(new_user)
             db.session.commit()
@@ -282,9 +297,9 @@ class UserResource(Resource):
 class FormResource(Resource):
     def post(self):
         data = request.get_json()
-        if not data or 'user_id' not in data:
+        if not data or "user_id" not in data:
             return {"message": "Invalid data"}, 400
-        new_form = Form(user_id=data['user_id'])
+        new_form = Form(user_id=data["user_id"])
         try:
             db.session.add(new_form)
             db.session.commit()
@@ -304,36 +319,40 @@ class FormResource(Resource):
                 "user_id": form.user_id,
                 "status": form.status,
                 "last_modified": json_serial(form.last_modified),
-                "created_at": json_serial(form.created_at)
+                "created_at": json_serial(form.created_at),
             }
         elif user_id:
             forms = Form.query.filter_by(user_id=user_id).all()
             if not forms:
                 return {"message": "No forms found for user"}, 404
-            return [{
-                "id": form.id,
-                "status": form.status,
-                "last_modified": json_serial(form.last_modified),
-                "created_at": json_serial(form.created_at)
-            } for form in forms]
+            return [
+                {
+                    "id": form.id,
+                    "status": form.status,
+                    "last_modified": json_serial(form.last_modified),
+                    "created_at": json_serial(form.created_at),
+                }
+                for form in forms
+            ]
         else:
             return {"message": "Invalid request"}, 400
 
     def put(self, form_id):
         data = request.get_json()
-        if not data or 'status' not in data:
+        if not data or "status" not in data:
             return {"message": "Invalid data"}, 400
         form = Form.query.get(form_id)
         if not form:
             return {"message": "Form not found"}, 404
         try:
-            form.status = data['status']
+            form.status = data["status"]
             db.session.commit()
             return {"message": f"Form status updated to {form.status}"}, 200
         except Exception as e:
             app.logger.exception("Error occurred while updating form status.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
+
 
 # Define a resource for interacting with the FormData model
 class FormDataResource(Resource):
@@ -382,7 +401,12 @@ class FormDataResource(Resource):
 api.add_resource(Message, "/api/hello")
 api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
 api.add_resource(UserResource, "/api/user", "/api/user/<string:sso_token>")
-api.add_resource(FormResource, "/api/form", "/api/form/<int:form_id>", "/api/forms/user/<int:user_id>")
+api.add_resource(
+    FormResource,
+    "/api/form",
+    "/api/form/<int:form_id>",
+    "/api/forms/user/<int:user_id>",
+)
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
 
 # Log all incoming requests
