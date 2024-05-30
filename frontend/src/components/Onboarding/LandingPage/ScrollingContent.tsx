@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import './LandingPage.css';
 import { motion } from "framer-motion";
 
@@ -23,7 +24,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
         setSticky(false);
       }
 
-      const cards = ref.current.querySelectorAll('.card');
+      const cards = ref.current.querySelectorAll('.scrolling-content');
       cards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
         if (rect.top + rect.height < window.innerHeight) {
@@ -47,9 +48,11 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
 
   return (
     <div ref = {ref}>
-      <img
+      <Image
         src={sections[activeCard][0]}
         alt={sections[activeCard][1]}
+        width={10000}
+        height={10000}
         className={`${sticky ? "sticky" : ''} full-screen-image`}
         style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }}
       />
@@ -63,7 +66,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
           animate={{
             opacity: activeCard == index ? 1 : 0.7,
           }}
-          className="scrolling-content card" key={index}>
+          className="scrolling-content" key={index}>
             <h1>{section[1]}</h1>
             <p>{section[2]}</p>
           </motion.div>
