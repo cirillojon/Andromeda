@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from "@/components/Navbar/navigation-menu";
+} from "./navigation-menu";
 
 const services: { title: string; href: string; description: string }[] = [
   {
