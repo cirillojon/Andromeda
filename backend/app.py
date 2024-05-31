@@ -36,6 +36,24 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
+# Define the PostgreSQL enum type for status
+def create_status_enum():
+    with db.engine.connect() as conn:
+        # Check if the enum type exists
+        result = conn.execute(
+            text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")
+        ).fetchone()
+        if not result:
+            # Only create the enum type if it does not exist
+            try:
+                conn.execute(
+                    text(
+                        "CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"
+                    )
+                )
+            except Exception as e:
+                app.logger.error("Error creating enum type: %s", e)
+
 
 # Define a helper function for JSON serialization
 def json_serial(obj):
@@ -684,8 +702,7 @@ class FormData(db.Model):
     __tablename__ = "form_data"
     id = db.Column(db.Integer, primary_key=True)
     form_id = db.Column(db.Integer, db.ForeignKey("forms.id"), nullable=False)
-    field_name = db.Column(db.String(255), nullable=False)
-    field_value = db.Column(db.Text, nullable=False)
+    data = db.Column(db.JSON, nullable=False)  # Store form data as JSON
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     last_modified = db.Column(
         db.DateTime,
@@ -806,17 +823,11 @@ class FormResource(Resource):
 class FormDataResource(Resource):
     def post(self):
         data = request.get_json()
-        if (
-            not data
-            or "form_id" not in data
-            or "field_name" not in data
-            or "field_value" not in data
-        ):
+        if not data or "form_id" not in data or "data" not in data:
             return {"message": "Invalid data"}, 400
         new_form_data = FormData(
             form_id=data["form_id"],
-            field_name=data["field_name"],
-            field_value=data["field_value"],
+            data=data["data"],
             created_by=data.get("created_by"),
         )
         try:
@@ -835,8 +846,7 @@ class FormDataResource(Resource):
         return [
             {
                 "id": data.id,
-                "field_name": data.field_name,
-                "field_value": data.field_value,
+                "data": data.data,
                 "created_by": data.created_by,
                 "last_modified": json_serial(data.last_modified),
                 "created_at": json_serial(data.created_at),
@@ -844,6 +854,35 @@ class FormDataResource(Resource):
             for data in form_data
         ]
 
+    def put(self, form_data_id):
+        data = request.get_json()
+        form_data = FormData.query.get(form_data_id)
+        if not form_data:
+            return {"message": "Form data not found"}, 404
+        if not data or "data" not in data:
+            return {"message": "Invalid data"}, 400
+        form_data.data = data["data"]
+        form_data.last_modified = datetime.utcnow()
+        try:
+            db.session.commit()
+            return {"message": "Form data updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating form data.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, form_data_id):
+        form_data = FormData.query.get(form_data_id)
+        if not form_data:
+            return {"message": "Form data not found"}, 404
+        try:
+            db.session.delete(form_data)
+            db.session.commit()
+            return {"message": "Form data deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting form data.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
 
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
@@ -886,22 +925,20 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
+            # Create status enum type
+            create_status_enum()
             # Create database tables for all models
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
             inspector = inspect(db.engine)
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
-            app.logger.info(f"Finished creating all: Worker ID {os.getpid()}")
         except Exception as e:
-            app.logger.error(f"Failed trying to creating all {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
-            
 
 # Call the initialize_app function to set up the database
 initialize_app()
 
 # Run the Flask development server (only if running this script directly)
 if __name__ == "__main__":
-    app.logger.info(f"Process {os.getpid()} running server")
     app.run(host="0.0.0.0", debug=True)
