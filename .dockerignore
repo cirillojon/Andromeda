@@ -4,3 +4,5 @@ frontend/.next
 frontend/node_modules
 
 backend/**/__pycache__
+backend/Andromeda.postman_collection.json
+backend/*.log

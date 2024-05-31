@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
-import logging
-from sqlalchemy import inspect, text
-import time
+from sqlalchemy import inspect
 from datetime import datetime, date
 from dotenv import load_dotenv
+import logging
+import time
+import sys
 import os
 
 # Load environment variables from .env file
@@ -31,6 +32,15 @@ api = Api(app)
 # Set up logging for the application
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
+    
+    c_handler = logging.StreamHandler(stream=sys.stdout)
+    c_handler.setLevel(logging.INFO)
+    f_handler = logging.FileHandler(f"gunicorn-worker-{os.getpid()}.log", "a+")
+    f_handler.setLevel(logging.ERROR)
+    
+    gunicorn_logger.addHandler(f_handler)
+    gunicorn_logger.addHandler(c_handler)
+    
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 else:
@@ -878,7 +888,13 @@ def log_request_info():
 @app.after_request
 def log_response_info(response):
     duration = time.time() - request.start_time
-    app.logger.debug(f"Response: {response.status} - Duration: {duration:.3f}s")
+    text = f"Response: {response.status} - Duration: {duration:.3f}s"
+    
+    if response.status_code >= 400:
+        app.logger.error(text)
+    else:
+        app.logger.debug(text)
+        
     return response
 
 
