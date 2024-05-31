@@ -176,7 +176,7 @@ class Project(db.Model):
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
-    financing_detail = db.relationship("FinancingDetail", backref="project")
+    financing_detail = db.relationship("FinancingDetail", foreign_keys=[financing_detail_id], backref="project")
 
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
