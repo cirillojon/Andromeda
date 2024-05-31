@@ -26,10 +26,8 @@ services:
       - NODE_ENV=development
     networks:
       - default
-    command: npm run dev
 
   postgres:
-    # image: postgres:latest # uncomment and remove build if you want default db
     build:
       context: postgres
       dockerfile: Dockerfile
