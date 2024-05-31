@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "../globals.css";
-import { Roboto } from "@next/font/google";
+import { Roboto } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { Libre_Franklin } from "next/font/google";
 import { Rubik } from "next/font/google";
