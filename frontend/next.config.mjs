@@ -19,8 +19,8 @@ const nextConfig = {
         destination: "http://167.71.165.9/api/user",
       },
       {
-        source: "/api/user/:user_id",
-        destination: "http://167.71.165.9/api/user/:user_id",
+        source: "/api/user/:sso_token",
+        destination: "http://167.71.165.9/api/user/:sso_token",
       },
       {
         source: "/api/form",
@@ -45,6 +45,42 @@ const nextConfig = {
       {
         source: "/api/project/user/:user_id",
         destination: "http://167.71.165.9/api/project/user/:user_id",
+      },
+      {
+        source: "/api/project/:project_id",
+        destination: "http://167.71.165.9/api/project/:project_id",
+      },
+      {
+        source: "/api/financing_option",
+        destination: "http://167.71.165.9/api/financing_option",
+      },
+      {
+        source: "/api/financing_option/:option_id",
+        destination: "http://167.71.165.9/api/financing_option/:option_id",
+      },
+      {
+        source: "/api/financing_detail",
+        destination: "http://167.71.165.9/api/financing_detail",
+      },
+      {
+        source: "/api/financing_detail/:detail_id",
+        destination: "http://167.71.165.9/api/financing_detail/:detail_id",
+      },
+      {
+        source: "/api/installer",
+        destination: "http://167.71.165.9/api/installer",
+      },
+      {
+        source: "/api/installer/:installer_id",
+        destination: "http://167.71.165.9/api/installer/:installer_id",
+      },
+      {
+        source: "/api/project_step",
+        destination: "http://167.71.165.9/api/project_step",
+      },
+      {
+        source: "/api/project_step/:step_id",
+        destination: "http://167.71.165.9/api/project_step/:step_id",
       }
     ];
   },
