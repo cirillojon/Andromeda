@@ -41,37 +41,6 @@
 					"response": []
 				},
 				{
-					"name": "new user local",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"test\",\r\n    \"email\": \"test@aol.com\",\r\n    \"sso_token\": \"tes12345677t\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://167.71.165.9/api/user",
-							"protocol": "http",
-							"host": [
-								"167",
-								"71",
-								"165",
-								"9"
-							],
-							"path": [
-								"api",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "get user",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -188,7 +157,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"form_id\": 12,\r\n    \"field_name\": \"test\",\r\n    \"field_value\": \"test\",\r\n    \"created_by\": 9\r\n}",
+							"raw": "{\r\n    \"form_id\": 12,\r\n    \"data\": {\"test\": \"testing\"},\r\n    \"created_by\": 9\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
