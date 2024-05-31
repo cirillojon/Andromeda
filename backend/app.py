@@ -175,7 +175,8 @@ class Project(db.Model):
     end_date = db.Column(db.Date)
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-
+    financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
+    financing_detail = db.relationship("FinancingDetail", foreign_keys=[financing_detail_id], backref="project")
 
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
@@ -197,6 +198,18 @@ class ProjectResource(Resource):
                     "end_date": safe_json_serial(project.end_date),
                     "status": project.status,
                     "financing_type_id": project.financing_type_id,
+                    "financing_detail": {
+                        "id": project.financing_detail.id,
+                        "total_cost": str(project.financing_detail.total_cost),
+                        "monthly_cost": str(project.financing_detail.monthly_cost),
+                        "down_payment": str(project.financing_detail.down_payment),
+                        "total_contribution": str(project.financing_detail.total_contribution),
+                        "remaining_balance": str(project.financing_detail.remaining_balance),
+                        "interest_rate": str(project.financing_detail.interest_rate),
+                        "payment_status": project.financing_detail.payment_status,
+                        "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                        "duration": project.financing_detail.duration,
+                    } if project.financing_detail else None,
                 }
                 for project in projects
             ]
@@ -217,6 +230,18 @@ class ProjectResource(Resource):
                 "end_date": safe_json_serial(project.end_date),
                 "status": project.status,
                 "financing_type_id": project.financing_type_id,
+                "financing_detail": {
+                    "id": project.financing_detail.id,
+                    "total_cost": str(project.financing_detail.total_cost),
+                    "monthly_cost": str(project.financing_detail.monthly_cost),
+                    "down_payment": str(project.financing_detail.down_payment),
+                    "total_contribution": str(project.financing_detail.total_contribution),
+                    "remaining_balance": str(project.financing_detail.remaining_balance),
+                    "interest_rate": str(project.financing_detail.interest_rate),
+                    "payment_status": project.financing_detail.payment_status,
+                    "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                    "duration": project.financing_detail.duration,
+                } if project.financing_detail else None,
             }
         else:
             return {"message": "User ID or Project ID not provided"}, 400
@@ -381,9 +406,9 @@ class FinancingDetail(db.Model):
 
 
 class FinancingDetailResource(Resource):
-    def get(self, detail_id=None):
-        if detail_id:
-            detail = FinancingDetail.query.get(detail_id)
+    def get(self, project_id=None):
+        if project_id:
+            detail = FinancingDetail.query.filter_by(project_id=project_id).first()
             if not detail:
                 return {"message": "Financing detail not found"}, 404
             return {
@@ -897,7 +922,7 @@ api.add_resource(
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
 api.add_resource(ProjectResource, "/api/project", "/api/project/user/<int:user_id>", "/api/project/<int:project_id>")
 api.add_resource(FinancingOptionResource, "/api/financing_option", "/api/financing_option/<int:option_id>")
-api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/<int:detail_id>")
+api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/project/<int:project_id>")
 api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
 api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>")
 
