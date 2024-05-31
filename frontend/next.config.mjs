@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+// Set below to "http://nginx:80" for local development
+let remote_url = "http://167.71.165.9";
+
 const nextConfig = {
   webpackDevMiddleware: config => {
     // Use polling to enable hot reloading in Docker
@@ -12,75 +15,75 @@ const nextConfig = {
     return [
       {
         source: "/api/hello",
-        destination: "http://167.71.165.9/api/hello",
+        destination: `${remote_url}/api/hello`,
       },
       {
         source: "/api/user",
-        destination: "http://167.71.165.9/api/user",
+        destination: `${remote_url}/api/user`,
       },
       {
         source: "/api/user/:sso_token",
-        destination: "http://167.71.165.9/api/user/:sso_token",
+        destination: `${remote_url}/api/user/:sso_token`,
       },
       {
         source: "/api/form",
-        destination: "http://167.71.165.9/api/form",
+        destination: `${remote_url}/api/form`,
       },
       {
         source: "/api/form/:form_id",
-        destination: "http://167.71.165.9/api/form/:form_id",
+        destination: `${remote_url}/api/form/:form_id`,
       },
       {
         source: "/api/forms/user/:user_id",
-        destination: "http://167.71.165.9/api/forms/user/:user_id",
+        destination: `${remote_url}/api/forms/user/:user_id`,
       },
       {
         source: "/api/form_data",
-        destination: "http://167.71.165.9/api/form_data",
+        destination: `${remote_url}/api/form_data`,
       },
       {
         source: "/api/form_data/:form_id",
-        destination: "http://167.71.165.9/api/form_data/:form_id",
+        destination: `${remote_url}/api/form_data/:form_id`,
       },
       {
         source: "/api/project/user/:user_id",
-        destination: "http://167.71.165.9/api/project/user/:user_id",
+        destination: `${remote_url}/api/project/user/:user_id`,
       },
       {
         source: "/api/project/:project_id",
-        destination: "http://167.71.165.9/api/project/:project_id",
+        destination: `${remote_url}/api/project/:project_id`,
       },
       {
         source: "/api/financing_option",
-        destination: "http://167.71.165.9/api/financing_option",
+        destination: `${remote_url}/api/financing_option`,
       },
       {
         source: "/api/financing_option/:option_id",
-        destination: "http://167.71.165.9/api/financing_option/:option_id",
+        destination: `${remote_url}/api/financing_option/:option_id`,
       },
       {
         source: "/api/financing_detail",
-        destination: "http://167.71.165.9/api/financing_detail",
+        destination: `${remote_url}/api/financing_detail`,
       },
       {
         source: "/api/financing_detail/:detail_id",
-        destination: "http://167.71.165.9/api/financing_detail/:detail_id",
+        destination: `${remote_url}/api/financing_detail/:detail_id`,
       },
       {
         source: "/api/installer",
-        destination: "http://167.71.165.9/api/installer",
+        destination: `${remote_url}/api/installer`,
       },
       {
         source: "/api/installer/:installer_id",
-        destination: "http://167.71.165.9/api/installer/:installer_id",
+        destination: `${remote_url}/api/installer/:installer_id`,
       },
       {
         source: "/api/project_step",
-        destination: "http://167.71.165.9/api/project_step",
+        destination: `${remote_url}/api/project_step`,
       },
       {
         source: "/api/project_step/:step_id",
-        destination: "http://167.71.165.9/api/project_step/:step_id",
+        destination: `${remote_url}/api/project_step/:step_id`,
       }
     ];
   },
