@@ -18,7 +18,7 @@ const CustomerSupportChat = () => {
         <Button
           variant="outline"
           size="default"
-          className="w-48 fixed bottom-14 right-14"
+          className="w-48 fixed bottom-8 right-14"
         >
           <MessageCircle className="w-5 h-5 mr-2" />
           Customer Support

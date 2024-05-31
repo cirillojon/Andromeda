@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
 import { Bell, Grid3X3 } from "lucide-react";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
-const DashboardNavBar = () => {
+const DashboardNavBar = async() => {
+  const user = await getKindeServerSession();
+  const currentUser = await user.getUser();
   return (
     <div className="bg-gray-900 text-white py-4 px-6 flex items-center justify-between">
       <div className="flex items-center gap-4">
@@ -39,6 +42,9 @@ const DashboardNavBar = () => {
         </nav>
       </div>
       <div className="flex items-center gap-4">
+        <span>
+          Welcome, {currentUser?.given_name}
+        </span>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="w-6 h-6" />
           <span className="sr-only">Notifications</span>
