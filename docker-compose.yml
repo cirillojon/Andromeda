@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URI=postgresql://postgres:postgres@postgres:5432/home_improvement
+      - DATABASE_URI=postgresql://db_user:postgres@postgres:5432/home_improvement
     networks:
       - default
     depends_on:
@@ -46,6 +46,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
+
   nginx:
     image: nginx:latest
     ports:
@@ -60,6 +61,7 @@ services:
 volumes:
   node_modules:
   pg_data:
+  
 networks:
   default:
     driver: bridge
