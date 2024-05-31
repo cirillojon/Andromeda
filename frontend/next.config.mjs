@@ -41,6 +41,10 @@ const nextConfig = {
       {
         source: "/api/form_data/:form_id",
         destination: "http://167.71.165.9/api/form_data/:form_id",
+      },
+      {
+        source: "/api/project/user/:user_id",
+        destination: "http://167.71.165.9/api/project/user/:user_id",
       }
     ];
   },
