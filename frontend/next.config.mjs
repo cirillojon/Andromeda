@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 // Set below to "http://nginx:80" for local development
 let remote_url = "http://167.71.165.9";
+
 const nextConfig = {
   webpackDevMiddleware: config => {
     // Use polling to enable hot reloading in Docker
@@ -21,8 +22,8 @@ const nextConfig = {
         destination: `${remote_url}/api/user`,
       },
       {
-        source: "/api/user/:user_id",
-        destination: `${remote_url}/api/user/:user_id`,
+        source: "/api/user/:sso_token",
+        destination: `${remote_url}/api/user/:sso_token`,
       },
       {
         source: "/api/form",
@@ -47,6 +48,42 @@ const nextConfig = {
       {
         source: "/api/project/user/:user_id",
         destination: `${remote_url}/api/project/user/:user_id`,
+      },
+      {
+        source: "/api/project/:project_id",
+        destination: `${remote_url}/api/project/:project_id`,
+      },
+      {
+        source: "/api/financing_option",
+        destination: `${remote_url}/api/financing_option`,
+      },
+      {
+        source: "/api/financing_option/:option_id",
+        destination: `${remote_url}/api/financing_option/:option_id`,
+      },
+      {
+        source: "/api/financing_detail",
+        destination: `${remote_url}/api/financing_detail`,
+      },
+      {
+        source: "/api/financing_detail/:detail_id",
+        destination: `${remote_url}/api/financing_detail/:detail_id`,
+      },
+      {
+        source: "/api/installer",
+        destination: `${remote_url}/api/installer`,
+      },
+      {
+        source: "/api/installer/:installer_id",
+        destination: `${remote_url}/api/installer/:installer_id`,
+      },
+      {
+        source: "/api/project_step",
+        destination: `${remote_url}/api/project_step`,
+      },
+      {
+        source: "/api/project_step/:step_id",
+        destination: `${remote_url}/api/project_step/:step_id`,
       }
     ];
   },
