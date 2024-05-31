@@ -10,11 +10,14 @@ export interface Project {
     id: string;
     project_name: string;
     project_address: string;
-    start_date: string;
+    project_type: string;
+    user_id: string;
+    installer_id: string;
+    site_survey_date: string;
+    inspection_date: string;
+    install_start_date: string;
     end_date: string;
     status: string;
-    project_type: string;
-    financing_type_id: string;
-    user_id: string;
+    financing_type: string;
     message: string;
 }
