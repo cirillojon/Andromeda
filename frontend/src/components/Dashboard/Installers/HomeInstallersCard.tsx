@@ -10,7 +10,7 @@ import Link from "next/link";
 
 const HomeInstallersCard = () => {
   return (
-    <Card>
+    <Card className="w-full drop-shadow-md">
       <CardHeader>
         <CardTitle>Installers</CardTitle>
         <CardDescription>
