@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+// Set below to "http://nginx:80" for local development
+let remote_url = "http://167.71.165.9";
 const nextConfig = {
   webpackDevMiddleware: config => {
     // Use polling to enable hot reloading in Docker
@@ -12,39 +14,39 @@ const nextConfig = {
     return [
       {
         source: "/api/hello",
-        destination: "http://167.71.165.9/api/hello",
+        destination: `${remote_url}/api/hello`,
       },
       {
         source: "/api/user",
-        destination: "http://167.71.165.9/api/user",
+        destination: `${remote_url}/api/user`,
       },
       {
         source: "/api/user/:user_id",
-        destination: "http://167.71.165.9/api/user/:user_id",
+        destination: `${remote_url}/api/user/:user_id`,
       },
       {
         source: "/api/form",
-        destination: "http://167.71.165.9/api/form",
+        destination: `${remote_url}/api/form`,
       },
       {
         source: "/api/form/:form_id",
-        destination: "http://167.71.165.9/api/form/:form_id",
+        destination: `${remote_url}/api/form/:form_id`,
       },
       {
         source: "/api/forms/user/:user_id",
-        destination: "http://167.71.165.9/api/forms/user/:user_id",
+        destination: `${remote_url}/api/forms/user/:user_id`,
       },
       {
         source: "/api/form_data",
-        destination: "http://167.71.165.9/api/form_data",
+        destination: `${remote_url}/api/form_data`,
       },
       {
         source: "/api/form_data/:form_id",
-        destination: "http://167.71.165.9/api/form_data/:form_id",
+        destination: `${remote_url}/api/form_data/:form_id`,
       },
       {
         source: "/api/project/user/:user_id",
-        destination: "http://167.71.165.9/api/project/user/:user_id",
+        destination: `${remote_url}/api/project/user/:user_id`,
       }
     ];
   },

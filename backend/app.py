@@ -36,24 +36,6 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-# Define the PostgreSQL enum type for status
-def create_status_enum():
-    with db.engine.connect() as conn:
-        # Check if the enum type exists
-        result = conn.execute(
-            text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")
-        ).fetchone()
-        if not result:
-            # Only create the enum type if it does not exist
-            try:
-                conn.execute(
-                    text(
-                        "CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"
-                    )
-                )
-            except Exception as e:
-                app.logger.error("Error creating enum type: %s", e)
-
 
 # Define a helper function for JSON serialization
 def json_serial(obj):
@@ -904,21 +886,22 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
-            # Create status enum type
-            create_status_enum()
             # Create database tables for all models
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
             inspector = inspect(db.engine)
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
+            app.logger.info(f"Finished creating all: Worker ID {os.getpid()}")
         except Exception as e:
+            app.logger.error(f"Failed trying to creating all {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
-
+            
 
 # Call the initialize_app function to set up the database
 initialize_app()
 
 # Run the Flask development server (only if running this script directly)
 if __name__ == "__main__":
+    app.logger.info(f"Process {os.getpid()} running server")
     app.run(host="0.0.0.0", debug=True)
