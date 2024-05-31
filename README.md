@@ -33,7 +33,7 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
 
 3. **Backend Development:**
 
-    For backend development, it is HIGHLY recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server.
+    For backend development, it is HIGHLY recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server. You can use Docker and look at the [Docker](#working-with-docker) section for creating the project.
 
     The backend is hosted on a Digital Ocean droplet. To access the server:
     ```bash
@@ -52,9 +52,10 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
 
    To start the server (with logging enabled):
     ```bash
+    # add the --reload flag for hot reloading (maybe not best for prod)
     gunicorn --workers=2 --bind=0.0.0.0:8000 --log-level=debug app:app
     ```
-    How to restart server: (Restart the server only if you are making changes)
+    How to restart server: (If the server isn't using the reload flag)
 
     ```bash
     To get the running gunicorn process:
@@ -337,13 +338,24 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
 
     Build and start all containers from the root directory:
     ```bash
-    docker-compose build
-    docker-compose up
+    # add -d for detaching output from terminal
+    # add --remove-orphans to remove dangling containers
+    docker compose up --build
     ```
 
-    To stop all running containers:
+    Docker should then spin up 4 services which are below:
+    - Backend
+    - Frontend
+    - PostgreSQL
+    - Nginx
+
+    The frontend will be available from port 3000 and the backend from port 5000. Nginx's reverse proxy is available from 127.0.0.1 and Postgres is available from port 5432.
+
+    To take down the containers (if you didn't use the `-d` flag for spinning up the containers, press control-c to give SIGINT) use the below command:
     ```bash
-    docker-compose down
+    # --rmi to remove built images (to clean up when spinning up again)
+    # --volumes to remove all (un)named volumes (for clean up when spinning up again)
+    docker compose down
     ```
 
 ## Application Structure
