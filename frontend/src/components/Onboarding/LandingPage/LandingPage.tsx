@@ -61,7 +61,7 @@ const LandingPage = () => {
             </h1>
           </div>
           <div className="flex flex-col text-center items-center">
-            <span className="mt-2 blatant">
+            <span className="mt-2 blatant scaling-text mb-1">
               Design, customize, and order your own <br />
               solar system, roof, and HVAC.
             </span>
@@ -72,7 +72,7 @@ const LandingPage = () => {
                 src="/assets/hero/Hero-House.png"
                 alt="House"
                 width={500}
-                height={20}
+                height={200}
                 onLoad={handleImageLoad} /* Prevent scrolling until image loads */
               />
             </div>
