@@ -41,6 +41,37 @@
 					"response": []
 				},
 				{
+					"name": "new user local",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test\",\r\n    \"email\": \"test@aol.com\",\r\n    \"sso_token\": \"tes12345677t\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://167.71.165.9/api/user",
+							"protocol": "http",
+							"host": [
+								"167",
+								"71",
+								"165",
+								"9"
+							],
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "get user",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
