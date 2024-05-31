@@ -82,6 +82,13 @@ const LandingPage = () => {
       <div>
         <ScrollingContent sections={sections}/>
       </div>
+      <div className="bg-gradient-to-t from-indigo-400 to-indigo-200">
+        <div>
+          <h1>Take control with <span className="text-gradient text-blue-400">Romeo</span></h1>
+          <span>Using romeo gives you the power to fully customize your project.
+Take advantage of transparent financing today.</span>
+        </div>
+      </div>
     </div>
   );
 };
