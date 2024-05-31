@@ -48,14 +48,16 @@ services:
       interval: 10s
       timeout: 5s
       retries: 10
-  # nginx:
-  #   image: nginx:latest
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-  #   depends_on:
-  #     - backend
+  nginx:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/home-improvement.conf:/etc/nginx/sites-available/home-improvement
+      - ./nginx/home-improvement.conf:/etc/nginx/sites-enabled/home-improvement
+    depends_on:
+      - backend
 
 volumes:
   node_modules:
