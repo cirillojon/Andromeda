@@ -1,0 +1,6 @@
+# frontend
+# ignoring since container will have these anyway
+frontend/.next
+frontend/node_modules
+
+backend/**/__pycache__
