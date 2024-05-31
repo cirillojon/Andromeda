@@ -43,6 +43,10 @@ const nextConfig = {
       {
         source: "/api/form_data/:form_id",
         destination: `${remote_url}/api/form_data/:form_id`,
+      },
+      {
+        source: "/api/project/user/:user_id",
+        destination: `${remote_url}/api/project/user/:user_id`,
       }
     ];
   },

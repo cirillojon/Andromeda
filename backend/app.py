@@ -5,7 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from sqlalchemy import inspect, text
 import time
-from datetime import datetime
+from datetime import datetime, date
 from dotenv import load_dotenv
 import os
 
@@ -40,10 +40,17 @@ else:
 # Define a helper function for JSON serialization
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
-    if isinstance(obj, (datetime,)):
+    if obj is None:
+        return None
+    if isinstance(obj, (datetime, date)):
         return obj.isoformat()
     raise TypeError("Type %s not serializable" % type(obj))
 
+def safe_json_serial(obj):
+    try:
+        return json_serial(obj)
+    except TypeError:
+        return None
 
 # Define the Task model
 class Task(db.Model):
@@ -141,12 +148,125 @@ class Project(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     project_name = db.Column(db.String(255), nullable=False)
     project_address = db.Column(db.String(255))
-    start_date = db.Column(db.Date)
+    project_type = db.Column(db.String(255), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
+    site_survey_date = db.Column(db.Date)
+    inspection_date = db.Column(db.Date)
+    install_start_date = db.Column(db.Date)
     end_date = db.Column(db.Date)
     status = db.Column(db.String(50))
-    project_type = db.Column(db.String(50), nullable=False)
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+
+
+class ProjectResource(Resource):
+    def get(self, user_id=None, project_id=None):
+        if user_id:
+            projects = Project.query.filter_by(user_id=user_id).all()
+            if not projects:
+                return {"message": "No projects found for user"}, 404
+            return [
+                {
+                    "id": project.id,
+                    "project_name": project.project_name,
+                    "project_address": project.project_address,
+                    "project_type": project.project_type,
+                    "user_id": project.user_id,
+                    "installer_id": project.installer_id,
+                    "site_survey_date": safe_json_serial(project.site_survey_date),
+                    "inspection_date": safe_json_serial(project.inspection_date),
+                    "install_start_date": safe_json_serial(project.install_start_date),
+                    "end_date": safe_json_serial(project.end_date),
+                    "status": project.status,
+                    "financing_type_id": project.financing_type_id,
+                }
+                for project in projects
+            ]
+        elif project_id:
+            project = Project.query.get(project_id)
+            if not project:
+                return {"message": "Project not found"}, 404
+            return {
+                "id": project.id,
+                "project_name": project.project_name,
+                "project_address": project.project_address,
+                "project_type": project.project_type,
+                "user_id": project.user_id,
+                "installer_id": project.installer_id,
+                "site_survey_date": safe_json_serial(project.site_survey_date),
+                "inspection_date": safe_json_serial(project.inspection_date),
+                "install_start_date": safe_json_serial(project.install_start_date),
+                "end_date": safe_json_serial(project.end_date),
+                "status": project.status,
+                "financing_type_id": project.financing_type_id,
+            }
+        else:
+            return {"message": "User ID or Project ID not provided"}, 400
+
+    def post(self):
+        data = request.get_json()
+        if not data or "project_name" not in data or "project_type" not in data:
+            return {"message": "Invalid data"}, 400
+        new_project = Project(
+            project_name=data["project_name"],
+            project_address=data.get("project_address"),
+            project_type=data["project_type"],
+            user_id=data.get("user_id"),
+            installer_id=data.get("installer_id"),
+            site_survey_date=data.get("site_survey_date"),
+            inspection_date=data.get("inspection_date"),
+            install_start_date=data.get("install_start_date"),
+            end_date=data.get("end_date"),
+            status=data.get("status"),
+            financing_type_id=data.get("financing_type_id"),
+        )
+        try:
+            db.session.add(new_project)
+            db.session.commit()
+            return {"message": "Project created", "project_id": new_project.id}, 201
+        except Exception as e:
+            app.logger.exception("Error occurred while creating a project.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def put(self, project_id):
+        project = Project.query.get(project_id)
+        if not project:
+            return {"message": "Project not found"}, 404
+        data = request.get_json()
+        if not data:
+            return {"message": "Invalid data"}, 400
+        project.project_name = data.get("project_name", project.project_name)
+        project.project_address = data.get("project_address", project.project_address)
+        project.project_type = data.get("project_type", project.project_type)
+        project.user_id = data.get("user_id", project.user_id)
+        project.installer_id = data.get("installer_id", project.installer_id)
+        project.site_survey_date = data.get("site_survey_date", project.site_survey_date)
+        project.inspection_date = data.get("inspection_date", project.inspection_date)
+        project.install_start_date = data.get("install_start_date", project.install_start_date)
+        project.end_date = data.get("end_date", project.end_date)
+        project.status = data.get("status", project.status)
+        project.financing_type_id = data.get("financing_type_id", project.financing_type_id)
+        try:
+            db.session.commit()
+            return {"message": "Project updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating the project.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, project_id):
+        project = Project.query.get(project_id)
+        if not project:
+            return {"message": "Project not found"}, 404
+        try:
+            db.session.delete(project)
+            db.session.commit()
+            return {"message": "Project deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting the project.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
 
 
 class FinancingOption(db.Model):
@@ -156,17 +276,205 @@ class FinancingOption(db.Model):
     description = db.Column(db.Text)
 
 
+class FinancingOptionResource(Resource):
+    def get(self, option_id=None):
+        if option_id:
+            option = FinancingOption.query.get(option_id)
+            if not option:
+                return {"message": "Financing option not found"}, 404
+            return {
+                "id": option.id,
+                "option_name": option.option_name,
+                "description": option.description,
+            }
+        else:
+            options = FinancingOption.query.all()
+            return [
+                {
+                    "id": option.id,
+                    "option_name": option.option_name,
+                    "description": option.description,
+                }
+                for option in options
+            ]
+
+    def post(self):
+        data = request.get_json()
+        if not data or "option_name" not in data:
+            return {"message": "Invalid data"}, 400
+        new_option = FinancingOption(
+            option_name=data["option_name"], description=data.get("description")
+        )
+        try:
+            db.session.add(new_option)
+            db.session.commit()
+            return {"message": "Financing option created", "option_id": new_option.id}, 201
+        except Exception as e:
+            app.logger.exception("Error occurred while creating a financing option.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def put(self, option_id):
+        option = FinancingOption.query.get(option_id)
+        if not option:
+            return {"message": "Financing option not found"}, 404
+        data = request.get_json()
+        if not data:
+            return {"message": "Invalid data"}, 400
+        option.option_name = data.get("option_name", option.option_name)
+        option.description = data.get("description", option.description)
+        try:
+            db.session.commit()
+            return {"message": "Financing option updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating the financing option.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, option_id):
+        option = FinancingOption.query.get(option_id)
+        if not option:
+            return {"message": "Financing option not found"}, 404
+        try:
+            db.session.delete(option)
+            db.session.commit()
+            return {"message": "Financing option deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting the financing option.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
     id = db.Column(db.Integer, primary_key=True)
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    total_cost = db.Column(db.Numeric(10, 2))
     monthly_cost = db.Column(db.Numeric(10, 2))
+    down_payment = db.Column(db.Numeric(10, 2))
     total_contribution = db.Column(db.Numeric(10, 2))
     remaining_balance = db.Column(db.Numeric(10, 2))
     interest_rate = db.Column(db.Numeric(5, 2))
+    payment_status = db.Column(db.String(50))
+    payment_due_date = db.Column(db.Date)
     duration = db.Column(db.Integer)  # duration in months or years
+
+
+class FinancingDetailResource(Resource):
+    def get(self, detail_id=None):
+        if detail_id:
+            detail = FinancingDetail.query.get(detail_id)
+            if not detail:
+                return {"message": "Financing detail not found"}, 404
+            return {
+                "id": detail.id,
+                "project_id": detail.project_id,
+                "user_id": detail.user_id,
+                "financing_option_id": detail.financing_option_id,
+                "total_cost": str(detail.total_cost),
+                "monthly_cost": str(detail.monthly_cost),
+                "down_payment": str(detail.down_payment),
+                "total_contribution": str(detail.total_contribution),
+                "remaining_balance": str(detail.remaining_balance),
+                "interest_rate": str(detail.interest_rate),
+                "payment_status": detail.payment_status,
+                "payment_due_date": json_serial(detail.payment_due_date),
+                "duration": detail.duration,
+            }
+        else:
+            details = FinancingDetail.query.all()
+            return [
+                {
+                    "id": detail.id,
+                    "project_id": detail.project_id,
+                    "user_id": detail.user_id,
+                    "financing_option_id": detail.financing_option_id,
+                    "total_cost": str(detail.total_cost),
+                    "monthly_cost": str(detail.monthly_cost),
+                    "down_payment": str(detail.down_payment),
+                    "total_contribution": str(detail.total_contribution),
+                    "remaining_balance": str(detail.remaining_balance),
+                    "interest_rate": str(detail.interest_rate),
+                    "payment_status": detail.payment_status,
+                    "payment_due_date": json_serial(detail.payment_due_date),
+                    "duration": detail.duration,
+                }
+                for detail in details
+            ]
+
+    def post(self):
+        data = request.get_json()
+        if (
+            not data
+            or "user_id" not in data
+            or "financing_option_id" not in data
+            or "project_id" not in data
+        ):
+            return {"message": "Invalid data"}, 400
+        new_detail = FinancingDetail(
+            user_id=data["user_id"],
+            financing_option_id=data["financing_option_id"],
+            project_id=data["project_id"],
+            total_cost=data.get("total_cost"),
+            monthly_cost=data.get("monthly_cost"),
+            down_payment=data.get("down_payment"),
+            total_contribution=data.get("total_contribution"),
+            remaining_balance=data.get("remaining_balance"),
+            interest_rate=data.get("interest_rate"),
+            payment_status=data.get("payment_status"),
+            payment_due_date=data.get("payment_due_date"),
+            duration=data.get("duration"),
+        )
+        try:
+            db.session.add(new_detail)
+            db.session.commit()
+            return {"message": "Financing detail created", "detail_id": new_detail.id}, 201
+        except Exception as e:
+            app.logger.exception("Error occurred while creating a financing detail.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def put(self, detail_id):
+        detail = FinancingDetail.query.get(detail_id)
+        if not detail:
+            return {"message": "Financing detail not found"}, 404
+        data = request.get_json()
+        if not data:
+            return {"message": "Invalid data"}, 400
+        detail.project_id = data.get("project_id", detail.project_id)
+        detail.user_id = data.get("user_id", detail.user_id)
+        detail.financing_option_id = data.get("financing_option_id", detail.financing_option_id)
+        detail.total_cost = data.get("total_cost", detail.total_cost)
+        detail.monthly_cost = data.get("monthly_cost", detail.monthly_cost)
+        detail.down_payment = data.get("down_payment", detail.down_payment)
+        detail.total_contribution = data.get("total_contribution", detail.total_contribution)
+        detail.remaining_balance = data.get("remaining_balance", detail.remaining_balance)
+        detail.interest_rate = data.get("interest_rate", detail.interest_rate)
+        detail.payment_status = data.get("payment_status", detail.payment_status)
+        detail.payment_due_date = data.get("payment_due_date", detail.payment_due_date)
+        detail.duration = data.get("duration", detail.duration)
+        try:
+            db.session.commit()
+            return {"message": "Financing detail updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating the financing detail.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, detail_id):
+        detail = FinancingDetail.query.get(detail_id)
+        if not detail:
+            return {"message": "Financing detail not found"}, 404
+        try:
+            db.session.delete(detail)
+            db.session.commit()
+            return {"message": "Financing detail deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting the financing detail.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
 
 
 class Installer(db.Model):
@@ -176,16 +484,171 @@ class Installer(db.Model):
     contact_email = db.Column(db.String(255), nullable=False)
     contact_phone = db.Column(db.String(20))
     contact_agent = db.Column(db.String(255))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
 
 
-class InstallerStep(db.Model):
-    __tablename__ = "installer_steps"
+class InstallerResource(Resource):
+    def get(self, installer_id=None):
+        if installer_id:
+            installer = Installer.query.get(installer_id)
+            if not installer:
+                return {"message": "Installer not found"}, 404
+            return {
+                "id": installer.id,
+                "name": installer.name,
+                "contact_email": installer.contact_email,
+                "contact_phone": installer.contact_phone,
+                "contact_agent": installer.contact_agent,
+            }
+        else:
+            installers = Installer.query.all()
+            return [
+                {
+                    "id": installer.id,
+                    "name": installer.name,
+                    "contact_email": installer.contact_email,
+                    "contact_phone": installer.contact_phone,
+                    "contact_agent": installer.contact_agent,
+                }
+                for installer in installers
+            ]
+
+    def post(self):
+        data = request.get_json()
+        if not data or "name" not in data or "contact_email" not in data:
+            return {"message": "Invalid data"}, 400
+        new_installer = Installer(
+            name=data["name"],
+            contact_email=data["contact_email"],
+            contact_phone=data.get("contact_phone"),
+            contact_agent=data.get("contact_agent"),
+        )
+        try:
+            db.session.add(new_installer)
+            db.session.commit()
+            return {"message": "Installer created", "installer_id": new_installer.id}, 201
+        except Exception as e:
+            app.logger.exception("Error occurred while creating an installer.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def put(self, installer_id):
+        installer = Installer.query.get(installer_id)
+        if not installer:
+            return {"message": "Installer not found"}, 404
+        data = request.get_json()
+        if not data:
+            return {"message": "Invalid data"}, 400
+        installer.name = data.get("name", installer.name)
+        installer.contact_email = data.get("contact_email", installer.contact_email)
+        installer.contact_phone = data.get("contact_phone", installer.contact_phone)
+        installer.contact_agent = data.get("contact_agent", installer.contact_agent)
+        try:
+            db.session.commit()
+            return {"message": "Installer updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating the installer.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, installer_id):
+        installer = Installer.query.get(installer_id)
+        if not installer:
+            return {"message": "Installer not found"}, 404
+        try:
+            db.session.delete(installer)
+            db.session.commit()
+            return {"message": "Installer deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting the installer.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+
+class ProjectStep(db.Model):
+    __tablename__ = "project_steps"
     id = db.Column(db.Integer, primary_key=True)
     installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
     progress_step = db.Column(db.String(255), nullable=False)
     step_date = db.Column(db.Date)
+
+
+class ProjectStepResource(Resource):
+    def get(self, step_id=None):
+        if step_id:
+            step = ProjectStep.query.get(step_id)
+            if not step:
+                return {"message": "Project step not found"}, 404
+            return {
+                "id": step.id,
+                "installer_id": step.installer_id,
+                "project_id": step.project_id,
+                "progress_step": step.progress_step,
+                "step_date": json_serial(step.step_date),
+            }
+        else:
+            steps = ProjectStep.query.all()
+            return [
+                {
+                    "id": step.id,
+                    "installer_id": step.installer_id,
+                    "project_id": step.project_id,
+                    "progress_step": step.progress_step,
+                    "step_date": json_serial(step.step_date),
+                }
+                for step in steps
+            ]
+
+    def post(self):
+        data = request.get_json()
+        if not data or "installer_id" not in data or "project_id" not in data or "progress_step" not in data:
+            return {"message": "Invalid data"}, 400
+        new_step = ProjectStep(
+            installer_id=data["installer_id"],
+            project_id=data["project_id"],
+            progress_step=data["progress_step"],
+            step_date=data.get("step_date"),
+        )
+        try:
+            db.session.add(new_step)
+            db.session.commit()
+            return {"message": "Project step created", "step_id": new_step.id}, 201
+        except Exception as e:
+            app.logger.exception("Error occurred while creating a project step.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def put(self, step_id):
+        step = ProjectStep.query.get(step_id)
+        if not step:
+            return {"message": "Project step not found"}, 404
+        data = request.get_json()
+        if not data:
+            return {"message": "Invalid data"}, 400
+        step.installer_id = data.get("installer_id", step.installer_id)
+        step.project_id = data.get("project_id", step.project_id)
+        step.progress_step = data.get("progress_step", step.progress_step)
+        step.step_date = data.get("step_date", step.step_date)
+        try:
+            db.session.commit()
+            return {"message": "Project step updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating the project step.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, step_id):
+        step = ProjectStep.query.get(step_id)
+        if not step:
+            return {"message": "Project step not found"}, 404
+        try:
+            db.session.delete(step)
+            db.session.commit()
+            return {"message": "Project step deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting the project step.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
 
 
 class User(db.Model):
@@ -238,7 +701,6 @@ class Message(Resource):
         return {"message": "Hello World!"}
 
 
-# Define a resource for interacting with the User model
 class UserResource(Resource):
     def post(self):
         data = request.get_json()
@@ -249,6 +711,12 @@ class UserResource(Resource):
             or "sso_token" not in data
         ):
             return {"message": "Invalid data"}, 400
+
+        # Check if the email already exists
+        existing_user = User.query.filter_by(email=data["email"]).first()
+        if existing_user:
+            return {"message": "Email already exists"}, 409
+
         new_user = User(
             email=data["email"], name=data["name"], sso_token=data["sso_token"]
         )
@@ -275,7 +743,6 @@ class UserResource(Resource):
         }
 
 
-# Define a resource for interacting with the Form model
 class FormResource(Resource):
     def post(self):
         data = request.get_json()
@@ -336,7 +803,6 @@ class FormResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
-# Define a resource for interacting with the FormData model
 class FormDataResource(Resource):
     def post(self):
         data = request.get_json()
@@ -390,6 +856,11 @@ api.add_resource(
     "/api/forms/user/<int:user_id>",
 )
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
+api.add_resource(ProjectResource, "/api/project", "/api/project/user/<int:user_id>", "/api/project/<int:project_id>")
+api.add_resource(FinancingOptionResource, "/api/financing_option", "/api/financing_option/<int:option_id>")
+api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/<int:detail_id>")
+api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
+api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>")
 
 # Log all incoming requests
 @app.before_request
