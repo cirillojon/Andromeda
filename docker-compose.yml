@@ -13,7 +13,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-    command: ["--workers=3", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload"]
+    command: ["--workers=1", "--bind=0.0.0.0:8000", "--log-level=debug", "--reload"]
 
   frontend:
     build: ./frontend

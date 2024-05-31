@@ -416,13 +416,12 @@ def initialize_app():
     with app.app_context():
         try:
             # Create database tables for all models
-            time.sleep(0.05)
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
             inspector = inspect(db.engine)
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
-            app.logger.info(f"Finished creating all {os.getpid()}")
+            app.logger.info(f"Finished creating all: Worker ID {os.getpid()}")
         except Exception as e:
             app.logger.error(f"Failed trying to creating all {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
