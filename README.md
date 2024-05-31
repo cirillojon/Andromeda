@@ -336,6 +336,11 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
 5. **Optional: Local Backend Development**
     To run the backend locally, update the `remote_url` variable in the `next.config.mjs` file to point to either `http://backend:5000` or `http://nginx:80` (the nginx is probably better) instead of the server IP.
 
+    Make sure to add an `.env` file with the below specification:
+    ```
+    POSTGRES_DEFAULT_PASSWORD=<PUT_DEFAULT_PASSWORD_HERE>
+    ```
+
     Build and start all containers from the root of project:
     ```bash
     # add -d for detaching output from terminal
