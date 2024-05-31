@@ -198,6 +198,18 @@ class ProjectResource(Resource):
                     "end_date": safe_json_serial(project.end_date),
                     "status": project.status,
                     "financing_type_id": project.financing_type_id,
+                    "financing_detail": {
+                        "id": project.financing_detail.id,
+                        "total_cost": str(project.financing_detail.total_cost),
+                        "monthly_cost": str(project.financing_detail.monthly_cost),
+                        "down_payment": str(project.financing_detail.down_payment),
+                        "total_contribution": str(project.financing_detail.total_contribution),
+                        "remaining_balance": str(project.financing_detail.remaining_balance),
+                        "interest_rate": str(project.financing_detail.interest_rate),
+                        "payment_status": project.financing_detail.payment_status,
+                        "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                        "duration": project.financing_detail.duration,
+                    } if project.financing_detail else None,
                 }
                 for project in projects
             ]
@@ -218,6 +230,18 @@ class ProjectResource(Resource):
                 "end_date": safe_json_serial(project.end_date),
                 "status": project.status,
                 "financing_type_id": project.financing_type_id,
+                "financing_detail": {
+                    "id": project.financing_detail.id,
+                    "total_cost": str(project.financing_detail.total_cost),
+                    "monthly_cost": str(project.financing_detail.monthly_cost),
+                    "down_payment": str(project.financing_detail.down_payment),
+                    "total_contribution": str(project.financing_detail.total_contribution),
+                    "remaining_balance": str(project.financing_detail.remaining_balance),
+                    "interest_rate": str(project.financing_detail.interest_rate),
+                    "payment_status": project.financing_detail.payment_status,
+                    "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                    "duration": project.financing_detail.duration,
+                } if project.financing_detail else None,
             }
         else:
             return {"message": "User ID or Project ID not provided"}, 400
