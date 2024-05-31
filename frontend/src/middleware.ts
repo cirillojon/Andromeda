@@ -1,14 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { json } from "stream/consumers";
-
-interface User {
-  id: string,
-  email: string,
-  name: string,
-  created_at: string,
-}
+import fetchDbUser from "./utils/api";
+import { DbUser } from "./utils/interfaces";
 
 export async function middleware(req: NextRequest) {
   const user = await getKindeServerSession();
@@ -21,11 +15,9 @@ export async function middleware(req: NextRequest) {
   }
 
   //check to see if the user exists
-  const getUrl = new URL(`/api/user/${currentUser?.id}`, req.url);
-  const response = await fetch(getUrl.toString());
-  const jsonData = await response.json();
+  const dbUser: DbUser | null = await fetchDbUser(currentUser.id);
   //might need to handle specific response on no user returned
-  if (jsonData.message && jsonData.message === "User not found") {
+  if (dbUser === null || (dbUser.message && dbUser.message === "User not found")) {
     const postUrl = new URL(`/api/user`, req.url);
     const response = await fetch(postUrl.toString(), {
       method: "POST",
