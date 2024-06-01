@@ -32,17 +32,21 @@ api = Api(app)
 # Set up logging for the application
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     
     c_handler = logging.StreamHandler(stream=sys.stdout)
     c_handler.setLevel(logging.INFO)
-    f_handler = logging.FileHandler(f"gunicorn-worker-{os.getpid()}.log", "a+")
-    f_handler.setLevel(logging.ERROR)
+    c_handler.setFormatter(formatter)
+    
+    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-worker", when="d", interval=1)
+    f_handler.setLevel(logging.INFO)
+    f_handler.setFormatter(formatter)
     
     gunicorn_logger.addHandler(f_handler)
     gunicorn_logger.addHandler(c_handler)
     
     app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.setLevel(logging.DEBUG)
 else:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -893,7 +897,7 @@ def log_response_info(response):
     if response.status_code >= 400:
         app.logger.error(text)
     else:
-        app.logger.debug(text)
+        app.logger.info(text)
         
     return response
 
@@ -910,7 +914,7 @@ def initialize_app():
             app.logger.info(f"Tables in the database: {tables}")
             app.logger.info(f"Finished creating all: Worker ID {os.getpid()}")
         except Exception as e:
-            app.logger.error(f"Failed trying to creating all {os.getpid()}")
+            app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
             
 
