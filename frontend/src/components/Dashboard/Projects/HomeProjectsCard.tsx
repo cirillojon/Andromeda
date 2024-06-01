@@ -10,6 +10,10 @@ import fetchDbUser from "@/utils/api";
 import { DbUser, Project } from "@/utils/interfaces";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import Link from "next/link";
+import ProjectSummary from "./ProjectSummary";
+import { Plus } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { buttonVariants } from "@/components/ui/button";
 
 const HomeProjectsCard = async () => {
   const user = await getKindeServerSession();
@@ -20,33 +24,67 @@ const HomeProjectsCard = async () => {
   }
   const dbUser: DbUser | null = await fetchDbUser(currentUser.id);
   let projects: Project[] = [];
-  
-  if(dbUser != null){
+
+  if (dbUser != null) {
     const getProjectsUrl = new URL(
-      `/api/project/user/1`,
+      `/api/project/user/${dbUser.id}`,
       process.env.NEXT_FRONTEND_BASE_URL
     );
 
-    console.log("Fetching data from " + getProjectsUrl.toString());
     projects = await fetch(getProjectsUrl.toString())
       .then((res) => res.json())
       .then((data) => data);
 
-    console.log("Projects:", projects)
+    console.log("HOMEPROJECTS CARD:", projects);
   }
 
   return (
-    <Card className="w-full drop-shadow-md">
+    <div className="w-full">
+      <div className="grid grid-rows-2">
+        <span className="text-3xl font-bold items-start">Active Projects</span>
+        <span className="text-gray-500">
+          A summary of your active projects and their status.
+        </span>
+      </div>
+      <div className="mb-6 rounded-lg h-screen pb-48 overflow-y-auto">
+        {projects.length > 0 ? (
+          projects.map((project) => (
+            <ProjectSummary key={project.id} project={project} />
+          ))
+        ) : (
+          <div>
+            <div className="text-gray-500 dark:text-gray-400 text-sm">
+              You have no active projects.
+            </div>
+            <div className={cn(buttonVariants({variant: "outline"}), " bg-green-500 hover:cursor-pointer hover:bg-green-200 mt-4 flex items-center rounded-full w-1/4")}>
+              <Plus className="flex" />
+              <Link href="/" className="justify-start">
+                Start a new Project
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default HomeProjectsCard;
+
+/*
+
+  <Card className="w-full drop-shadow-md h-[80vh]">
       <CardHeader>
         <CardTitle>Active Projects Summary</CardTitle>
         <CardDescription>
           A summary of your active projects and their status.
         </CardDescription>
+        <div className="text-gray-500 dark:text-gray-400 border-b-2 w-full"/>
       </CardHeader>
-      <CardContent>
+      <CardContent className="h-96 overflow-y-auto">
         {projects.length > 0 ? (
           projects.map((project) => (
-            <ProjectPreview key={project.id} project={project} />
+            <ProjectSummary key={project.id} project={project} />
           ))
         ) : (
           <div className="text-gray-500 dark:text-gray-400 text-sm">
@@ -64,23 +102,4 @@ const HomeProjectsCard = async () => {
         </Link>
       </CardFooter>
     </Card>
-  );
-};
-
-export default HomeProjectsCard;
-
-const ProjectPreview = ({ project }: { project: Project }) => {
-  return (
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-lg font-medium">{project.project_name}</p>
-        <p className="text-gray-500 dark:text-gray-400 text-sm">
-          {project.status}
-        </p>
-      </div>
-      <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-        75% complete
-      </div>
-    </div>
-  );
-};
+*/

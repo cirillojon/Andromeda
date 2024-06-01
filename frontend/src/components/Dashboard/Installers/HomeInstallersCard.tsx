@@ -6,59 +6,53 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { Installer } from "@/utils/interfaces";
 import Link from "next/link";
 
-const HomeInstallersCard = () => {
+const HomeInstallersCard = ({ installer }: { installer: Installer }) => {
+  console.log("HOMEINSTALLERSCARDInstaller:", installer);
   return (
     <Card className="w-full drop-shadow-md">
       <CardHeader>
-        <CardTitle>Installers</CardTitle>
+        <CardTitle>Installer</CardTitle>
         <CardDescription>
-          A summary of your active installers and their completion.
+          The current installer working on the project.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-lg font-medium">Sun Power</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Writing approvals
-              </p>
-            </div>
-            <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-              95% on-time
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium">RoofTek</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">Done</p>
-            </div>
-            <div className="bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-              85% on-time
-            </div>
-          </div>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-lg font-medium">Backed Up Inc</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Batteries in-route
-              </p>
-            </div>
-            <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
-              92% on-time
+              <div className="text-xl font-medium mb-1">{installer.name}</div>
+              <div className="text-gray-500 text-md mb-2">
+                Agent:{" "}
+                <span className="font-bold text-gray-700">
+                  {installer.contact_agent}
+                </span>
+              </div>
+              <div className="text-gray-500 mb-2 text-md">
+                Email:{" "}
+                <span className="font-bold text-gray-700">
+                  {installer.contact_email}
+                </span>
+              </div>
+              <div className="text-gray-500 mb-2 text-md">
+                Phone:{" "}
+                <span className="font-bold text-gray-700">
+                  {installer.contact_phone}
+                </span>
+              </div>
             </div>
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <Link
-          href="/dashboard/installers"
+          href={`/dashboard/projects/installers/${installer.id}`}
           className="text-blue-500 hover:underline"
           prefetch={false}
         >
-          View all installers
+          View installer
         </Link>
       </CardFooter>
     </Card>

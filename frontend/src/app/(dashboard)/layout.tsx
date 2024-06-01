@@ -33,7 +33,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="fixed w-screen h-screen">
       <body className={libre_franklin.variable + " " + rubik.variable}>
         <DashboardNavBar/>
         <main>{children}</main>
