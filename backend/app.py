@@ -36,7 +36,6 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-# Define the PostgreSQL enum type for status
 def create_status_enum():
     with db.engine.connect() as conn:
         # Check if the enum type exists
@@ -250,6 +249,7 @@ class ProjectResource(Resource):
         data = request.get_json()
         if not data or "project_name" not in data or "project_type" not in data:
             return {"message": "Invalid data"}, 400
+
         new_project = Project(
             project_name=data["project_name"],
             project_address=data.get("project_address"),
@@ -263,9 +263,35 @@ class ProjectResource(Resource):
             status=data.get("status"),
             financing_type_id=data.get("financing_type_id"),
         )
+
+        if "financing_detail" in data:
+            financing_data = data["financing_detail"]
+            new_detail = FinancingDetail(
+                user_id=new_project.user_id,
+                financing_option_id=financing_data.get("financing_option_id"),
+                project_id=new_project.id,  # This will be set after committing the project
+                total_cost=financing_data.get("total_cost"),
+                monthly_cost=financing_data.get("monthly_cost"),
+                down_payment=financing_data.get("down_payment"),
+                total_contribution=financing_data.get("total_contribution"),
+                remaining_balance=financing_data.get("remaining_balance"),
+                interest_rate=financing_data.get("interest_rate"),
+                payment_status=financing_data.get("payment_status"),
+                payment_due_date=financing_data.get("payment_due_date"),
+                duration=financing_data.get("duration"),
+            )
+
         try:
             db.session.add(new_project)
             db.session.commit()
+            
+            if "financing_detail" in data:
+                new_detail.project_id = new_project.id  # Set project_id after project commit
+                db.session.add(new_detail)
+                db.session.commit()
+                new_project.financing_detail_id = new_detail.id
+                db.session.commit()
+            
             return {"message": "Project created", "project_id": new_project.id}, 201
         except Exception as e:
             app.logger.exception("Error occurred while creating a project.")
@@ -479,10 +505,18 @@ class FinancingDetailResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def put(self, detail_id):
-        detail = FinancingDetail.query.get(detail_id)
+    def put(self, project_id):
+        try:
+            project_id = int(project_id)
+        except ValueError:
+            return {"message": "Invalid project ID"}, 400
+
+        print(f"Received project_id: {project_id}")
+        detail = FinancingDetail.query.filter_by(project_id=project_id).first()
         if not detail:
+            print(f"No detail found for project_id: {project_id}")
             return {"message": "Financing detail not found"}, 404
+
         data = request.get_json()
         if not data:
             return {"message": "Invalid data"}, 400
@@ -506,8 +540,8 @@ class FinancingDetailResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def delete(self, detail_id):
-        detail = FinancingDetail.query.get(detail_id)
+    def delete(self, project_id):
+        detail = FinancingDetail.query.get(project_id)
         if not detail:
             return {"message": "Financing detail not found"}, 404
         try:
