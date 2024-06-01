@@ -38,7 +38,7 @@ if __name__ != "__main__":
     c_handler.setLevel(logging.INFO)
     c_handler.setFormatter(formatter)
     
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-worker", when="d", interval=1)
+    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
     f_handler.setLevel(logging.INFO)
     f_handler.setFormatter(formatter)
     
