@@ -50,6 +50,23 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
+def create_status_enum():
+    with db.engine.connect() as conn:
+        # Check if the enum type exists
+        result = conn.execute(
+            text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")
+        ).fetchone()
+        if not result:
+            # Only create the enum type if it does not exist
+            try:
+                conn.execute(
+                    text(
+                        "CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"
+                    )
+                )
+            except Exception as e:
+                app.logger.error("Error creating enum type: %s", e)
+
 
 # Define a helper function for JSON serialization
 def json_serial(obj):
@@ -171,7 +188,8 @@ class Project(db.Model):
     end_date = db.Column(db.Date)
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-
+    financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
+    financing_detail = db.relationship("FinancingDetail", foreign_keys=[financing_detail_id], backref="project")
 
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
@@ -193,6 +211,18 @@ class ProjectResource(Resource):
                     "end_date": safe_json_serial(project.end_date),
                     "status": project.status,
                     "financing_type_id": project.financing_type_id,
+                    "financing_detail": {
+                        "id": project.financing_detail.id,
+                        "total_cost": str(project.financing_detail.total_cost),
+                        "monthly_cost": str(project.financing_detail.monthly_cost),
+                        "down_payment": str(project.financing_detail.down_payment),
+                        "total_contribution": str(project.financing_detail.total_contribution),
+                        "remaining_balance": str(project.financing_detail.remaining_balance),
+                        "interest_rate": str(project.financing_detail.interest_rate),
+                        "payment_status": project.financing_detail.payment_status,
+                        "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                        "duration": project.financing_detail.duration,
+                    } if project.financing_detail else None,
                 }
                 for project in projects
             ]
@@ -213,6 +243,18 @@ class ProjectResource(Resource):
                 "end_date": safe_json_serial(project.end_date),
                 "status": project.status,
                 "financing_type_id": project.financing_type_id,
+                "financing_detail": {
+                    "id": project.financing_detail.id,
+                    "total_cost": str(project.financing_detail.total_cost),
+                    "monthly_cost": str(project.financing_detail.monthly_cost),
+                    "down_payment": str(project.financing_detail.down_payment),
+                    "total_contribution": str(project.financing_detail.total_contribution),
+                    "remaining_balance": str(project.financing_detail.remaining_balance),
+                    "interest_rate": str(project.financing_detail.interest_rate),
+                    "payment_status": project.financing_detail.payment_status,
+                    "payment_due_date": safe_json_serial(project.financing_detail.payment_due_date),
+                    "duration": project.financing_detail.duration,
+                } if project.financing_detail else None,
             }
         else:
             return {"message": "User ID or Project ID not provided"}, 400
@@ -221,6 +263,7 @@ class ProjectResource(Resource):
         data = request.get_json()
         if not data or "project_name" not in data or "project_type" not in data:
             return {"message": "Invalid data"}, 400
+
         new_project = Project(
             project_name=data["project_name"],
             project_address=data.get("project_address"),
@@ -234,9 +277,35 @@ class ProjectResource(Resource):
             status=data.get("status"),
             financing_type_id=data.get("financing_type_id"),
         )
+
+        if "financing_detail" in data:
+            financing_data = data["financing_detail"]
+            new_detail = FinancingDetail(
+                user_id=new_project.user_id,
+                financing_option_id=financing_data.get("financing_option_id"),
+                project_id=new_project.id,  # This will be set after committing the project
+                total_cost=financing_data.get("total_cost"),
+                monthly_cost=financing_data.get("monthly_cost"),
+                down_payment=financing_data.get("down_payment"),
+                total_contribution=financing_data.get("total_contribution"),
+                remaining_balance=financing_data.get("remaining_balance"),
+                interest_rate=financing_data.get("interest_rate"),
+                payment_status=financing_data.get("payment_status"),
+                payment_due_date=financing_data.get("payment_due_date"),
+                duration=financing_data.get("duration"),
+            )
+
         try:
             db.session.add(new_project)
             db.session.commit()
+            
+            if "financing_detail" in data:
+                new_detail.project_id = new_project.id  # Set project_id after project commit
+                db.session.add(new_detail)
+                db.session.commit()
+                new_project.financing_detail_id = new_detail.id
+                db.session.commit()
+            
             return {"message": "Project created", "project_id": new_project.id}, 201
         except Exception as e:
             app.logger.exception("Error occurred while creating a project.")
@@ -377,9 +446,9 @@ class FinancingDetail(db.Model):
 
 
 class FinancingDetailResource(Resource):
-    def get(self, detail_id=None):
-        if detail_id:
-            detail = FinancingDetail.query.get(detail_id)
+    def get(self, project_id=None):
+        if project_id:
+            detail = FinancingDetail.query.filter_by(project_id=project_id).first()
             if not detail:
                 return {"message": "Financing detail not found"}, 404
             return {
@@ -450,10 +519,18 @@ class FinancingDetailResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def put(self, detail_id):
-        detail = FinancingDetail.query.get(detail_id)
+    def put(self, project_id):
+        try:
+            project_id = int(project_id)
+        except ValueError:
+            return {"message": "Invalid project ID"}, 400
+
+        print(f"Received project_id: {project_id}")
+        detail = FinancingDetail.query.filter_by(project_id=project_id).first()
         if not detail:
+            print(f"No detail found for project_id: {project_id}")
             return {"message": "Financing detail not found"}, 404
+
         data = request.get_json()
         if not data:
             return {"message": "Invalid data"}, 400
@@ -477,8 +554,8 @@ class FinancingDetailResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def delete(self, detail_id):
-        detail = FinancingDetail.query.get(detail_id)
+    def delete(self, project_id):
+        detail = FinancingDetail.query.get(project_id)
         if not detail:
             return {"message": "Financing detail not found"}, 404
         try:
@@ -698,8 +775,7 @@ class FormData(db.Model):
     __tablename__ = "form_data"
     id = db.Column(db.Integer, primary_key=True)
     form_id = db.Column(db.Integer, db.ForeignKey("forms.id"), nullable=False)
-    field_name = db.Column(db.String(255), nullable=False)
-    field_value = db.Column(db.Text, nullable=False)
+    data = db.Column(db.JSON, nullable=False)  # Store form data as JSON
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     last_modified = db.Column(
         db.DateTime,
@@ -820,17 +896,11 @@ class FormResource(Resource):
 class FormDataResource(Resource):
     def post(self):
         data = request.get_json()
-        if (
-            not data
-            or "form_id" not in data
-            or "field_name" not in data
-            or "field_value" not in data
-        ):
+        if not data or "form_id" not in data or "data" not in data:
             return {"message": "Invalid data"}, 400
         new_form_data = FormData(
             form_id=data["form_id"],
-            field_name=data["field_name"],
-            field_value=data["field_value"],
+            data=data["data"],
             created_by=data.get("created_by"),
         )
         try:
@@ -849,8 +919,7 @@ class FormDataResource(Resource):
         return [
             {
                 "id": data.id,
-                "field_name": data.field_name,
-                "field_value": data.field_value,
+                "data": data.data,
                 "created_by": data.created_by,
                 "last_modified": json_serial(data.last_modified),
                 "created_at": json_serial(data.created_at),
@@ -858,6 +927,35 @@ class FormDataResource(Resource):
             for data in form_data
         ]
 
+    def put(self, form_data_id):
+        data = request.get_json()
+        form_data = FormData.query.get(form_data_id)
+        if not form_data:
+            return {"message": "Form data not found"}, 404
+        if not data or "data" not in data:
+            return {"message": "Invalid data"}, 400
+        form_data.data = data["data"]
+        form_data.last_modified = datetime.utcnow()
+        try:
+            db.session.commit()
+            return {"message": "Form data updated"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while updating form data.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+
+    def delete(self, form_data_id):
+        form_data = FormData.query.get(form_data_id)
+        if not form_data:
+            return {"message": "Form data not found"}, 404
+        try:
+            db.session.delete(form_data)
+            db.session.commit()
+            return {"message": "Form data deleted"}, 200
+        except Exception as e:
+            app.logger.exception("Error occurred while deleting form data.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
 
 # Add the resources to the API
 api.add_resource(Message, "/api/hello")
@@ -872,7 +970,7 @@ api.add_resource(
 api.add_resource(FormDataResource, "/api/form_data", "/api/form_data/<int:form_id>")
 api.add_resource(ProjectResource, "/api/project", "/api/project/user/<int:user_id>", "/api/project/<int:project_id>")
 api.add_resource(FinancingOptionResource, "/api/financing_option", "/api/financing_option/<int:option_id>")
-api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/<int:detail_id>")
+api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/project/<int:project_id>")
 api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
 api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>")
 
@@ -906,22 +1004,21 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
+            # Create status enum type
+            create_status_enum()
             # Create database tables for all models
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
             inspector = inspect(db.engine)
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
-            app.logger.info(f"Finished creating all: Worker ID {os.getpid()}")
         except Exception as e:
             app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
-            
 
 # Call the initialize_app function to set up the database
 initialize_app()
 
 # Run the Flask development server (only if running this script directly)
 if __name__ == "__main__":
-    app.logger.info(f"Process {os.getpid()} running server")
     app.run(host="0.0.0.0", debug=True)
