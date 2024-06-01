@@ -6,15 +6,16 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import { FinancingDetail } from "@/utils/interfaces";
 import Link from "next/link";
 
-const HomeFinancesCard = () => {
+const HomeFinancesCard = ({financing_detail}: {financing_detail: FinancingDetail}) => {
   return (
     <Card className="w-full drop-shadow-md">
       <CardHeader>
         <CardTitle>Finances</CardTitle>
         <CardDescription>
-          A summary of your financial performance and key metrics.
+          Review of financial status.
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -22,35 +23,26 @@ const HomeFinancesCard = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-lg font-medium">Monthly Expense</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Solar Panel Array
-              </p>
             </div>
-            <div className="text-2xl font-bold">$154.30</div>
+            <div className="text-2xl font-bold">${financing_detail.monthly_cost}</div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-lg font-medium">Monthly Expense</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Roof Replacement
-              </p>
+              <p className="text-lg font-medium">Total Contribution</p>
             </div>
-            <div className="text-2xl font-bold">$280.67</div>
+            <div className="text-2xl font-bold">${financing_detail.total_contribution}</div>
           </div>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-lg font-medium">Monthly Expense</p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm">
-                Battery Installation
-              </p>
+              <p className="text-lg font-medium">Remaning Balance</p>
             </div>
-            <div className="text-2xl font-bold">$88.43</div>
+            <div className="text-2xl font-bold">${financing_detail.remaining_balance}</div>
           </div>
         </div>
       </CardContent>
       <CardFooter>
         <Link
-          href="/dashboard/finances"
+          href={`/dashboard/projects/finances/${financing_detail.project_id}`}
           className="text-blue-500 hover:underline"
           prefetch={false}
         >

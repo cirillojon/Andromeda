@@ -66,8 +66,8 @@ const nextConfig = {
         destination: `${remote_url}/api/financing_detail`,
       },
       {
-        source: "/api/financing_detail/:detail_id",
-        destination: `${remote_url}/api/financing_detail/:detail_id`,
+        source: "/api/financing_detail/project/:project_id",
+        destination: `${remote_url}/api/financing_detail/project/:project_id`,
       },
       {
         source: "/api/installer",

@@ -1,0 +1,71 @@
+import { Installer, Project } from "@/utils/interfaces";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import Link from "next/link";
+import HomeFinancesCard from "../Finances/HomeFinancesCard";
+import HomeInstallersCard from "../Installers/HomeInstallersCard";
+import HomeTimeline from "../HomeTimeline";
+
+const ProjectSummary = async ({ project }: { project: Project }) => {
+  const getInstallerUrl = new URL(
+    `/api/installer/${project.installer_id}`,
+    process.env.NEXT_FRONTEND_BASE_URL
+  );
+  console.log("GETINSTALLERURL:", getInstallerUrl.toString());
+  let installer: Installer = await fetch(getInstallerUrl.toString())
+    .then((res) => res.json())
+    .then((data) => data);
+
+  console.log("INSTALLER:", installer);
+
+  return (
+    <Card className="mb-6">
+      <CardHeader className="bg-gray-900 text-white rounded-tr-md rounded-tl-md mb-4">
+        <CardTitle>{project.project_name}</CardTitle>
+        <CardDescription>{project.status}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <HomeTimeline/>
+        <div className="m-2"/>
+        <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="mr-4 ml-4 mt-4 lg:mt-0">
+            <HomeFinancesCard financing_detail={project.financing_detail} />
+          </div>
+          <div className="mr-4 ml-4 mt-4 lg:mt-0">
+            <HomeInstallersCard installer={installer} />
+          </div>
+        </div>
+      </CardContent>
+      <CardFooter>
+        <Link
+          href={`/dashboard/projects/${project.id}`}
+          className="text-blue-500"
+        >
+          View Project
+        </Link>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default ProjectSummary;
+
+/*
+<div className="flex items-center justify-between">
+      <div>
+        <p className="text-lg font-medium">{project.project_name}</p>
+        <p className="text-gray-500 dark:text-gray-400 text-sm">
+          {project.status}
+        </p>
+      </div>
+      <div className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+        75% complete
+      </div>
+    </div>
+*/
