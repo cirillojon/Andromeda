@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
-// Set below to "http://nginx:80" for local development
-let remote_url = "http://167.71.165.9";
+let remote_url = process.env.REMOTE_URL ?? "http://167.71.165.9";
 
 const nextConfig = {
   webpackDevMiddleware: config => {
