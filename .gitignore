@@ -44,4 +44,4 @@ next-env.d.ts
 env/
 __pycache__/
 backend/app.py.save
-backend/*.log
+backend/logs
