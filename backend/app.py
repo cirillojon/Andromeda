@@ -51,7 +51,7 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-# Rest of your application code
+
 # Define a helper function for JSON serialization
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
