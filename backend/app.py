@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_sqlalchemy import SQLAlchemy
-import logging
-from sqlalchemy import inspect, text
-import time
+from sqlalchemy import inspect
 from datetime import datetime, date
 from dotenv import load_dotenv
+import logging
+import time
+import sys
 import os
 
 # Load environment variables from .env file
@@ -31,8 +32,21 @@ api = Api(app)
 # Set up logging for the application
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    c_handler = logging.StreamHandler(stream=sys.stdout)
+    c_handler.setLevel(logging.INFO)
+    c_handler.setFormatter(formatter)
+    
+    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+    f_handler.setLevel(logging.INFO)
+    f_handler.setFormatter(formatter)
+    
+    gunicorn_logger.addHandler(f_handler)
+    gunicorn_logger.addHandler(c_handler)
+    
     app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
+    app.logger.setLevel(logging.DEBUG)
 else:
     logging.basicConfig(level=logging.DEBUG)
 
@@ -959,7 +973,13 @@ def log_request_info():
 @app.after_request
 def log_response_info(response):
     duration = time.time() - request.start_time
-    app.logger.debug(f"Response: {response.status} - Duration: {duration:.3f}s")
+    text = f"Response: {response.status} - Duration: {duration:.3f}s"
+    
+    if response.status_code >= 400:
+        app.logger.error(text)
+    else:
+        app.logger.info(text)
+        
     return response
 
 
@@ -974,6 +994,7 @@ def initialize_app():
             tables = inspector.get_table_names(schema="public")
             app.logger.info(f"Tables in the database: {tables}")
         except Exception as e:
+            app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
 
 # Call the initialize_app function to set up the database

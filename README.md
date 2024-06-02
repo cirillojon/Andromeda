@@ -68,6 +68,8 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
     kill <pid>
     ```
 
+    The backend will have logs outputted to `stdout` and log files located at `/etc/logs`. If you're starting the backend from scratch, make sure to create this directory before running!
+
     Adding a New API Endpoint to `app.py`
 
     Create a new resource class to handle the API logic. For instance, if you want to add a Task endpoint with GET and POST options:

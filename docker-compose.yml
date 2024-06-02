@@ -3,6 +3,7 @@ services:
     build:
       context: ./backend
     volumes:
+      - ./backend/logs:/etc/logs
       - ./backend:/app
     ports:
       - "8000:8000"
