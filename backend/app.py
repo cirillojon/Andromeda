@@ -508,15 +508,19 @@ class FinancingDetailResource(Resource):
         except ValueError:
             return {"message": "Invalid project ID"}, 400
 
-        print(f"Received project_id: {project_id}")
+        # Using logger instead of print
+        app.logger.info(f"Received request to update project_id: {project_id}")
+
         detail = FinancingDetail.query.filter_by(project_id=project_id).first()
         if not detail:
-            print(f"No detail found for project_id: {project_id}")
+            app.logger.warning(f"No financing detail found for project_id: {project_id}")
             return {"message": "Financing detail not found"}, 404
 
         data = request.get_json()
         if not data:
             return {"message": "Invalid data"}, 400
+        
+        # Updating fields with received data
         detail.project_id = data.get("project_id", detail.project_id)
         detail.user_id = data.get("user_id", detail.user_id)
         detail.financing_option_id = data.get("financing_option_id", detail.financing_option_id)
@@ -529,8 +533,10 @@ class FinancingDetailResource(Resource):
         detail.payment_status = data.get("payment_status", detail.payment_status)
         detail.payment_due_date = data.get("payment_due_date", detail.payment_due_date)
         detail.duration = data.get("duration", detail.duration)
+
         try:
             db.session.commit()
+            app.logger.info(f"Financing detail updated successfully for project_id: {project_id}")
             return {"message": "Financing detail updated"}, 200
         except Exception as e:
             app.logger.exception("Error occurred while updating the financing detail.")
