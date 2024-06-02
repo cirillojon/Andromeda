@@ -175,11 +175,11 @@ class Project(db.Model):
     financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
     financing_detail = db.relationship(
         "FinancingDetail",
-        foreign_keys=[financing_detail_id],
-        backref="project",
-        cascade="all, delete-orphan",  # This enables cascading deletes
+        backref=db.backref("project", uselist=False, cascade="all, delete-orphan"),
+        cascade="all, delete-orphan",
         single_parent=True
     )
+
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
         if user_id:
@@ -420,7 +420,7 @@ class FinancingOptionResource(Resource):
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id", ondelete="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     total_cost = db.Column(db.Numeric(10, 2))
@@ -432,7 +432,6 @@ class FinancingDetail(db.Model):
     payment_status = db.Column(db.String(50))
     payment_due_date = db.Column(db.Date)
     duration = db.Column(db.Integer)  # duration in months or years
-
 
 class FinancingDetailResource(Resource):
     def get(self, project_id=None):
