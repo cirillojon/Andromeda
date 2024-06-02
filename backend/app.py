@@ -1,10 +1,12 @@
 from flask import Flask, request
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
-from datetime import datetime, date
 from dotenv import load_dotenv
+
+from src.utils.connection import db
+
+from datetime import datetime, date
 import logging
 import time
 import sys
@@ -20,8 +22,16 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# Create the SQLAlchemy db instance
-db = SQLAlchemy(app)
+db.init_app(app)
+
+# Not a fan but removes half initialization error 
+from src.models.financing_details import FinancingDetail
+from src.models.financing_options import FinancingOption
+from src.models.form import Form, FormData
+from src.models.project_step import ProjectStep
+from src.models.project import Project
+from src.models.task import Task
+from src.models.user import User
 
 # Initialize migrate
 migrate = Migrate(app, db)
@@ -65,14 +75,6 @@ def safe_json_serial(obj):
         return json_serial(obj)
     except TypeError:
         return None
-
-# Define the Task model
-class Task(db.Model):
-    __tablename__ = "task"
-    __table_args__ = {"schema": "public"}
-    id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(200), nullable=False)
-
 
 # Define a resource for interacting with the Task model
 class TaskResource(Resource):
@@ -155,24 +157,6 @@ class TaskResource(Resource):
             app.logger.exception("Error occurred while updating a task.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
-
-class Project(db.Model):
-    __tablename__ = "projects"
-    id = db.Column(db.Integer, primary_key=True)
-    project_name = db.Column(db.String(255), nullable=False)
-    project_address = db.Column(db.String(255))
-    project_type = db.Column(db.String(255), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
-    site_survey_date = db.Column(db.Date)
-    inspection_date = db.Column(db.Date)
-    install_start_date = db.Column(db.Date)
-    end_date = db.Column(db.Date)
-    status = db.Column(db.String(50))
-    financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-    financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
-    financing_detail = db.relationship("FinancingDetail", foreign_keys=[financing_detail_id], backref="project")
 
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
@@ -335,13 +319,6 @@ class ProjectResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
-class FinancingOption(db.Model):
-    __tablename__ = "financing_options"
-    id = db.Column(db.Integer, primary_key=True)
-    option_name = db.Column(db.String(255), nullable=False)
-    description = db.Column(db.Text)
-
-
 class FinancingOptionResource(Resource):
     def get(self, option_id=None):
         if option_id:
@@ -409,23 +386,6 @@ class FinancingOptionResource(Resource):
             app.logger.exception("Error occurred while deleting the financing option.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
-
-class FinancingDetail(db.Model):
-    __tablename__ = "financing_details"
-    id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
-    financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-    total_cost = db.Column(db.Numeric(10, 2))
-    monthly_cost = db.Column(db.Numeric(10, 2))
-    down_payment = db.Column(db.Numeric(10, 2))
-    total_contribution = db.Column(db.Numeric(10, 2))
-    remaining_balance = db.Column(db.Numeric(10, 2))
-    interest_rate = db.Column(db.Numeric(5, 2))
-    payment_status = db.Column(db.String(50))
-    payment_due_date = db.Column(db.Date)
-    duration = db.Column(db.Integer)  # duration in months or years
 
 
 class FinancingDetailResource(Resource):
@@ -551,15 +511,6 @@ class FinancingDetailResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
-class Installer(db.Model):
-    __tablename__ = "installers"
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), nullable=False)
-    contact_email = db.Column(db.String(255), nullable=False)
-    contact_phone = db.Column(db.String(20))
-    contact_agent = db.Column(db.String(255))
-
-
 class InstallerResource(Resource):
     def get(self, installer_id=None):
         if installer_id:
@@ -638,15 +589,6 @@ class InstallerResource(Resource):
             return {"message": "Internal server error"}, 500
 
 
-class ProjectStep(db.Model):
-    __tablename__ = "project_steps"
-    id = db.Column(db.Integer, primary_key=True)
-    installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
-    progress_step = db.Column(db.String(255), nullable=False)
-    step_date = db.Column(db.Date)
-
-
 class ProjectStepResource(Resource):
     def get(self, step_id=None):
         if step_id:
@@ -723,49 +665,6 @@ class ProjectStepResource(Resource):
             app.logger.exception("Error occurred while deleting the project step.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
-
-class User(db.Model):
-    __tablename__ = "users"
-    id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    name = db.Column(db.String(255))
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-    sso_token = db.Column(
-        db.String(255), unique=True, nullable=True
-    )  # nullable initially to handle existing users
-
-
-# Define the Form model
-class Form(db.Model):
-    __tablename__ = "forms"
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    status = db.Column(
-        db.Enum("Pending", "Approved", "Rejected", name="status_type"),
-        default="Pending",
-    )
-    last_modified = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp(),
-    )
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
-
-
-# Define the FormData model
-class FormData(db.Model):
-    __tablename__ = "form_data"
-    id = db.Column(db.Integer, primary_key=True)
-    form_id = db.Column(db.Integer, db.ForeignKey("forms.id"), nullable=False)
-    data = db.Column(db.JSON, nullable=False)  # Store form data as JSON
-    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
-    last_modified = db.Column(
-        db.DateTime,
-        default=db.func.current_timestamp(),
-        onupdate=db.func.current_timestamp(),
-    )
-    created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
 
 
 # Define a simple message resource
