@@ -1,4 +1,4 @@
-from app import db
+from src.utils.connection import db
 
 class ProjectStep(db.Model):
     __tablename__ = "project_steps"

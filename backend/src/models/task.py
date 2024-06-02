@@ -1,4 +1,4 @@
-from app import db
+from src.utils.connection import db
 
 class Task(db.Model):
     __tablename__ = "task"
