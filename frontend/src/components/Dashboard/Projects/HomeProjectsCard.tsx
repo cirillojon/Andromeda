@@ -56,10 +56,15 @@ const HomeProjectsCard = async () => {
             <div className="text-gray-500 dark:text-gray-400 text-sm">
               You have no active projects.
             </div>
-            <div className={cn(buttonVariants({variant: "outline"}), " bg-green-500 hover:cursor-pointer hover:bg-green-200 mt-4 flex items-center rounded-full w-1/4")}>
+            <div
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "bg-green-500 hover:cursor-pointer hover:bg-green-200 mt-4 inline-flex items-center rounded-full p-2"
+              )}
+            >
               <Plus className="flex" />
               <Link href="/" className="justify-start">
-                Start a new Project
+                Project
               </Link>
             </div>
           </div>
