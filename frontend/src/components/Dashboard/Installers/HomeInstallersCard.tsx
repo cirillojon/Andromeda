@@ -26,19 +26,19 @@ const HomeInstallersCard = ({ installer }: { installer: Installer }) => {
               <div className="text-gray-500 text-md mb-2">
                 Agent:{" "}
                 <span className="font-bold text-gray-700">
-                  {installer.contact_agent}
+                  {installer.contact_agent ? installer.contact_agent : "TBD"}
                 </span>
               </div>
               <div className="text-gray-500 mb-2 text-md">
                 Email:{" "}
                 <span className="font-bold text-gray-700">
-                  {installer.contact_email}
+                  {installer.contact_email ? installer.contact_email : "TBD"}
                 </span>
               </div>
               <div className="text-gray-500 mb-2 text-md">
                 Phone:{" "}
                 <span className="font-bold text-gray-700">
-                  {installer.contact_phone}
+                  {installer.contact_phone ? installer.contact_phone : "TBD"}
                 </span>
               </div>
             </div>
