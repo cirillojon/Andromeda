@@ -25,6 +25,7 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=development
+      - REMOTE_URL=http://nginx:80
     networks:
       - default
 
