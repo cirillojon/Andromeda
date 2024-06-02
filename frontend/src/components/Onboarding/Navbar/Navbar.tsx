@@ -35,18 +35,20 @@ const Navbar = () => {
           <SheetContent side="right">
             <nav className="grid text-lg font-medium mt-8">
               {services.map((service) => (
-                <SheetClose asChild key={service.title}>
-                  <div className="grid grid-cols-2 hover:bg-gray-200 rounded-md items-center">
+                <div
+                  key={service.title}
+                  className="grid grid-cols-2 hover:bg-gray-200 rounded-md items-center"
+                >
+                  <SheetClose asChild>
                     <Link
                       href={service.href}
                       className="flex h-8 items-center pl-2 gap-2 text-lg font-semibold "
                     >
                       {service.title}
                     </Link>
-                    <ChevronRight className="ml-auto"/>
-                    
-                  </div>
-                </SheetClose>
+                  </SheetClose>
+                  <ChevronRight className="ml-auto" />
+                </div>
               ))}
             </nav>
             <div className="border-t border-gray-200 border-2 m-6" />
