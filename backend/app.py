@@ -6,6 +6,7 @@ from sqlalchemy import inspect
 from datetime import datetime, date
 from dotenv import load_dotenv
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import time
 import sys
 import os
@@ -33,18 +34,18 @@ api = Api(app)
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
+
     c_handler = logging.StreamHandler(stream=sys.stdout)
     c_handler.setLevel(logging.INFO)
     c_handler.setFormatter(formatter)
-    
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+
+    f_handler = TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
     f_handler.setLevel(logging.INFO)
     f_handler.setFormatter(formatter)
-    
+
     gunicorn_logger.addHandler(f_handler)
     gunicorn_logger.addHandler(c_handler)
-    
+
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(logging.DEBUG)
 else:
@@ -172,7 +173,14 @@ class Project(db.Model):
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
-    financing_detail = db.relationship("FinancingDetail", foreign_keys=[financing_detail_id], backref="project")
+    
+    financing_detail = db.relationship(
+        "FinancingDetail",
+        foreign_keys=[financing_detail_id],
+        backref=db.backref("project", uselist=False),
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
@@ -414,7 +422,7 @@ class FinancingOptionResource(Resource):
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id", ondelete="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     total_cost = db.Column(db.Numeric(10, 2))
@@ -426,7 +434,6 @@ class FinancingDetail(db.Model):
     payment_status = db.Column(db.String(50))
     payment_due_date = db.Column(db.Date)
     duration = db.Column(db.Integer)  # duration in months or years
-
 
 class FinancingDetailResource(Resource):
     def get(self, project_id=None):
