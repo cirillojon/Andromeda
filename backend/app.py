@@ -1,10 +1,9 @@
 from flask import Flask, request
 from flask_migrate import Migrate
-from flask_restful import Api, Resource
+from flask_restful import Api
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 from dotenv import load_dotenv
-
-from src.utils.connection import db
 
 import logging
 import time
@@ -21,7 +20,7 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db.init_app(app)
+db = SQLAlchemy(app)
 
 # Not a fan but removes half initialization/early reference error 
 # Importing models for db to initialize tables

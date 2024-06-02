@@ -1,4 +1,4 @@
-from src.utils.connection import db
+from app import db
 
 class Installer(db.Model):
     __tablename__ = "installers"

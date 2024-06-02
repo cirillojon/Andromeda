@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 
-from src.utils.connection import db
+from app import db
 from src.models.installer import Installer
 from app import app
 

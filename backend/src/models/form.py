@@ -1,4 +1,4 @@
-from src.utils.connection import db
+from app import db
 
 # Define the Form model
 class Form(db.Model):

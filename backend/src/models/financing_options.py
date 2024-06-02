@@ -1,4 +1,4 @@
-from src.utils.connection import db
+from app import db
 
 class FinancingOption(db.Model):
     __tablename__ = "financing_options"

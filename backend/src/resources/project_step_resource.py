@@ -2,7 +2,7 @@ from flask import request
 from flask_restful import Resource
 
 from src.utils.json import json_serial
-from src.utils.connection import db
+from app import db
 from src.models.project_step import ProjectStep
 from app import app
 
