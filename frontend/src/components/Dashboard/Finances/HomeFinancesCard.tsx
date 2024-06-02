@@ -9,14 +9,16 @@ import {
 import { FinancingDetail } from "@/utils/interfaces";
 import Link from "next/link";
 
-const HomeFinancesCard = ({financing_detail}: {financing_detail: FinancingDetail}) => {
+const HomeFinancesCard = ({
+  financing_detail,
+}: {
+  financing_detail: FinancingDetail;
+}) => {
   return (
     <Card className="w-full drop-shadow-md">
       <CardHeader>
         <CardTitle>Finances</CardTitle>
-        <CardDescription>
-          Review of financial status.
-        </CardDescription>
+        <CardDescription>Review of financial status.</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid gap-4">
@@ -24,19 +26,25 @@ const HomeFinancesCard = ({financing_detail}: {financing_detail: FinancingDetail
             <div>
               <p className="text-lg font-medium">Monthly Expense</p>
             </div>
-            <div className="text-2xl font-bold">${financing_detail.monthly_cost}</div>
+            <div className="text-2xl font-bold">
+              ${financing_detail.monthly_cost}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-lg font-medium">Total Contribution</p>
             </div>
-            <div className="text-2xl font-bold">${financing_detail.total_contribution}</div>
+            <div className="text-2xl font-bold">
+              ${financing_detail.total_contribution}
+            </div>
           </div>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-lg font-medium">Remaning Balance</p>
             </div>
-            <div className="text-2xl font-bold">${financing_detail.remaining_balance}</div>
+            <div className="text-2xl font-bold">
+              ${financing_detail.remaining_balance}
+            </div>
           </div>
         </div>
       </CardContent>

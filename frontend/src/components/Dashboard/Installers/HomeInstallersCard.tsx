@@ -10,7 +10,6 @@ import { Installer } from "@/utils/interfaces";
 import Link from "next/link";
 
 const HomeInstallersCard = ({ installer }: { installer: Installer }) => {
-  console.log("HOMEINSTALLERSCARDInstaller:", installer);
   return (
     <Card className="w-full drop-shadow-md">
       <CardHeader>

@@ -1,6 +1,4 @@
 import HomeProjectsCard from "./Projects/HomeProjectsCard";
-import HomeFinancesCard from "./Finances/HomeFinancesCard";
-import HomeInstallersCard from "./Installers/HomeInstallersCard";
 
 const HomeDashboard = () => {
   return (
