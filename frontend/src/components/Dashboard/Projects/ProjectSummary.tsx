@@ -31,10 +31,10 @@ const ProjectSummary = async ({ project }: { project: Project }) => {
         <HomeTimeline />
         <div className="m-2" />
         <div className="grid grid-cols-1 lg:grid-cols-2">
-          <div className="mr-4 ml-4 mt-4 lg:mt-0">
+          <div className="-mr-4 md:mr-4 -ml-4 md:ml-4 mt-4 lg:mt-0">
             <HomeFinancesCard financing_detail={project.financing_detail} />
           </div>
-          <div className="mr-4 ml-4 mt-4 lg:mt-0">
+          <div className="-mr-4 md:mr-4 -ml-4 md:ml-4 mt-4 lg:mt-0">
             <HomeInstallersCard installer={installer} />
           </div>
         </div>

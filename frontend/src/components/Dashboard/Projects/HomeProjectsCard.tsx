@@ -36,7 +36,7 @@ const HomeProjectsCard = async () => {
           A summary of your active projects and their status.
         </span>
       </div>
-      <div className="mb-6 rounded-lg h-screen pb-48 overflow-y-auto">
+      <div className="pb-40 md:pb-32 rounded-lg">
         {projects.length > 0 ? (
           projects.map((project) => (
             <ProjectSummary key={project.id} project={project} />
