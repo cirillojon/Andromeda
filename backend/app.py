@@ -33,15 +33,16 @@ from src.models.project import Project
 from src.models.task import Task
 from src.models.user import User
 
-from src.resources.user_resource import UserResource
-from src.resources.task_resource import TaskResource
-from src.resources.project_resource import ProjectResource
-from src.resources.financing_option_resource import FinancingOptionResource
 from src.resources.financing_detail_resource import FinancingDetailResource
-from src.resources.installer_resource import InstallerResource
-from src.resources.project_step_resource import ProjectStepResource
-from src.resources.form_resource import FormResource
+from src.resources.financing_option_resource import FinancingOptionResource
 from src.resources.form_data_resource import FormDataResource
+from src.resources.form_resource import FormResource
+from src.resources.hello_resource import HelloResource
+from src.resources.installer_resource import InstallerResource
+from src.resources.project_resource import ProjectResource
+from src.resources.project_step_resource import ProjectStepResource
+from src.resources.task_resource import TaskResource
+from src.resources.user_resource import UserResource
 
 # Initialize migrate
 migrate = Migrate(app, db)
@@ -71,14 +72,8 @@ else:
     logging.basicConfig(level=logging.DEBUG)
 
 
-# Define a simple message resource
-class Message(Resource):
-    def get(self):
-        return {"message": "Hello World!"}
-
-
 # Add the resources to the API
-api.add_resource(Message, "/api/hello")
+api.add_resource(HelloResource, "/api/hello")
 api.add_resource(TaskResource, "/api/task", "/api/task/<int:task_id>")
 api.add_resource(UserResource, "/api/user", "/api/user/<string:sso_token>")
 api.add_resource(
