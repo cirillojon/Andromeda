@@ -23,7 +23,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
-# Not a fan but removes half initialization error 
+# Not a fan but removes half initialization/early reference error 
+# Importing models for db to initialize tables
 from src.models.financing_details import FinancingDetail
 from src.models.financing_options import FinancingOption
 from src.models.installer import Installer
@@ -49,28 +50,6 @@ migrate = Migrate(app, db)
 
 # Initialize Flask-RESTful API
 api = Api(app)
-
-# Set up logging for the application
-if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-    c_handler = logging.StreamHandler(stream=sys.stdout)
-    c_handler.setLevel(logging.INFO)
-    c_handler.setFormatter(formatter)
-    
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
-    f_handler.setLevel(logging.INFO)
-    f_handler.setFormatter(formatter)
-    
-    gunicorn_logger.addHandler(f_handler)
-    gunicorn_logger.addHandler(c_handler)
-    
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(logging.DEBUG)
-else:
-    logging.basicConfig(level=logging.DEBUG)
-
 
 # Add the resources to the API
 api.add_resource(HelloResource, "/api/hello")
@@ -130,9 +109,28 @@ def initialize_app():
             app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
             app.logger.error("Error during table creation", exc_info=e)
 
+
 # Call the initialize_app function to set up the database
 initialize_app()
 
-# Run the Flask development server (only if running this script directly)
-if __name__ == "__main__":
+# Set up logging for the application
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    c_handler = logging.StreamHandler(stream=sys.stdout)
+    c_handler.setLevel(logging.INFO)
+    c_handler.setFormatter(formatter)
+    
+    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+    f_handler.setLevel(logging.INFO)
+    f_handler.setFormatter(formatter)
+    
+    gunicorn_logger.addHandler(f_handler)
+    gunicorn_logger.addHandler(c_handler)
+    
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(logging.DEBUG)
+else:
+    logging.basicConfig(level=logging.DEBUG)
     app.run(host="0.0.0.0", debug=True)
