@@ -6,6 +6,7 @@ from sqlalchemy import inspect
 from datetime import datetime, date
 from dotenv import load_dotenv
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import time
 import sys
 import os
@@ -33,24 +34,24 @@ api = Api(app)
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
+
     c_handler = logging.StreamHandler(stream=sys.stdout)
     c_handler.setLevel(logging.INFO)
     c_handler.setFormatter(formatter)
-    
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+
+    f_handler = TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
     f_handler.setLevel(logging.INFO)
     f_handler.setFormatter(formatter)
-    
+
     gunicorn_logger.addHandler(f_handler)
     gunicorn_logger.addHandler(c_handler)
-    
+
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(logging.DEBUG)
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-
+# Rest of your application code
 # Define a helper function for JSON serialization
 def json_serial(obj):
     """JSON serializer for objects not serializable by default json code"""
