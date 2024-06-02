@@ -36,23 +36,6 @@ if __name__ != "__main__":
 else:
     logging.basicConfig(level=logging.DEBUG)
 
-def create_status_enum():
-    with db.engine.connect() as conn:
-        # Check if the enum type exists
-        result = conn.execute(
-            text("SELECT 1 FROM pg_type WHERE typname = 'status_type'")
-        ).fetchone()
-        if not result:
-            # Only create the enum type if it does not exist
-            try:
-                conn.execute(
-                    text(
-                        "CREATE TYPE status_type AS ENUM ('Pending', 'Approved', 'Rejected')"
-                    )
-                )
-            except Exception as e:
-                app.logger.error("Error creating enum type: %s", e)
-
 
 # Define a helper function for JSON serialization
 def json_serial(obj):
@@ -984,8 +967,6 @@ def log_response_info(response):
 def initialize_app():
     with app.app_context():
         try:
-            # Create status enum type
-            create_status_enum()
             # Create database tables for all models
             db.create_all()
             app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
