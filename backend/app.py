@@ -432,7 +432,7 @@ class FinancingDetail(db.Model):
     payment_status = db.Column(db.String(50))
     payment_due_date = db.Column(db.Date)
     duration = db.Column(db.Integer)  # duration in months or years
-    project = db.relationship("Project", back_populates="financing_detail")
+
 
 class FinancingDetailResource(Resource):
     def get(self, project_id=None):
