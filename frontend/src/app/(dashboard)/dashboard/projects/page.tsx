@@ -42,10 +42,10 @@ const page = async () => {
         <span className="text-gray-500">Your active or pending projects.</span>
       </div>
       <div className="mb-6 rounded-lg">
-        {projects.filter((project) => project.status === "COMPLETE").length >
+        {projects.filter((project) => project.status === "PENDING").length >
         0 ? (
           projects
-            .filter((project) => project.status === "COMPLETE")
+            .filter((project) => project.status === "PENDING")
             .map((project) => (
               <div key={project.id} className="mb-4">
                 <Card>
