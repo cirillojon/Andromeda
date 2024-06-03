@@ -1,10 +1,7 @@
 "use client";
 import Image from "next/image";
-import React, { useRef, useState, FormEvent } from 'react';
-import { cn } from "@/lib/utils";
-import { Label } from "../../ui/label";
+import React, { useState } from 'react';
 import { Input } from "../../ui/input";
-import "./WaitlistPage.css";
 
 const WaitlistPage = () => {
 	const [isFormValid, setIsFormValid] = useState(false);
