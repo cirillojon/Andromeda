@@ -10,9 +10,9 @@ import { toast } from "sonner";
 const ContactPage = () => {
   const router = useRouter();
   const [isFormValid, setIsFormValid] = useState(false);
-  const [firstNameAestrisk, setFirstNameAestrisk] = useState(true);
-  const [lastNameAestrisk, setLastNameAestrisk] = useState(true);
-  const [emailAestrisk, setEmailAestrisk] = useState(true);
+  const [firstNameAsterisk, setFirstNameAsterisk] = useState(true);
+  const [lastNameAsterisk, setLastNameAsterisk] = useState(true);
+  const [emailAsterisk, setEmailAsterisk] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -27,9 +27,9 @@ const ContactPage = () => {
     const email = document.getElementById("email") as HTMLInputElement;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    setFirstNameAestrisk(!firstName.value);
-    setLastNameAestrisk(!lastName.value);
-    setEmailAestrisk(!emailRegex.test(email.value));
+    setFirstNameAsterisk(!firstName.value);
+    setLastNameAsterisk(!lastName.value);
+    setEmailAsterisk(!emailRegex.test(email.value));
 
     setIsFormValid(
       firstName.value.length > 0 &&
@@ -76,7 +76,7 @@ const ContactPage = () => {
             <LabelInputContainer>
               <div className="flex items-center">
                 <Label htmlFor="firstname">First name</Label>
-                <div hidden={!firstNameAestrisk}>
+                <div hidden={!firstNameAsterisk}>
                   <Asterisk className="text-red-500 h-4 w-4" />
                 </div>
               </div>
@@ -91,7 +91,7 @@ const ContactPage = () => {
             <LabelInputContainer>
               <div className="flex items-center">
                 <Label htmlFor="lastname">Last name</Label>
-                <div hidden={!lastNameAestrisk}>
+                <div hidden={!lastNameAsterisk}>
                   <Asterisk className="text-red-500 h-4 w-4 " />
                 </div>
               </div>
@@ -121,7 +121,7 @@ const ContactPage = () => {
           <LabelInputContainer className="mb-4">
             <div className="flex items-center">
               <Label htmlFor="email">Email Address</Label>
-              <div hidden={!emailAestrisk}>
+              <div hidden={!emailAsterisk}>
                 <Asterisk className="text-red-500 h-4 w-4 " />
               </div>
             </div>
@@ -131,7 +131,7 @@ const ContactPage = () => {
               type="email"
               name="email"
               onInput={checkFormValidity}
-              onEmptied={() => setEmailAestrisk(true)}
+              onEmptied={() => setEmailAsterisk(true)}
             />
           </LabelInputContainer>
           <button
