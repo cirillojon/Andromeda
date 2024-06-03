@@ -21,7 +21,7 @@ const Footer: React.FC = () => {
         
         <hr className="border-gray-700 mb-8" />
 
-        <div className="flex flex-col md:flex-row justify-between items-center">
+        <div className="flex flex-col md:flex-row justify-between md:items-center items-left">
           <div className="mb-4 md:mb-0">
             <h3 className="text-lg font-bold">Contact Us</h3>
             <p>Email: help@andromeda.com</p>

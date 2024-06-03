@@ -51,6 +51,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
