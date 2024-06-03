@@ -6,6 +6,7 @@ from sqlalchemy import inspect
 from dotenv import load_dotenv
 
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import time
 import sys
 import os
@@ -23,19 +24,20 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
     gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
-    formatter = logging.Formatter('[%(asctime)s] [PID %(process)d] %(levelname)s: %(message)s')
     
+    formatter = logging.Formatter('[%(asctime)s] [PID %(process)d] %(levelname)s: %(message)s')
+
     c_handler = logging.StreamHandler(stream=sys.stdout)
     c_handler.setLevel(logging.INFO)
     c_handler.setFormatter(formatter)
-    
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+
+    f_handler = TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
     f_handler.setLevel(logging.INFO)
     f_handler.setFormatter(formatter)
-    
+
     gunicorn_logger.addHandler(f_handler)
     gunicorn_logger.addHandler(c_handler)
-    
+
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
 
@@ -63,6 +65,7 @@ from src.resources.project_step_resource import ProjectStepResource
 from src.resources.task_resource import TaskResource
 from src.resources.user_resource import UserResource
 
+# initialization of db before continuing running server
 with app.app_context():
     try:
         # Create database tables for all models

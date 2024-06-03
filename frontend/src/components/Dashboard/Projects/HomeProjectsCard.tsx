@@ -1,11 +1,3 @@
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-  CardFooter,
-} from "@/components/ui/card";
 import fetchDbUser from "@/utils/api";
 import { DbUser, Project } from "@/utils/interfaces";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
@@ -34,8 +26,6 @@ const HomeProjectsCard = async () => {
     projects = await fetch(getProjectsUrl.toString())
       .then((res) => res.json())
       .then((data) => data);
-
-    console.log("HOMEPROJECTS CARD:", projects);
   }
 
   return (
@@ -46,7 +36,7 @@ const HomeProjectsCard = async () => {
           A summary of your active projects and their status.
         </span>
       </div>
-      <div className="mb-6 rounded-lg h-screen pb-48 overflow-y-auto">
+      <div className="pb-40 md:pb-32 rounded-lg">
         {projects.length > 0 ? (
           projects.map((project) => (
             <ProjectSummary key={project.id} project={project} />
@@ -75,36 +65,3 @@ const HomeProjectsCard = async () => {
 };
 
 export default HomeProjectsCard;
-
-/*
-
-  <Card className="w-full drop-shadow-md h-[80vh]">
-      <CardHeader>
-        <CardTitle>Active Projects Summary</CardTitle>
-        <CardDescription>
-          A summary of your active projects and their status.
-        </CardDescription>
-        <div className="text-gray-500 dark:text-gray-400 border-b-2 w-full"/>
-      </CardHeader>
-      <CardContent className="h-96 overflow-y-auto">
-        {projects.length > 0 ? (
-          projects.map((project) => (
-            <ProjectSummary key={project.id} project={project} />
-          ))
-        ) : (
-          <div className="text-gray-500 dark:text-gray-400 text-sm">
-            You have no active projects.
-          </div>
-        )}
-      </CardContent>
-      <CardFooter>
-        <Link
-          href="/dashboard/projects"
-          className="text-blue-500 hover:underline"
-          prefetch={false}
-        >
-          View all projects
-        </Link>
-      </CardFooter>
-    </Card>
-*/
