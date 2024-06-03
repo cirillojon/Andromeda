@@ -12,6 +12,7 @@ const WaitlistPage = () => {
 	const checkFormValidity = () => {
 		const email = document.getElementById("email") as HTMLInputElement;
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		console.log(isFormValid);
 
 		setIsFormValid(
 			emailRegex.test(email.value)
@@ -34,7 +35,7 @@ const WaitlistPage = () => {
 						onInput={checkFormValidity}
 						onEmptied={() => setIsFormValid(false)}
 					/>
-					<button className="ml-2 bg-indigo-400 py-2 px-4 rounded text-white hover:bg-indigo-600">
+					<button disabled={!isFormValid} className="ml-2 py-2 px-4 rounded text-white bg-indigo-400 hover:bg-indigo-600">
 						Subscribe
 					</button>
 				</div>
