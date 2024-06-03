@@ -3,7 +3,7 @@ from app import db
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
     id = db.Column(db.Integer, primary_key=True)
-    project_id = db.Column(db.Integer, db.ForeignKey("projects.id"))
+    project_id = db.Column(db.Integer, db.ForeignKey("projects.id", ondelete="CASCADE"))
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     financing_option_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     total_cost = db.Column(db.Numeric(10, 2))
