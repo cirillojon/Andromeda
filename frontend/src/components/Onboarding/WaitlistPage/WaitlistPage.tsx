@@ -20,14 +20,6 @@ const WaitlistPage = () => {
 		
 	return (
 		<div className="grid grid-cols-1 grid-rows-1 items-center justify-center max-w-fit h-full md:grid-cols-2 drop-shadow-2xl mt-16">
-			<div className="flex md:w-full md:h-full flex-col items-left w-0 h-0">
-				<Image
-					src="/assets/hero/florida_better.jpg"
-					alt="Florida Map"
-					width={500}
-					height={200}
-				/>
-			</div>
 			<div className="flex flex-col mt-0 mb-14 md:mb-0">
 				<h1 className="scaling-header-text md:mb-10">
 					Join Our Waitlist
@@ -46,14 +38,22 @@ const WaitlistPage = () => {
 						Subscribe
 					</button>
 				</div>
-			<div className="flex flex-col items-center text-center">
-				<span className="scaling-text w-2/3 mt-8">
-					Romeo is initially launching in the Tampa and Orlando areas. Enter your email above to be alerted when we go live!
-				</span>
-				<span className="scaling-text w-2/3 mt-4">
-					The first 100 homeowners to sign-up will receive a promotional offer upon launch.
-				</span>
+				<div className="flex flex-col items-center text-center">
+					<span className="scaling-text w-2/3 mt-8">
+						Romeo is initially launching in the Tampa and Orlando areas. Enter your email above to be alerted when we go live!
+					</span>
+					<span className="scaling-text w-2/3 mt-4">
+						The first 100 homeowners to sign-up will receive a promotional offer upon launch.
+					</span>
+				</div>
 			</div>
+			<div className="flex md:w-full md:h-full flex-col items-end w-0 h-0">
+				<Image
+					src="/assets/hero/florida_better.jpg"
+					alt="Florida Map"
+					width={500}
+					height={200}
+				/>
 			</div>
 			
 		</div>
