@@ -47,16 +47,16 @@ const LandingPage = () => {
             </span>
           </div>
           <div className="flex flex-col items-center mb-6 md:mb-0">
+            <RegisterLink
+              className={cn(buttonVariants({ variant: "default" }), "mt-4")}
+            >
+              Get Started
+            </RegisterLink>
             <a href="/waitlist">
-              <button className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600">
+              <button className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600 mt-4">
                 Join Waitlist
               </button>
             </a>
-            {/* <RegisterLink
-              className={cn(buttonVariants({ variant: "default" }), "")}
-            >
-              Get Started
-            </RegisterLink> */}
           </div>
         </div>
         <div className="flex flex-col h-full md:h-screen items-center justify-center bg-gradient-to-t from-transparent to-indigo-200 mb-20 md:mb-0">
