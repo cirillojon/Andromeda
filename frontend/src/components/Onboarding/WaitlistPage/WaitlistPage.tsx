@@ -36,7 +36,7 @@ const WaitlistPage = () => {
 				<div className="flex m-auto md:mb-10">
 					<Input
 						id="email"
-						placeholder="homeimprovement@test.com"
+						placeholder="Email Address"
 						type="email"
 						name="email"
 						onInput={checkFormValidity}
