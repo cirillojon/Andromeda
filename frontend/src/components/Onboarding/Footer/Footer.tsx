@@ -2,7 +2,7 @@ import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="bg-gradient-to-t from-indigo-400 to-indigo-100 text-white py-8">
+    <footer className="bg-gradient-to-t from-indigo-400 to-indigo-100 text-white py-8" style={{bottom:0}}>
       <div className="container mx-auto px-4 text-black">
         <div className="text-left mb-8">
           <h2 className="text-2xl font-bold mb-2">Take control with <span className="text-gradient text-blue-400">Andromeda</span></h2>

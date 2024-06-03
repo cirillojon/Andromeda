@@ -71,7 +71,7 @@ html {
 	margin-top: 5vh;
     width: 100vw;
     height: 100vh;
-    object-fit: cover; /* Ensure the image covers the entire space */
+    object-fit: cover;
     z-index: -1;
 	margin-bottom: -50vh; 
 }
