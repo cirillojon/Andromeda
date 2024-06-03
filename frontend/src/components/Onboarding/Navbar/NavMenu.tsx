@@ -80,7 +80,7 @@ const NavMenu = () => {
             <Button variant={"ghost"}>FAQ</Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Button variant={"ghost"}>Mission</Button>
+            <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <Link href="/contact" legacyBehavior passHref>

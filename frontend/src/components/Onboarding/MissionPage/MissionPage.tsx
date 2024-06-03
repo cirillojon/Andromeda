@@ -11,7 +11,7 @@ const MissionPage = () => {
 					Mission
 				</h1>
 				<div className="flex flex-col items-center text-left">
-					<span className="scaling-text w-2/3 mt-8">
+					<span className="scaling-text w-2/3 mt-10">
 					Andromeda empowers homeowners to take control of the design, customization, and 
 					financing of high-value projects such as solar systems, batteries, roofs, and HVAC. 
 					</span>
@@ -21,7 +21,7 @@ const MissionPage = () => {
 					to track progress of projects. 
 					</span>
 					<a href="/contact">
-						<button className="mt-4 py-2 px-4 rounded bg-indigo-400 hover:bg-indigo-600">
+						<button className="mt-10 py-2 px-4 rounded bg-indigo-400 hover:bg-indigo-600">
 							Contact Us
 						</button>
 					</a>
