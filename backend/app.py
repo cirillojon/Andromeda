@@ -20,7 +20,26 @@ app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-db = SQLAlchemy(app)
+if __name__ != "__main__":
+    gunicorn_logger = logging.getLogger("gunicorn.error")
+    gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
+    formatter = logging.Formatter('[%(asctime)s] [PID %(process)d] %(levelname)s: %(message)s')
+    
+    c_handler = logging.StreamHandler(stream=sys.stdout)
+    c_handler.setLevel(logging.INFO)
+    c_handler.setFormatter(formatter)
+    
+    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
+    f_handler.setLevel(logging.INFO)
+    f_handler.setFormatter(formatter)
+    
+    gunicorn_logger.addHandler(f_handler)
+    gunicorn_logger.addHandler(c_handler)
+    
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
+db = SQLAlchemy()
 
 # Not a fan but removes half initialization/early reference error 
 # Importing models for db to initialize tables
@@ -43,6 +62,19 @@ from src.resources.project_resource import ProjectResource
 from src.resources.project_step_resource import ProjectStepResource
 from src.resources.task_resource import TaskResource
 from src.resources.user_resource import UserResource
+
+with app.app_context():
+    try:
+        # Create database tables for all models
+        db.init_app(app)
+        db.create_all()
+        app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
+        inspector = inspect(db.engine)
+        tables = inspector.get_table_names(schema="public")
+        app.logger.info(f"Tables in the database: {tables}")
+    except Exception as e:
+        app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
+        app.logger.error("Error during table creation", exc_info=e)
 
 # Initialize migrate
 migrate = Migrate(app, db)
@@ -94,42 +126,6 @@ def log_response_info(response):
     return response
 
 
-# Function to initialize the application
-def initialize_app():
-    with app.app_context():
-        try:
-            # Create database tables for all models
-            db.create_all()
-            app.logger.info(f"Connected to: {app.config['SQLALCHEMY_DATABASE_URI']}")
-            inspector = inspect(db.engine)
-            tables = inspector.get_table_names(schema="public")
-            app.logger.info(f"Tables in the database: {tables}")
-        except Exception as e:
-            app.logger.error(f"Failed trying to creating all for Worker {os.getpid()}")
-            app.logger.error("Error during table creation", exc_info=e)
-
-
-# Call the initialize_app function to set up the database
-initialize_app()
-
-# Set up logging for the application
-if __name__ != "__main__":
-    gunicorn_logger = logging.getLogger("gunicorn.error")
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    
-    c_handler = logging.StreamHandler(stream=sys.stdout)
-    c_handler.setLevel(logging.INFO)
-    c_handler.setFormatter(formatter)
-    
-    f_handler = logging.handlers.TimedRotatingFileHandler(filename=f"/etc/logs/{os.getpid()}-gunicorn-worker", when="d", interval=1)
-    f_handler.setLevel(logging.INFO)
-    f_handler.setFormatter(formatter)
-    
-    gunicorn_logger.addHandler(f_handler)
-    gunicorn_logger.addHandler(c_handler)
-    
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(logging.DEBUG)
-else:
+if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
     app.run(host="0.0.0.0", debug=True)
