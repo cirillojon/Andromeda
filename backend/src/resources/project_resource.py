@@ -28,7 +28,7 @@ class ProjectResource(Resource):
 
     def post(self):
         data = request.get_json()
-        required_fields = {"project_name", "project_type", "financing_detail"}
+        required_fields = {"project_name", "project_type", "financing_detail", "user_id"}
         missing_fields = required_fields - set(data.keys())
         if missing_fields:
             return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
