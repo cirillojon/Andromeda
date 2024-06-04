@@ -13,19 +13,24 @@ import HomeInstallersCard from "../Installers/HomeInstallersCard";
 import HomeTimeline from "../HomeTimeline";
 
 const ProjectSummary = async ({ project }: { project: Project }) => {
-  const getInstallerUrl = new URL(
-    `/api/installer/${project.installer_id}`,
-    process.env.NEXT_FRONTEND_BASE_URL
-  );
-  let installer: Installer = await fetch(getInstallerUrl.toString())
-    .then((res) => res.json())
-    .then((data) => data);
+  let getInstallerUrl = "";
+  let installer: Installer | null = null;
+  if(project.installer_id){
+    getInstallerUrl = new URL(
+      `/api/installer/${project.installer_id}`,
+      process.env.NEXT_FRONTEND_BASE_URL
+    ).toString();
+
+    installer = await fetch(getInstallerUrl)
+      .then((res) => res.json())
+      .then((data) => data);
+  } 
 
   return (
     <Card className="mb-6">
       <CardHeader className="bg-gray-900 text-white rounded-tr-md rounded-tl-md mb-4">
         <CardTitle>{project.project_name}</CardTitle>
-        <CardDescription>{project.status}</CardDescription>
+        <CardDescription>{project?.status}</CardDescription>
       </CardHeader>
       <CardContent>
         <HomeTimeline />
