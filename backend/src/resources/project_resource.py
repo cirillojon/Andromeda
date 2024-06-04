@@ -3,6 +3,7 @@ from flask_restful import Resource
 
 from app import db
 from src.models.project import Project
+from src.models.project_step import ProjectStep
 from src.models.financing_details import FinancingDetail
 from app import app
 
@@ -112,6 +113,10 @@ class ProjectResource(Resource):
 
     def delete(self, project_id):
         try:
+            steps = ProjectStep.query.filter_by(project_id=project_id).all()
+            if steps:
+                return {"message": "Project Steps must be deleted before deleting project"}, 400
+
             project = Project.query.get(project_id)
             if not project:
                 return {"message": "Project not found"}, 404
