@@ -1,4 +1,5 @@
 from app import db
+from src.utils.json import safe_json_serial
 
 class FinancingDetail(db.Model):
     __tablename__ = "financing_details"
@@ -16,3 +17,16 @@ class FinancingDetail(db.Model):
     payment_due_date = db.Column(db.Date)
     duration = db.Column(db.Integer)  # duration in months or years
 
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "total_cost": str(self.total_cost),
+            "monthly_cost": str(self.monthly_cost),
+            "down_payment": str(self.down_payment),
+            "total_contribution": str(self.total_contribution),
+            "remaining_balance": str(self.remaining_balance),
+            "interest_rate": str(self.interest_rate),
+            "payment_status": self.payment_status,
+            "payment_due_date": safe_json_serial(self.payment_due_date),
+            "duration": self.duration,
+        }
