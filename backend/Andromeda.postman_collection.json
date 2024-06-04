@@ -384,7 +384,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/financing_detail/project/40",
+							"raw": "http://167.71.165.9/api/financing_detail/project/94",
 							"protocol": "http",
 							"host": [
 								"167",
@@ -396,7 +396,7 @@
 								"api",
 								"financing_detail",
 								"project",
-								"40"
+								"94"
 							]
 						}
 					},
@@ -465,6 +465,38 @@
 					"response": []
 				},
 				{
+					"name": "update installer",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"testInstaller\",\r\n    \"contact_email\": \"test@aol.com\",\r\n    \"contact_phone\": \"1234567890\",\r\n    \"contact_agent\": \"fred\",\r\n    \"project_type\": \"solar\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://167.71.165.9/api/installer/1",
+							"protocol": "http",
+							"host": [
+								"167",
+								"71",
+								"165",
+								"9"
+							],
+							"path": [
+								"api",
+								"installer",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "new installer",
 					"request": {
 						"method": "POST",
@@ -498,6 +530,109 @@
 			]
 		},
 		{
+			"name": "Waitlist",
+			"item": [
+				{
+					"name": "get waitlist",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"testInstaller\",\r\n    \"contact_email\": \"test@aol.com\",\r\n    \"contact_phone\": \"1234567890\",\r\n    \"contact_agent\": \"fred\",\r\n    \"project_type\": \"solar\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://167.71.165.9/api/waitlist/9",
+							"protocol": "http",
+							"host": [
+								"167",
+								"71",
+								"165",
+								"9"
+							],
+							"path": [
+								"api",
+								"waitlist",
+								"9"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update waitlist",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"location\": \"88\",\r\n    \"service_interest\": \"space\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://167.71.165.9/api/waitlist/8",
+							"protocol": "http",
+							"host": [
+								"167",
+								"71",
+								"165",
+								"9"
+							],
+							"path": [
+								"api",
+								"waitlist",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new waitlist",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"test\",\r\n    \"contact_email\": \"test@aol.com\",\r\n    \"contact_phone\": \"1234567890\",\r\n    \"location\": \"test\",\r\n    \"service_interest\": \"test\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://167.71.165.9/api/waitlist",
+							"protocol": "http",
+							"host": [
+								"167",
+								"71",
+								"165",
+								"9"
+							],
+							"path": [
+								"api",
+								"waitlist"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Projects",
 			"item": [
 				{
@@ -507,7 +642,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"project_name\": \"test project\",\r\n    \"project_address\": \"123 sesame street\",\r\n    \"project_type\": \"test\",\r\n    \"user_id\": 598,\r\n    \"installer_id\": 1,\r\n    \"site_survey_date\": \"2023-01-02\",\r\n    \"inspection_date\": \"2023-01-03\",\r\n    \"install_start_date\": \"2023-01-04\",\r\n    \"end_date\": \"2023-01-05\",\r\n    \"status\": \"PENDING\",\r\n    \"financing_type_id\": 1,\r\n    \"financing_detail\" : {}\r\n}",
+							"raw": "{\r\n    \"project_name\": \"test project\",\r\n    \"project_address\": \"123 sesame street\",\r\n    \"house_sqft\": 5,\r\n    \"project_type\": \"test\",\r\n    \"user_id\": 16,\r\n    \"installer_id\": 1,\r\n    \"site_survey_date\": \"1/2/3\",\r\n    \"inspection_date\": \"1/2/3\",\r\n    \"install_start_date\": \"2020-01-02\",\r\n    \"end_date\": \"2020-01-12\",\r\n    \"status\": \"PENDING\",\r\n    \"hvac_details\": \"no\",\r\n    \"solar_electric_bill_kwh\": 5,\r\n    \"solar_panel_amount\": 1,\r\n    \"solar_panel_wattage\": 1,\r\n    \"solar_yearly_kwh\": 1,\r\n    \"solar_battery_type\": \"tesla\",\r\n    \"solar_microinverter\": \"bad\",\r\n    \"roof_angle\": 2.0,\r\n    \"roof_current_type\": \"good\",\r\n    \"roof_new_type\": \"new\",\r\n    \"roof_current_health\": \"bad\",\r\n    \"financing_type_id\": 1,\r\n    \"financing_detail\": {}\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -549,7 +684,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/project/user/598",
+							"raw": "http://167.71.165.9/api/project/user/16",
 							"protocol": "http",
 							"host": [
 								"167",
@@ -561,7 +696,7 @@
 								"api",
 								"project",
 								"user",
-								"598"
+								"16"
 							]
 						}
 					},
@@ -585,7 +720,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/project/39",
+							"raw": "http://167.71.165.9/api/project/94",
 							"protocol": "http",
 							"host": [
 								"167",
@@ -596,7 +731,7 @@
 							"path": [
 								"api",
 								"project",
-								"39"
+								"94"
 							]
 						}
 					},
@@ -609,7 +744,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"project_name\": \"BRIAN LEACH\",\r\n    \"project_address\": \"123 sesame street\",\r\n    \"start_date\": \"10/23/2000\",\r\n    \"end_date\": \"10/23/2000\",\r\n    \"status\": \"PENDING\",\r\n    \"project_type\": \"test\",\r\n    \"financing_type_id\": 1,\r\n    \"user_id\": 1\r\n}",
+							"raw": "{\r\n    \"status\": \"PENDING\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -617,7 +752,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/project",
+							"raw": "http://167.71.165.9/api/project/94",
 							"protocol": "http",
 							"host": [
 								"167",
@@ -627,7 +762,8 @@
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"94"
 							]
 						}
 					},
@@ -648,7 +784,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/project/8",
+							"raw": "http://167.71.165.9/api/project/93",
 							"protocol": "http",
 							"host": [
 								"167",
@@ -659,7 +795,7 @@
 							"path": [
 								"api",
 								"project",
-								"8"
+								"93"
 							]
 						}
 					},
