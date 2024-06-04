@@ -49,6 +49,8 @@ class FinancingDetailResource(Resource):
                 for detail in details
             ]
 
+    # Currently do not use
+    """
     def post(self):
         data = request.get_json()
         if (
@@ -82,7 +84,8 @@ class FinancingDetailResource(Resource):
             app.logger.exception("Error occurred while creating a financing detail.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-
+    """
+    
     def put(self, project_id):
         try:
             project_id = int(project_id)
@@ -124,6 +127,8 @@ class FinancingDetailResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
+    # Currently do not use
+    """
     def delete(self, project_id):
         detail = FinancingDetail.query.get(project_id)
         if not detail:
@@ -136,3 +141,4 @@ class FinancingDetailResource(Resource):
             app.logger.exception("Error occurred while deleting the financing detail.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
+    """

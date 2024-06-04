@@ -8,7 +8,7 @@ from app import app
 
 
 class ProjectStepResource(Resource):
-    def get(self, step_id=None):
+    def get(self, step_id=None, project_id=None):
         if step_id:
             step = ProjectStep.query.get(step_id)
             if not step:
@@ -20,8 +20,10 @@ class ProjectStepResource(Resource):
                 "progress_step": step.progress_step,
                 "step_date": json_serial(step.step_date),
             }
-        else:
-            steps = ProjectStep.query.all()
+        elif project_id:
+            steps = ProjectStep.query.filter_by(project_id=project_id).all()
+            if not steps:
+                return {"message": "No forms found for user"}, 404
             return [
                 {
                     "id": step.id,
@@ -32,10 +34,17 @@ class ProjectStepResource(Resource):
                 }
                 for step in steps
             ]
+        else:
+            return {"message": "Invalid request"}, 400
 
     def post(self):
         data = request.get_json()
-        if not data or "installer_id" not in data or "project_id" not in data or "progress_step" not in data:
+        if (
+            not data
+            or "installer_id" not in data
+            or "project_id" not in data
+            or "progress_step" not in data
+        ):
             return {"message": "Invalid data"}, 400
         new_step = ProjectStep(
             installer_id=data["installer_id"],
