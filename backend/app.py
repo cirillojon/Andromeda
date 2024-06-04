@@ -5,7 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import inspect
 from dotenv import load_dotenv
 
-
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import time
@@ -135,6 +134,5 @@ def log_response_info(response):
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
     logging.basicConfig(level=logging.DEBUG)
     app.run(host="0.0.0.0", debug=True)
