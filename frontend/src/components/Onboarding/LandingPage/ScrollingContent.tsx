@@ -11,6 +11,7 @@ interface ScrollingContentProps {
 
 const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
   const [activeCard, setActiveCard] = React.useState(0);
+  const [scrollVal, setScrollVal] = React.useState(0);
   const [sticky, setSticky] = React.useState(true);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -19,11 +20,17 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
     if (ref.current) {
       const currentScrollHeight = (window.scrollY - ref.current.offsetTop);
       if (currentScrollHeight > -20) {
-        setSticky(true);
+        console.log(currentScrollHeight + " " + (ref.current.clientHeight - window.innerHeight));
+        if (currentScrollHeight < (ref.current.clientHeight - window.innerHeight)) {
+          setSticky(true);
+        } else {
+          setScrollVal(ref.current.clientHeight - window.innerHeight);
+          setSticky(false);
+        }
       } else {
+        setScrollVal(0);
         setSticky(false);
       }
-
       const cards = ref.current.querySelectorAll('.scrolling-content');
       cards.forEach((card, index) => {
         const rect = card.getBoundingClientRect();
@@ -39,9 +46,12 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
 
     window.addEventListener('scroll', handleScroll);
 
+    window.addEventListener('resize', handleScroll);
+
     // Clean up the event listener on component unmount
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
     };
   }, []);
 
@@ -54,7 +64,7 @@ const ScrollingContent: React.FC<ScrollingContentProps> = ({ sections }) => {
         width={10000}
         height={10000}
         className={`${sticky ? "sticky" : ''} full-screen-image`}
-        style={{ position: sticky ? 'sticky' : 'static', top: sticky ? '0' : 'auto' }}
+        style={{ position: sticky ? 'sticky' : 'relative', top: sticky ? '0' : scrollVal }}
       />
       {sections.map((section, index) => (
         <div key={index}>
