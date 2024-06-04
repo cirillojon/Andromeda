@@ -20,12 +20,12 @@ class FinancingDetail(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "total_cost": str(self.total_cost),
-            "monthly_cost": str(self.monthly_cost),
-            "down_payment": str(self.down_payment),
-            "total_contribution": str(self.total_contribution),
-            "remaining_balance": str(self.remaining_balance),
-            "interest_rate": str(self.interest_rate),
+            "total_cost": safe_json_serial(self.total_cost),
+            "monthly_cost": safe_json_serial(self.monthly_cost),
+            "down_payment": safe_json_serial(self.down_payment),
+            "total_contribution": safe_json_serial(self.total_contribution),
+            "remaining_balance": safe_json_serial(self.remaining_balance),
+            "interest_rate": safe_json_serial(self.interest_rate),
             "payment_status": self.payment_status,
             "payment_due_date": safe_json_serial(self.payment_due_date),
             "duration": self.duration,
