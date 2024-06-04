@@ -1,7 +1,7 @@
 from flask import request
 from flask_restful import Resource
 
-from src.utils.json import safe_json_serial
+from src.utils.json import json_serial, safe_json_serial
 from app import db
 from src.models.project import Project
 from src.models.financing_details import FinancingDetail
@@ -17,8 +17,10 @@ class ProjectResource(Resource):
             return [
                 {
                     "id": project.id,
+                    "created_at": json_serial(project.created_at),
                     "project_name": project.project_name,
                     "project_address": project.project_address,
+                    "house_sqft": project.house_sqft,
                     "project_type": project.project_type,
                     "user_id": project.user_id,
                     "installer_id": project.installer_id,
@@ -27,6 +29,17 @@ class ProjectResource(Resource):
                     "install_start_date": safe_json_serial(project.install_start_date),
                     "end_date": safe_json_serial(project.end_date),
                     "status": project.status,
+                    "hvac_details": project.hvac_details,
+                    "solar_electric_bill_kwh": project.solar_electric_bill_kwh,
+                    "solar_panel_amount": project.solar_panel_amount,
+                    "solar_panel_wattage": project.solar_panel_wattage,
+                    "solar_yearly_kwh": project.solar_yearly_kwh,
+                    "solar_battery_type": project.solar_battery_type,
+                    "solar_microinverter": project.solar_microinverter,
+                    "roof_angle": project.roof_angle,
+                    "roof_current_type": project.roof_current_type,
+                    "roof_new_type":project.roof_new_type,
+                    "roof_current_health": project.roof_current_health,
                     "financing_type_id": project.financing_type_id,
                     "financing_detail": {
                         "id": project.financing_detail.id,
@@ -49,8 +62,10 @@ class ProjectResource(Resource):
                 return {"message": "Project not found"}, 404
             return {
                 "id": project.id,
+                "created_at": json_serial(project.created_at),
                 "project_name": project.project_name,
                 "project_address": project.project_address,
+                "house_sqft": project.house_sqft,
                 "project_type": project.project_type,
                 "user_id": project.user_id,
                 "installer_id": project.installer_id,
@@ -59,6 +74,17 @@ class ProjectResource(Resource):
                 "install_start_date": safe_json_serial(project.install_start_date),
                 "end_date": safe_json_serial(project.end_date),
                 "status": project.status,
+                "hvac_details": project.hvac_details,
+                "solar_electric_bill_kwh": project.solar_electric_bill_kwh,
+                "solar_panel_amount": project.solar_panel_amount,
+                "solar_panel_wattage": project.solar_panel_wattage,
+                "solar_yearly_kwh": project.solar_yearly_kwh,
+                "solar_battery_type": project.solar_battery_type,
+                "solar_microinverter": project.solar_microinverter,
+                "roof_angle": project.roof_angle,
+                "roof_current_type": project.roof_current_type,
+                "roof_new_type":project.roof_new_type,
+                "roof_current_health": project.roof_current_health,
                 "financing_type_id": project.financing_type_id,
                 "financing_detail": {
                     "id": project.financing_detail.id,
@@ -79,7 +105,7 @@ class ProjectResource(Resource):
     def post(self):
         data = request.get_json()
         if not data or "project_name" not in data or "project_type" not in data:
-            return {"message": "Invalid data"}, 400
+            return {"message": "Invalid data. Missing required fields."}, 400
 
         new_project = Project(
             project_name=data["project_name"],
@@ -93,6 +119,18 @@ class ProjectResource(Resource):
             end_date=data.get("end_date"),
             status=data.get("status"),
             financing_type_id=data.get("financing_type_id"),
+            hvac_details=data.get("hvac_details"),
+            house_sqft=data.get("house_sqft"),
+            solar_electric_bill_kwh=data.get("solar_electric_bill_kwh"),
+            solar_panel_amount=data.get("solar_panel_amount"),
+            solar_panel_wattage=data.get("solar_panel_wattage"),
+            solar_yearly_kwh=data.get("solar_yearly_kwh"),
+            solar_battery_type=data.get("solar_battery_type"),
+            solar_microinverter=data.get("solar_microinverter"),
+            roof_angle = data.get("roof_angle"),
+            roof_current_type = data.get("roof_current_type"),
+            roof_new_type = data.get("roof_new_type"),
+            roof_current_health = data.get("roof_current_health"),
         )
 
         if "financing_detail" in data:
@@ -147,6 +185,18 @@ class ProjectResource(Resource):
         project.end_date = data.get("end_date", project.end_date)
         project.status = data.get("status", project.status)
         project.financing_type_id = data.get("financing_type_id", project.financing_type_id)
+        project.hvac_details = data.get("hvac_details", project.hvac_details),
+        project.house_sqft = data.get("house_sqft", project.house_sqft),
+        project.solar_electric_bill_kwh = data.get("solar_electric_bill_kwh", project.solar_electric_bill_kwh),
+        project.solar_panel_amount = data.get("solar_panel_amount", project.solar_panel_amount),
+        project.solar_panel_wattage = data.get("solar_panel_wattage", project.solar_panel_wattage),
+        project.solar_yearly_kwh = data.get("solar_yearly_kwh", project.solar_yearly_kwh),
+        project.solar_battery_type = data.get("solar_battery_type", project.solar_battery_type),
+        project.solar_microinverter = data.get("solar_microinverter", project.solar_microinverter),
+        project.roof_angle = data.get("roof_angle", project.roof_angle),
+        project.roof_current_type = data.get("roof_current_type", project.roof_current_type),
+        project.roof_new_type = data.get("roof_new_type", project.roof_new_type),
+        project.roof_current_health = data.get("roof_current_health", project.roof_current_health),
         try:
             db.session.commit()
             return {"message": "Project updated"}, 200

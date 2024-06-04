@@ -23,7 +23,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
-    gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
+    if len(gunicorn_logger.handlers) > 0:
+        gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
     
     formatter = logging.Formatter('[%(asctime)s] [PID %(process)d] %(levelname)s: %(message)s')
 
@@ -64,6 +65,7 @@ from src.resources.project_resource import ProjectResource
 from src.resources.project_step_resource import ProjectStepResource
 from src.resources.task_resource import TaskResource
 from src.resources.user_resource import UserResource
+from src.resources.waitlist_resource import WaitlistResource
 
 # initialization of db before continuing running server
 with app.app_context():
@@ -100,7 +102,9 @@ api.add_resource(ProjectResource, "/api/project", "/api/project/user/<int:user_i
 api.add_resource(FinancingOptionResource, "/api/financing_option", "/api/financing_option/<int:option_id>")
 api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/project/<int:project_id>")
 api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
+api.add_resource(WaitlistResource, "/api/waitlist", "/api/waitlist/<int:waitlist_id>")
 api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>")
+
 
 
 # Log all incoming requests
