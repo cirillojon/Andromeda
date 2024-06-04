@@ -23,7 +23,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
-    gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
+    if len(gunicorn_logger.handlers) > 0:
+        gunicorn_logger.removeHandler(gunicorn_logger.handlers[0])
     
     formatter = logging.Formatter('[%(asctime)s] [PID %(process)d] %(levelname)s: %(message)s')
 
