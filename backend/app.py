@@ -103,8 +103,7 @@ api.add_resource(FinancingOptionResource, "/api/financing_option", "/api/financi
 api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financing_detail/project/<int:project_id>")
 api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
 api.add_resource(WaitlistResource, "/api/waitlist", "/api/waitlist/<int:waitlist_id>")
-api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>")
-
+api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>", "/api/project_step/project/<int:project_id>",),
 
 
 # Log all incoming requests
