@@ -77,6 +77,14 @@ const nextConfig = {
         destination: `${remote_url}/api/installer/:installer_id`,
       },
       {
+        source: "/api/waitlist",
+        destination: `${remote_url}/api/waitlist`,
+      },
+      {
+        source: "/api/waitlist/:waitlist_id",
+        destination: `${remote_url}/api/waitlist/:waitlist_id`,
+      },
+      {
         source: "/api/project_step",
         destination: `${remote_url}/api/project_step`,
       },
