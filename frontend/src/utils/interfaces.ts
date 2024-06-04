@@ -10,6 +10,7 @@ export interface Project {
     id: string; // not null
     project_name: string; // not null
     project_type: string; // not null
+    financing_detail: FinancingDetail; // not null
     project_address?: string;
     end_date?: string;
     status?: string;
@@ -33,7 +34,6 @@ export interface Project {
     roof_current_type?: string;
     roof_new_type?: string;
     roof_current_health?: string;
-    financing_detail?: FinancingDetail;
     message?: string;
 }
 
