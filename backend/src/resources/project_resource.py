@@ -104,8 +104,11 @@ class ProjectResource(Resource):
 
     def post(self):
         data = request.get_json()
-        if not data or "project_name" not in data or "project_type" not in data:
-            return {"message": "Invalid data. Missing required fields."}, 400
+        required_fields = {"project_name", "project_type", "financing_detail"}
+        missing_fields = required_fields - set(data.keys())
+        if missing_fields:
+            message = f"Missing required fields: {', '.join(missing_fields)}"
+            return {"message": message}, 400
 
         new_project = Project(
             project_name=data["project_name"],
