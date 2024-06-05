@@ -690,7 +690,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://167.71.165.9/api/project",
+							"raw": "http://167.71.165.9/api/project?user_id=16",
 							"protocol": "http",
 							"host": [
 								"167",

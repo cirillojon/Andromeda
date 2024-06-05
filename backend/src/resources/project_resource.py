@@ -2,6 +2,7 @@ from flask import request
 from flask_restful import Resource
 
 from app import db
+from src.models.form import Form, FormData
 from src.models.project import Project
 from src.models.project_step import ProjectStep
 from src.models.financing_details import FinancingDetail
@@ -28,8 +29,18 @@ class ProjectResource(Resource):
             return {"message": "Internal server error"}, 500
 
     def post(self):
-        data = request.get_json()
-        required_fields = {"project_name", "project_type", "financing_detail", "user_id"}
+        user_id = request.args.get('user_id')
+        
+        # Fetch the latest form data for the user
+        form_data_entry = FormData.query.join(Form).filter(Form.user_id == user_id).order_by(FormData.created_at.desc()).first()
+        
+        if not form_data_entry:
+            return {"message": "No form data found for the user"}, 404
+
+        data = form_data_entry.data
+
+        # Validate if all required fields are present in the form data
+        required_fields = {"project_name", "project_type", "user_id", "financing_detail"}
         missing_fields = required_fields - set(data.keys())
         if missing_fields:
             return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
