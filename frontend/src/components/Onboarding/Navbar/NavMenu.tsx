@@ -77,7 +77,7 @@ const NavMenu = () => {
             </NavigationMenuContent>
           </NavigationMenuItem>
           <NavigationMenuItem>
-            <Button variant={"ghost"}>FAQ</Button>
+            <Button variant={"ghost"}><a href="/faq">FAQ</a></Button>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
