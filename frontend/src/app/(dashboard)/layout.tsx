@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import { Libre_Franklin } from "next/font/google";
 import { Rubik } from "next/font/google";
 import "./styles.css";
-import DashboardNavBar from "@/components/Dashboard/DashboardNavBar";
+import DashboardNavBar from "@/components/Dashboard/Home/DashboardNavBar";
 import CustomerSupportChat from "@/components/Dashboard/Support/CustomerSupportChat";
 
 const libre_franklin = Libre_Franklin({
@@ -38,7 +38,7 @@ export default async function RootLayout({
         <DashboardNavBar/>
         <main>{children}</main>
         <CustomerSupportChat/>
-        <Toaster richColors />
+        <Toaster richColors/>
       </body>
     </html>
   );

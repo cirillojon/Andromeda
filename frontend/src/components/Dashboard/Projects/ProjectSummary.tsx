@@ -10,7 +10,7 @@ import {
 import Link from "next/link";
 import HomeFinancesCard from "../Finances/HomeFinancesCard";
 import HomeInstallersCard from "../Installers/HomeInstallersCard";
-import HomeTimeline from "../HomeTimeline";
+import HomeTimeline from "../Home/HomeTimeline";
 
 const ProjectSummary = async ({ project }: { project: Project }) => {
   let getInstallerUrl = "";
