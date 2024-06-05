@@ -1,6 +1,13 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
-import { Bell, ChevronRight, Grid3X3, Menu } from "lucide-react";
+import { Button } from "../../ui/button";
+import {
+  Bell,
+  ChevronRight,
+  Grid3X3,
+  Menu,
+  SettingsIcon,
+  UserIcon,
+} from "lucide-react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import {
   Sheet,
@@ -8,6 +15,7 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import ProfileDropdown from "./ProfileDropdown";
 
 const DashboardNavBar = async () => {
   const user = await getKindeServerSession();
@@ -111,17 +119,16 @@ const DashboardNavBar = async () => {
         </SheetContent>
       </Sheet>
       <div className="flex items-center gap-4">
-        <span>Welcome, {currentUser?.given_name}</span>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="w-6 h-6" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <Button variant="ghost" size="icon" className="rounded-full bg-white">
-          <span className="sr-only">User menu</span>
-        </Button>
+        <ProfileDropdown/>
       </div>
     </div>
   );
 };
 
 export default DashboardNavBar;
+
+//make the logout button a client component to utilize toast
