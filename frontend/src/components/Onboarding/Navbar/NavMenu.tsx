@@ -90,9 +90,9 @@ const NavMenu = () => {
             </NavigationMenuLink>
           </Link>
         </NavigationMenuItem>
-        <NavigationMenuItem>
+        <NavigationMenuItem className={navigationMenuTriggerStyle()}>
           <LoginLink>
-            <Button>Log In</Button>
+              Log In
           </LoginLink>
         </NavigationMenuItem>
       </NavigationMenuList>
