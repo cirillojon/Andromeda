@@ -4,11 +4,27 @@ import React, {useEffect} from 'react';
 import Image from "next/image";
 import "./AddressPage.css"
 
+const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+// Tampa coords
+var latitude = 27.9517;
+var longitude = -82.4588;
+
 function initAutocomplete() {
+
+	if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition((position) => {
+			latitude = position.coords.latitude;
+			longitude = position.coords.longitude;
+		}, 
+		(error) => {
+
+		});
+	}
+
 	const map = new google.maps.Map(
 	  document.getElementById("map") as HTMLElement,
 	  {
-		center: { lat: -33.8688, lng: 151.2195 },
+		center: { lat: latitude, lng: longitude },
 		zoom: 13,
 		mapTypeId: "roadmap",
 	  }
@@ -82,12 +98,6 @@ function initAutocomplete() {
 	  
 	});
   }
-  
-  declare global {
-	interface Window {
-	  initAutocomplete: () => void;
-	}
-  }
 
 const AddressPage: React.FC = () => {
 
@@ -116,7 +126,7 @@ const AddressPage: React.FC = () => {
 					/>
 					<div id="map" className="map"></div>
 					<script
-						src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBvCvPz-PFCnAiedyHYzmlvb6LnKM4CnLw&callback=initAutocomplete&libraries=places&v=weekly"
+						src={"https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&callback=initAutocomplete&libraries=places&v=weekly"}
 						defer
 					></script>
 					<button className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600 mt-4">
