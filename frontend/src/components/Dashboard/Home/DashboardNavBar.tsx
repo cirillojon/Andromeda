@@ -5,8 +5,6 @@ import {
   ChevronRight,
   Grid3X3,
   Menu,
-  SettingsIcon,
-  UserIcon,
 } from "lucide-react";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import {
@@ -119,16 +117,15 @@ const DashboardNavBar = async () => {
         </SheetContent>
       </Sheet>
       <div className="flex items-center gap-4">
+        <div>Welcome, {currentUser?.given_name}</div>
         <Button variant="ghost" size="icon" className="rounded-full">
           <Bell className="w-6 h-6" />
           <span className="sr-only">Notifications</span>
         </Button>
-        <ProfileDropdown/>
+        <ProfileDropdown />
       </div>
     </div>
   );
 };
 
 export default DashboardNavBar;
-
-//make the logout button a client component to utilize toast
