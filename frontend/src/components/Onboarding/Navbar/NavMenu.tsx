@@ -17,7 +17,7 @@ import {
   Sheet,
   SheetContent,
   SheetTrigger,
-  SheetClose,                    
+  SheetClose,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
@@ -92,7 +92,7 @@ const NavMenu = () => {
         </NavigationMenuItem>
         <NavigationMenuItem className={navigationMenuTriggerStyle()}>
           <LoginLink>
-              Log In
+            Log In
           </LoginLink>
         </NavigationMenuItem>
       </NavigationMenuList>
