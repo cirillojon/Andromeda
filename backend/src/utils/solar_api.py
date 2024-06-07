@@ -19,7 +19,6 @@ def fetch_solar_data(api_key, latitude, longitude):
     except ValueError as e:
         raise Exception(f"Failed to parse building insights response: {e}")
 
-    # Corrected URL for fetching data layers
     data_layers_url = f"{SOLAR_API_BASE_URL}/dataLayers:get"
     data_layers_params = {
         "location.latitude": latitude,
