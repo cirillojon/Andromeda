@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -13,13 +12,8 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "./navigation-menu";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-  SheetClose,
-} from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 const services = [
   {
@@ -53,44 +47,47 @@ const handlePointerEvents = (event: any) => {
 
 const NavMenu = () => {
   return (
-      <NavigationMenu>
-        <NavigationMenuList className="gap-3 lg:gap-6">
-          <NavigationMenuItem>
-            <NavigationMenuTrigger
-              onPointerMove={handlePointerEvents}
-              className="bg-transparent"
-            >
-              Services
-            </NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
-                {services.map((service) => (
-                  <ListItem
-                    key={service.title}
-                    title={service.title}
-                    href={service.href}
-                  >
-                    {service.description}
-                  </ListItem>
-                ))}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Button variant={"ghost"}><a href="/faq">FAQ</a></Button>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <Link href="/contact" legacyBehavior passHref>
-              <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Contact
-              </NavigationMenuLink>
-            </Link>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+    <NavigationMenu>
+      <NavigationMenuList className="gap-3 lg:gap-6">
+        <NavigationMenuItem>
+          <NavigationMenuTrigger
+            onPointerMove={handlePointerEvents}
+            className="bg-transparent"
+          >
+            Services
+          </NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[200px] gap-3 p-4 md:w-[300px] grid-cols-1 lg:w-[350px]">
+              {services.map((service) => (
+                <ListItem
+                  key={service.title}
+                  title={service.title}
+                  href={service.href}
+                >
+                  {service.description}
+                </ListItem>
+              ))}
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Button variant={"ghost"}><a href="/faq">FAQ</a></Button>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <Link href="/contact" legacyBehavior passHref>
+            <Button variant={"ghost"}><a href="/mission">Contact</a></Button>
+          </Link>
+        </NavigationMenuItem>
+        <NavigationMenuItem className={navigationMenuTriggerStyle()}>
+          <LoginLink>
+            Log In
+          </LoginLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   );
 };
 
