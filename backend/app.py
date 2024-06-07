@@ -20,6 +20,7 @@ app = Flask(__name__)
 # Configure the SQLAlchemy part of the app instance using environment variables
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URI")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SOLAR_API_KEY"] = os.getenv("SOLAR_API_KEY")
 
 if __name__ != "__main__":
     gunicorn_logger = logging.getLogger("gunicorn.error")
@@ -63,6 +64,7 @@ from src.resources.hello_resource import HelloResource
 from src.resources.installer_resource import InstallerResource
 from src.resources.project_resource import ProjectResource
 from src.resources.project_step_resource import ProjectStepResource
+from src.resources.solar_data_resource import SolarDataResource
 from src.resources.task_resource import TaskResource
 from src.resources.user_resource import UserResource
 from src.resources.waitlist_resource import WaitlistResource
@@ -104,7 +106,7 @@ api.add_resource(FinancingDetailResource, "/api/financing_detail", "/api/financi
 api.add_resource(InstallerResource, "/api/installer", "/api/installer/<int:installer_id>")
 api.add_resource(WaitlistResource, "/api/waitlist", "/api/waitlist/<int:waitlist_id>")
 api.add_resource(ProjectStepResource, "/api/project_step", "/api/project_step/<int:step_id>", "/api/project_step/project/<int:project_id>",),
-
+api.add_resource(SolarDataResource, "/api/solar_data")
 
 # Log all incoming requests
 @app.before_request
