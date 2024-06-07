@@ -17,6 +17,7 @@ class SolarDataResource(Resource):
         api_key = app.config["SOLAR_API_KEY"]
         
         try:
+            app.logger.info(f"Fetching solar data for address: {address}, latitude: {latitude}, longitude: {longitude}")
             solar_data = get_or_create_solar_data(api_key, project_id, address, latitude, longitude)
             return solar_data, 200
         except Exception as e:

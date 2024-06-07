@@ -8,8 +8,8 @@ def fetch_solar_data(api_key, latitude, longitude):
     headers = {"Authorization": f"Bearer {api_key}"}
     
     # Fetch building insights
-    building_insights_url = f"{SOLAR_API_BASE_URL}/buildingInsights:findClosest"
-    building_insights_response = requests.get(building_insights_url, headers=headers, params={"location": f"{latitude},{longitude}"})
+    building_insights_url = f"{SOLAR_API_BASE_URL}/buildingInsights:findClosest?location.latitude={latitude}&location.longitude={longitude}&key={api_key}"
+    building_insights_response = requests.get(building_insights_url)
     
     if building_insights_response.status_code != 200:
         raise Exception(f"Failed to fetch building insights: {building_insights_response.text}")
@@ -19,9 +19,16 @@ def fetch_solar_data(api_key, latitude, longitude):
     except ValueError as e:
         raise Exception(f"Failed to parse building insights response: {e}")
 
-    # Fetch data layers
-    data_layers_url = f"{SOLAR_API_BASE_URL}/dataLayers"
-    data_layers_response = requests.get(data_layers_url, headers=headers, params={"location": f"{latitude},{longitude}", "radiusMeters": 100, "view": "IMAGERY_AND_ANNUAL_FLUX_LAYERS"})
+    # Corrected URL for fetching data layers
+    data_layers_url = f"{SOLAR_API_BASE_URL}/dataLayers:get"
+    data_layers_params = {
+        "location.latitude": latitude,
+        "location.longitude": longitude,
+        "radiusMeters": 100,
+        "view": "IMAGERY_AND_ANNUAL_FLUX_LAYERS",
+        "key": api_key
+    }
+    data_layers_response = requests.get(data_layers_url, params=data_layers_params)
     
     if data_layers_response.status_code != 200:
         raise Exception(f"Failed to fetch data layers: {data_layers_response.text}")
