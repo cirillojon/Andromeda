@@ -6,6 +6,7 @@ import ProjectSummary from "./ProjectSummary";
 import { Plus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import getAllProjectsByUserId from "@/utils/actions/getAllProjectsByUserId";
 
 const HomeProjectsCard = async () => {
   const user = await getKindeServerSession();
@@ -15,17 +16,10 @@ const HomeProjectsCard = async () => {
     return null;
   }
   const dbUser: DbUser | null = await fetchDbUser(currentUser.id);
-  let projects: Project[] = [];
+  let projects: Project[] | null = null;
 
   if (dbUser != null) {
-    const getProjectsUrl = new URL(
-      `/api/project/user/${dbUser.id}`,
-      process.env.NEXT_FRONTEND_BASE_URL
-    );
-
-    projects = await fetch(getProjectsUrl.toString())
-      .then((res) => res.json())
-      .then((data) => data);
+    projects = await getAllProjectsByUserId(dbUser.id)
   }
 
   return (
@@ -37,7 +31,7 @@ const HomeProjectsCard = async () => {
         </span>
       </div>
       <div className="pb-40 md:pb-32 rounded-lg">
-        {projects.length > 0 ? (
+        {projects && projects.length > 0 ? (
           projects.map((project) => (
             <ProjectSummary key={project.id} project={project} />
           ))
