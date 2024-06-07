@@ -18,13 +18,6 @@ class Project(db.Model):
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
     financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
-    financing_detail = db.relationship(
-        "FinancingDetail",
-        foreign_keys=[financing_detail_id],
-        backref=db.backref("project", uselist=False),
-        cascade="all, delete-orphan",
-        single_parent=True
-    )
     hvac_details = db.Column(db.String(255))
     solar_electric_bill_kwh = db.Column(db.Integer)
     solar_panel_amount = db.Column(db.Integer)
@@ -36,6 +29,14 @@ class Project(db.Model):
     roof_current_type = db.Column(db.String(50))
     roof_new_type = db.Column(db.String(50))
     roof_current_health = db.Column(db.String(255))
+    
+    financing_detail = db.relationship(
+        "FinancingDetail",
+        foreign_keys=[financing_detail_id],
+        backref=db.backref("project", uselist=False),
+        cascade="all, delete-orphan",
+        single_parent=True
+    )
 
     def to_dict(self):
         return {
@@ -64,5 +65,6 @@ class Project(db.Model):
             "roof_new_type": self.roof_new_type,
             "roof_current_health": self.roof_current_health,
             "financing_type_id": self.financing_type_id,
-            "financing_detail": self.financing_detail.to_dict() if self.financing_detail else None
+            "financing_detail": self.financing_detail.to_dict() if self.financing_detail else None,
+            "solar_data": self.solar_data.to_dict() if self.solar_data else None
         }
