@@ -66,5 +66,4 @@ class Project(db.Model):
             "roof_current_health": self.roof_current_health,
             "financing_type_id": self.financing_type_id,
             "financing_detail": self.financing_detail.to_dict() if self.financing_detail else None,
-            "solar_data": self.solar_data.to_dict() if self.solar_data else None
         }
