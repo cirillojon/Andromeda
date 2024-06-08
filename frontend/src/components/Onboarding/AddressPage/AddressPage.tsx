@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import "./AddressPage.css";
+import postSolarData from "@/utils/actions/postSolarData";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 // Tampa coords
@@ -10,9 +11,9 @@ var latitude = 27.9517;
 var longitude = -82.4588;
 
 function initAutocomplete(
-  setAddress: any,
-  setLatitude: any,
-  setLongitude: any
+  setAddress: (address: string) => void,
+  setLatitude: (latitude: number) => void,
+  setLongitude: (longitude: number) => void
 ) {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
@@ -98,7 +99,7 @@ function initAutocomplete(
         }
 
         // Update state with address, latitude, and longitude
-        setAddress(place.formatted_address);
+        setAddress(place.formatted_address || "");
         setLatitude(place.geometry.location.lat());
         setLongitude(place.geometry.location.lng());
       });
@@ -107,28 +108,22 @@ function initAutocomplete(
     return;
   });
 }
+
 const AddressPage: React.FC = () => {
   const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState(27.9517);
   const [longitude, setLongitude] = useState(-82.4588);
+
   useEffect(() => {
     initAutocomplete(setAddress, setLatitude, setLongitude);
   }, []);
 
   const handleSubmit = async () => {
-    try {
-      const response = await fetch("/api/solar_data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ address, latitude, longitude }),
-      });
-
-      const data = await response.json();
-      console.log("Data: ", data);
-    } catch (error) {
-      console.error("Error:", error);
+    const response = await postSolarData(address, longitude, latitude);
+    if (!response.success) {
+      console.log(response.error);
+    } else {
+      console.log(response.data);
     }
   };
 
@@ -153,9 +148,7 @@ const AddressPage: React.FC = () => {
           />
           <div id="map" className="map"></div>
           <script
-            src={
-              `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initAutocomplete&libraries=places&v=weekly`
-            }
+            src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initAutocomplete&libraries=places&v=weekly`}
             defer
           ></script>
           <button
