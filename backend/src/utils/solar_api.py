@@ -39,20 +39,19 @@ def fetch_solar_data(api_key, latitude, longitude):
     
     return building_insights, data_layers
 
-def get_or_create_solar_data(api_key, project_id, address, latitude, longitude):
+def get_or_create_solar_data(api_key, address, latitude, longitude):
     # Check if the data already exists in the database
-    solar_data = SolarData.query.filter_by(project_id=project_id).first()
+    solar_data = SolarData.query.filter_by(address=address).first()
     if solar_data:
-        app.logger.info(f"Fetching solar data for project_id={project_id} from database.")
+        app.logger.info(f"Fetching solar data for address={address} from database.")
         return solar_data.to_dict()
     
     # Fetch data from the API if not present in the database
-    app.logger.info(f"Fetching solar data for project_id={project_id} from API.")
+    app.logger.info(f"Fetching solar data for address={address} from API.")
     building_insights, data_layers = fetch_solar_data(api_key, latitude, longitude)
     
     # Store the new data in the database
     new_solar_data = SolarData(
-        project_id=project_id,
         address=address,
         latitude=latitude,
         longitude=longitude,
