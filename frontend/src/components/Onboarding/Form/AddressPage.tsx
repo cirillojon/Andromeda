@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import "./AddressPage.css";
 import postSolarData from "@/utils/actions/postSolarData";
+import { useRouter } from "next/navigation";
 
 const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 // Tampa coords
@@ -110,14 +111,19 @@ const AddressPage: React.FC = () => {
   const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState(27.9517);
   const [longitude, setLongitude] = useState(-82.4588);
+  const router = useRouter();
 
   useEffect(() => {
     initAutocomplete(setAddress, setLatitude, setLongitude);
   }, []);
 
   const handleSubmit = async () => {
-	console.log(address)
+    if (!address) {
+      alert("Please enter an address");
+      return;
+    }
     const response = await postSolarData(address, longitude, latitude);
+    router.push(`/form/${encodeURIComponent(address)}`);
     if (!response.success) {
       console.log(response.error);
     } else {
