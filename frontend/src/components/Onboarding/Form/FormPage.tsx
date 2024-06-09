@@ -47,7 +47,7 @@ const FormPage: React.FC = () => {
   };
 
   return (
-    <div className="container md:mt-16 mt-0">
+    <div className="form-container md:mt-16 mt-0">
       <div className="tabs">
         <button className={`tab scaling-header-text ${activeTab === 'Solar' ? "active" : ''}`} onClick={() => setActiveTab('Solar')}>Solar</button>
         <button className={`tab scaling-header-text ${activeTab === 'Roofing' ? "active" : ''}`} onClick={() => setActiveTab('Roofing')}>Roofing</button>
