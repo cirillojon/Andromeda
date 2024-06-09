@@ -1,9 +1,9 @@
-import AddressPage from "@/components/Onboarding/AddressPage/AddressPage";
+import FormPage from "@/components/Onboarding/Form/FormPage";
 
 const page = () => {
   return (
     <div>
-      <AddressPage />
+      <FormPage />
     </div>
   );
 }

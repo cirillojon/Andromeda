@@ -16,12 +16,11 @@ function initAutocomplete(
   setLongitude: (longitude: number) => void
 ) {
   if (navigator.geolocation) {
+	console.log(navigator);
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        latitude = position.coords.latitude;
-        longitude = position.coords.longitude;
-        setLatitude(latitude);
-        setLongitude(longitude);
+        setLatitude(position.coords.latitude);
+        setLongitude(position.coords.longitude);
       },
       (error) => {}
     );
@@ -39,8 +38,6 @@ function initAutocomplete(
   // Create the search box and link it to the UI element.
   const input = document.getElementById("pac-input") as HTMLInputElement;
   const searchBox = new google.maps.places.SearchBox(input);
-
-//   map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
 
   // Bias the SearchBox results towards current map's viewport.
   map.addListener("bounds_changed", () => {
@@ -119,6 +116,7 @@ const AddressPage: React.FC = () => {
   }, []);
 
   const handleSubmit = async () => {
+	console.log(address)
     const response = await postSolarData(address, longitude, latitude);
     if (!response.success) {
       console.log(response.error);
