@@ -2,7 +2,7 @@ import AddressPage from "@/components/Onboarding/Form/AddressPage";
 
 const page = () => {
   return (
-    <div>
+    <div className="">
       <AddressPage/>
     </div>
   );
