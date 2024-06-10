@@ -37,11 +37,16 @@ const LandingPage = () => {
             </span>
           </div>
           <div className="flex flex-col items-center mb-6 md:mb-0">
-            <RegisterLink
+            <a href="/form">
+              <button className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600 mt-4">
+                Get Started
+              </button>
+            </a>
+            {/* <RegisterLink
               className={cn(buttonVariants({ variant: "default" }), "mt-4")}
             >
               Get Started
-            </RegisterLink>
+            </RegisterLink> */}
             <a href="/waitlist">
               <button className="bg-black text-white py-2 px-4 rounded hover:bg-gray-600 mt-4">
                 Join Waitlist

@@ -1,0 +1,75 @@
+.form-container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 20px;
+}
+
+.tabs {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 20px;
+}
+
+.tab {
+	height: auto;
+	padding: 0px 20px;
+	border: none;
+	background-color: #818cf8;
+	margin: 0 5px;
+	transition: background-color 0.3s ease;
+}
+
+.tab:hover {
+	background-color: #c7d2fe;
+}
+
+.active {
+	background-color: #a5b4fc;
+	font-weight: bold;
+}
+
+.mainContent {
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+	max-width: 1200px;
+	gap: 20px;
+}
+
+.viewbox {
+	flex: 3;
+	border: 1px solid #ccc;
+	min-width: 320px;
+	height: 79vh;
+}
+
+.sidebar {
+	flex: 1;
+	min-width: 320px;
+}
+
+/* Put the input tab on top when the screen shrinks */
+@media (max-width: 716px) {
+	.sidebar {
+	  order: -1;
+	}
+  }
+
+.content {
+	background-image: linear-gradient(0deg, rgb(129 140 248), rgb(224 231 255));
+	height: 79vh;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.input {
+	display: block;
+	width: 100%;
+	padding: 10px;
+	margin: 10px 0;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}

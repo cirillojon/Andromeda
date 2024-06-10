@@ -91,6 +91,10 @@ const nextConfig = {
       {
         source: "/api/project_step/:step_id",
         destination: `${remote_url}/api/project_step/:step_id`,
+      },
+      {
+        source: "/api/solar_data",
+        destination: `${remote_url}/api/solar_data`,
       }
     ];
   },
