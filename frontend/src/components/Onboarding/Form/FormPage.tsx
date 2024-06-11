@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import "./FormPage.css";
+import SolarMap from './SolarMap';
 
 const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
@@ -56,7 +57,7 @@ const FormPage: React.FC = () => {
       </div>
       <div className="mainContent">
         <div className="viewbox">
-          {/* Placeholder for the large viewbox */}
+          <SolarMap/>
         </div>
         <div className="sidebar">
           {renderContent()}

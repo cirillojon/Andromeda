@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useLoadScript, GoogleMap, MarkerF } from "@react-google-maps/api";
 import usePlacesAutocomplete, {
@@ -9,8 +9,6 @@ import usePlacesAutocomplete, {
 } from "use-places-autocomplete";
 import postSolarData from "@/utils/actions/postSolarData";
 import { Input } from "@/components/ui/input";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { ButtonGooey } from "@/components/ui/button-gooey";
 
 const AddressPage: React.FC = () => {
@@ -86,7 +84,10 @@ const AddressPage: React.FC = () => {
       alert("Please enter a monthly bill");
       return;
     }
-    await postSolarData(address, longitude, latitude);
+    const response = await postSolarData(address, longitude, latitude);
+    if (response.data) {
+      localStorage.setItem("solarData", JSON.stringify(response.data));
+    }
     router.push(
       `/form/${encodeURIComponent(address)}&${encodeURIComponent(monthlyBill)}`
     );
