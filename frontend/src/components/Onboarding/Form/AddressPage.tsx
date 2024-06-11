@@ -87,10 +87,15 @@ const AddressPage: React.FC = () => {
     if (response.data) {
       secureLocalStorage.setItem("solarData", JSON.stringify(response.data));
     }
+    
+    // Clear the reload flag
+    sessionStorage.removeItem("reloaded");
+  
     router.push(
       `/form/${encodeURIComponent(address)}&${encodeURIComponent(monthlyBill)}`
     );
   };
+  
 
   return (
     <div

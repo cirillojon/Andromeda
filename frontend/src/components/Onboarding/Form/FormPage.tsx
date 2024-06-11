@@ -23,7 +23,6 @@ const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
   const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
   const [solarData, setSolarData] = useState<SolarData | null>(null);
-
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
@@ -31,7 +30,14 @@ const FormPage: React.FC = () => {
       console.log('Loaded solar data:', data); // Debug log
       setSolarData(data);
     }
+  
+    // Simulate manual page reload
+    if (!sessionStorage.getItem("reloaded")) {
+      sessionStorage.setItem("reloaded", "true");
+      window.location.reload();
+    }
   }, []);
+  
 
   const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPanelCount(Number(e.target.value));
