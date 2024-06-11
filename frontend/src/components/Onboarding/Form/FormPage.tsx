@@ -6,6 +6,11 @@ import SolarMap from './SolarMap';
 
 const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
+  const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
+
+  const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPanelCount(Number(e.target.value));
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -13,7 +18,15 @@ const FormPage: React.FC = () => {
         return (
           <div className="content">
             <h1 className="scaling-header-text">Solar Data Input</h1>
-            <input type="text" placeholder="Input 1" className="input" />
+            <input
+              type="number"
+              placeholder="Number of Panels"
+              className="input"
+              value={panelCount}
+              onChange={handlePanelCountChange}
+              min="1"
+              step="1"
+            />
             <input type="text" placeholder="Input 2" className="input" />
             <input type="text" placeholder="Input 3" className="input" />
           </div>
@@ -57,7 +70,7 @@ const FormPage: React.FC = () => {
       </div>
       <div className="mainContent">
         <div className="viewbox">
-          <SolarMap />
+          <SolarMap panelCount={panelCount} />
         </div>
         <div className="sidebar">
           {renderContent()}
