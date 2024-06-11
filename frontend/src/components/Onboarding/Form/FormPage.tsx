@@ -4,6 +4,10 @@ import React, { useState, useEffect } from 'react';
 import "./FormPage.css";
 import SolarMap from './SolarMap';
 import secureLocalStorage from "react-secure-storage";
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
 
 interface SolarData {
   building_insights: {
@@ -101,6 +105,21 @@ const FormPage: React.FC = () => {
   const panelsPercentage = (panelCount / maxPanels) * 100;
   const savingsPercentage = (totalSavings / maxYearlySavings) * 100;
 
+  const panelData = solarData?.building_insights.solarPotential.solarPanels.slice(0, panelCount);
+
+  const barChartData = {
+    labels: panelData?.map((panel, index) => `Panel ${index + 1}`),
+    datasets: [
+      {
+        label: 'Yearly Energy (kWh)',
+        data: panelData?.map(panel => panel.yearlyEnergyDcKwh),
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        borderColor: 'rgba(75, 192, 192, 1)',
+        borderWidth: 1,
+      }
+    ]
+  };
+
   console.log('Total Savings:', totalSavings); // Debug log
 
   return (
@@ -134,6 +153,9 @@ const FormPage: React.FC = () => {
                 <div className="progress">
                   <div className="progress-filled" style={{ width: `${savingsPercentage}%` }}></div>
                 </div>
+              </div>
+              <div className="chart-container">
+                <Bar data={barChartData} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Yearly Energy Production by Panel' } } }} />
               </div>
             </div>
           )}
