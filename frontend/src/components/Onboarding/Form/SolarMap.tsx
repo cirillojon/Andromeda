@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { GoogleMap, Polygon, Marker, LoadScript } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
 
@@ -83,6 +83,15 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
     ));
   };
 
+  const mapOptions = {
+    tilt: 0,
+    heading: 0,
+    mapTypeId: "satellite",
+    disableDefaultUI: true,
+    clickableIcons: true,
+    scrollwheel: false,
+  };
+
   return (
     <LoadScript googleMapsApiKey={apiKey!}>
       <div>
@@ -90,7 +99,7 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
           mapContainerStyle={{ height: "400px", width: "800px" }}
           center={location}
           zoom={25}
-          mapTypeId="satellite"
+          options={mapOptions}
           onLoad={handleLoad}
         >
           {renderPanels()}
