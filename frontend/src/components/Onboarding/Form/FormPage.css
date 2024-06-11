@@ -122,3 +122,23 @@
   .chart-container {
 	margin-top: 20px;
   }
+
+  .chart-container {
+	margin-top: 20px;
+  }
+  
+  .roof-segment {
+	margin-top: 20px;
+	padding: 10px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	background-color: #f9f9f9;
+  }
+  
+  .roof-segment h3 {
+	margin-bottom: 10px;
+  }
+  
+  .roof-segment p {
+	margin: 5px 0;
+  }

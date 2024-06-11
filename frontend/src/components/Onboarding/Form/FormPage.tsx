@@ -19,6 +19,14 @@ interface SolarData {
         orientation: string;
         yearlyEnergyDcKwh: number;
       }[];
+      roofSegmentStats: {
+        stats: {
+          areaMeters2: number;
+        };
+        center: { latitude: number; longitude: number };
+        pitchDegrees: number;
+        azimuthDegrees: number;
+      }[];
     };
   };
 }
@@ -27,6 +35,7 @@ const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
   const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
   const [solarData, setSolarData] = useState<SolarData | null>(null);
+
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
@@ -157,6 +166,17 @@ const FormPage: React.FC = () => {
               <div className="chart-container">
                 <Bar data={barChartData} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Yearly Energy Production by Panel' } } }} />
               </div>
+              {solarData.building_insights.solarPotential.roofSegmentStats.map((segment, index) => {
+                console.log(`Roof Segment ${index + 1} Data:`, segment); // Debug log
+                return (
+                  <div key={index} className="roof-segment">
+                    <h3>Roof Segment {index + 1}</h3>
+                    <p><strong>Area (m²):</strong> {segment.stats.areaMeters2}</p>
+                    <p><strong>Pitch (degrees):</strong> {segment.pitchDegrees}</p>
+                    <p><strong>Azimuth (degrees):</strong> {segment.azimuthDegrees}</p>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
