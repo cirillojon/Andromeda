@@ -1,7 +1,5 @@
-"use client";
-
-import React, { useEffect, useState } from "react";
-import { GoogleMap, Polygon, Marker, LoadScript } from "@react-google-maps/api";
+import React, { useEffect, useState, useCallback, useRef } from "react";
+import { GoogleMap, Marker, LoadScript } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
 
 interface LatLng {
@@ -10,6 +8,7 @@ interface LatLng {
 }
 
 interface SolarPanel {
+  id: string;
   center: LatLng;
   orientation: "LANDSCAPE" | "PORTRAIT";
   yearlyEnergyDcKwh: number;
@@ -25,6 +24,7 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [location, setLocation] = useState<LatLng>({ lat: 0, lng: 0 });
   const [selectedPanel, setSelectedPanel] = useState<SolarPanel | null>(null);
+  const polygonsRef = useRef<google.maps.Polygon[]>([]);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -41,9 +41,10 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
         const solarPotential = data.building_insights.solarPotential;
         const newPanels: SolarPanel[] = solarPotential.solarPanels
           .slice(0, panelCount)
-          .map((panel: any) => {
+          .map((panel: any, index: number) => {
             const offset = 0.00001;
             return {
+              id: `${panel.center.latitude}-${panel.center.longitude}-${index}`, // Ensure unique ID for each panel
               center: { lat: panel.center.latitude, lng: panel.center.longitude },
               orientation: panel.orientation,
               yearlyEnergyDcKwh: panel.yearlyEnergyDcKwh,
@@ -62,25 +63,38 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
     getSolarDataFromLocalStorage();
   }, [panelCount]);
 
-  const handlePanelClick = (panel: SolarPanel) => {
-    setSelectedPanel(panel);
-  };
+  useEffect(() => {
+    if (map) {
+      // Clear existing polygons
+      polygonsRef.current.forEach((polygon) => polygon.setMap(null));
+      polygonsRef.current = [];
 
-  const renderPanels = () => {
-    return solarPanels.map((panel, index) => (
-      <Polygon
-        key={index}
-        path={panel.corners}
-        options={{
+      // Add new polygons
+      solarPanels.forEach((panel) => {
+        const polygon = new google.maps.Polygon({
+          paths: panel.corners,
           fillColor: "#FF0000",
           fillOpacity: 0.35,
           strokeColor: "#FF0000",
           strokeOpacity: 0.8,
           strokeWeight: 2,
-        }}
-        onClick={() => handlePanelClick(panel)}
-      />
-    ));
+        });
+        polygon.setMap(map);
+        polygon.addListener("click", () => handlePanelClick(panel));
+        polygonsRef.current.push(polygon);
+      });
+    }
+  }, [map, solarPanels]);
+
+  const handlePanelClick = (panel: SolarPanel) => {
+    setSelectedPanel(panel);
+  };
+
+  const handleRemovePanel = (panelId: string) => {
+    setSolarPanels((prevPanels) => prevPanels.filter((panel) => panel.id !== panelId));
+    if (selectedPanel?.id === panelId) {
+      setSelectedPanel(null);
+    }
   };
 
   const mapOptions = {
@@ -102,7 +116,6 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
           options={mapOptions}
           onLoad={handleLoad}
         >
-          {renderPanels()}
           {selectedPanel && (
             <Marker position={selectedPanel.center} label={`Energy: ${selectedPanel.yearlyEnergyDcKwh} kWh`} />
           )}
