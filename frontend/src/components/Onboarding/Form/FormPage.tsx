@@ -89,6 +89,12 @@ const FormPage: React.FC = () => {
     ? (panelCount * solarData.building_insights.solarPotential.maxSunshineHoursPerYear * solarData.building_insights.solarPotential.panelCapacityWatts) / 1000 
     : 0;
 
+  const maxPanels = 110; // temporary hardcoded value
+  const maxYearlySavings = 69718; // temporary hardcoded value
+
+  const panelsPercentage = (panelCount / maxPanels) * 100;
+  const savingsPercentage = (totalSavings / maxYearlySavings) * 100;
+
   console.log('Total Savings:', totalSavings); // Debug log
 
   return (
@@ -111,6 +117,18 @@ const FormPage: React.FC = () => {
               <p><strong>Max Sunshine Hours/Year:</strong> {solarData.building_insights.solarPotential.maxSunshineHoursPerYear}</p>
               <p><strong>Panel Capacity (Watts):</strong> {solarData.building_insights.solarPotential.panelCapacityWatts}</p>
               <p><strong>Total Savings (kWh/year):</strong> {totalSavings.toFixed(2)}</p>
+              <div className="progress-bar">
+                <p>Panels Count: {panelCount}/{maxPanels}</p>
+                <div className="progress">
+                  <div className="progress-filled" style={{ width: `${panelsPercentage}%` }}></div>
+                </div>
+              </div>
+              <div className="progress-bar">
+                <p>Yearly Savings: {totalSavings.toFixed(2)} kWh/{maxYearlySavings} kWh</p>
+                <div className="progress">
+                  <div className="progress-filled" style={{ width: `${savingsPercentage}%` }}></div>
+                </div>
+              </div>
             </div>
           )}
         </div>

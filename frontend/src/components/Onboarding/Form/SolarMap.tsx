@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { GoogleMap, Marker, LoadScript } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
 
