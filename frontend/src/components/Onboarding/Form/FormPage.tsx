@@ -166,17 +166,18 @@ const FormPage: React.FC = () => {
               <div className="chart-container">
                 <Bar data={barChartData} options={{ responsive: true, plugins: { legend: { display: false }, title: { display: true, text: 'Yearly Energy Production by Panel' } } }} />
               </div>
-              {solarData.building_insights.solarPotential.roofSegmentStats.map((segment, index) => {
-                console.log(`Roof Segment ${index + 1} Data:`, segment); // Debug log
-                return (
+              {solarData.building_insights.solarPotential.roofSegmentStats.length > 0 && (
+              <div className="roof-segments-container">
+                {solarData.building_insights.solarPotential.roofSegmentStats.map((segment, index) => (
                   <div key={index} className="roof-segment">
                     <h3>Roof Segment {index + 1}</h3>
-                    <p><strong>Area (m²):</strong> {segment.stats.areaMeters2}</p>
-                    <p><strong>Pitch (degrees):</strong> {segment.pitchDegrees}</p>
-                    <p><strong>Azimuth (degrees):</strong> {segment.azimuthDegrees}</p>
+                    <p><strong>Area (m²):</strong> {segment.stats.areaMeters2.toFixed(2)}</p>
+                    <p><strong>Pitch (degrees):</strong> {segment.pitchDegrees.toFixed(2)}</p>
+                    <p><strong>Azimuth (degrees):</strong> {segment.azimuthDegrees.toFixed(2)}</p>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+            )}
             </div>
           )}
         </div>
