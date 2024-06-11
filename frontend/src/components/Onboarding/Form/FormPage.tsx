@@ -36,12 +36,12 @@ const FormPage: React.FC = () => {
             <input type="text" placeholder="Input 3" className="input" />
           </div>
         );
-        case 'HVAC':
-          return (
-            <div className="content">
-              <h1 className="scaling-header-text">Coming Soon!</h1>
-            </div>
-          );
+      case 'HVAC':
+        return (
+          <div className="content">
+            <h1 className="scaling-header-text">Coming Soon!</h1>
+          </div>
+        );
       default:
         return null;
     }
@@ -57,7 +57,7 @@ const FormPage: React.FC = () => {
       </div>
       <div className="mainContent">
         <div className="viewbox">
-          <SolarMap/>
+          <SolarMap />
         </div>
         <div className="sidebar">
           {renderContent()}
