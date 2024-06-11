@@ -110,9 +110,9 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
 
   return (
     <LoadScript googleMapsApiKey={apiKey!}>
-      <div>
+      <div className="map-container">
         <GoogleMap
-          mapContainerStyle={{ height: "400px", width: "800px" }}
+          mapContainerStyle={{ height: "100%", width: "100%" }}
           center={location}
           zoom={25}
           options={mapOptions}

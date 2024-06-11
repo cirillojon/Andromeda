@@ -13,11 +13,12 @@
   
   .tab {
 	height: auto;
-	padding: 0px 20px;
+	padding: 10px 20px;
 	border: none;
 	background-color: #818cf8;
 	margin: 0 5px;
 	transition: background-color 0.3s ease;
+	cursor: pointer;
   }
   
   .tab:hover {
@@ -42,6 +43,13 @@
 	border: 1px solid #ccc;
 	min-width: 320px;
 	height: 79vh;
+	border-radius: 8px;
+	overflow: hidden;
+  }
+  
+  .map-container {
+	height: 100%;
+	width: 100%;
   }
   
   .sidebar {
@@ -49,7 +57,6 @@
 	min-width: 320px;
   }
   
-  /* Put the input tab on top when the screen shrinks */
   @media (max-width: 716px) {
 	.sidebar {
 	  order: -1;
@@ -111,3 +118,4 @@
 	line-height: 20px;
 	transition: width 0.5s;
   }
+  
