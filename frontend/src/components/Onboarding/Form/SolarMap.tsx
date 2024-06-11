@@ -1,16 +1,15 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import secureLocalStorage from "react-secure-storage";
 
 const SolarMap = () => {
   const [solarData, setSolarData] = useState(null);
 
   useEffect(() => {
     const getSolarDataFromLocalStorage = () => {
-      const loadedData = localStorage.getItem("solarData");
-      if (loadedData) {
-        setSolarData(JSON.parse(loadedData));
-      }
+      const storageItem = secureLocalStorage.getItem("solarData") as string;
+      setSolarData(JSON.parse(storageItem));
     };
 
     getSolarDataFromLocalStorage();

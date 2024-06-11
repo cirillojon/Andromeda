@@ -10,6 +10,7 @@ import usePlacesAutocomplete, {
 import postSolarData from "@/utils/actions/postSolarData";
 import { Input } from "@/components/ui/input";
 import { ButtonGooey } from "@/components/ui/button-gooey";
+import secureLocalStorage from "react-secure-storage";
 
 const AddressPage: React.FC = () => {
   const [address, setAddress] = useState("");
@@ -54,9 +55,7 @@ const AddressPage: React.FC = () => {
           </div>
           <div className="w-full">
             <h1 className="text-slate-700">Home Address:</h1>
-            <Input
-              placeholder="Search for an address"
-            />
+            <Input placeholder="Search for an address" />
           </div>
           <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
           <div className="flex">
@@ -86,7 +85,7 @@ const AddressPage: React.FC = () => {
     }
     const response = await postSolarData(address, longitude, latitude);
     if (response.data) {
-      localStorage.setItem("solarData", JSON.stringify(response.data));
+      secureLocalStorage.setItem("solarData", JSON.stringify(response.data));
     }
     router.push(
       `/form/${encodeURIComponent(address)}&${encodeURIComponent(monthlyBill)}`
