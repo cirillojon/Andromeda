@@ -42,17 +42,18 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
         const newPanels: SolarPanel[] = solarPotential.solarPanels
           .slice(0, panelCount)
           .map((panel: any, index: number) => {
-            const offset = 0.00001;
+            const offsetLat = 0.000005; // height
+            const offsetLng = 0.000005; // width
             return {
               id: `${panel.center.latitude}-${panel.center.longitude}-${index}`, // Ensure unique ID for each panel
               center: { lat: panel.center.latitude, lng: panel.center.longitude },
               orientation: panel.orientation,
               yearlyEnergyDcKwh: panel.yearlyEnergyDcKwh,
               corners: [
-                { lat: panel.center.latitude + offset, lng: panel.center.longitude + offset },
-                { lat: panel.center.latitude + offset, lng: panel.center.longitude - offset },
-                { lat: panel.center.latitude - offset, lng: panel.center.longitude - offset },
-                { lat: panel.center.latitude - offset, lng: panel.center.longitude + offset },
+                { lat: panel.center.latitude + offsetLat, lng: panel.center.longitude + offsetLng },
+                { lat: panel.center.latitude + offsetLat, lng: panel.center.longitude - offsetLng },
+                { lat: panel.center.latitude - offsetLat, lng: panel.center.longitude - offsetLng },
+                { lat: panel.center.latitude - offsetLat, lng: panel.center.longitude + offsetLng },
               ],
             };
           });
@@ -65,19 +66,20 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
 
   useEffect(() => {
     if (map) {
-      // Clear existing polygons
+      // Clear existing panels
       polygonsRef.current.forEach((polygon) => polygon.setMap(null));
       polygonsRef.current = [];
 
-      // Add new polygons
+      // Add new panels
       solarPanels.forEach((panel) => {
         const polygon = new google.maps.Polygon({
           paths: panel.corners,
-          fillColor: "#FF0000",
-          fillOpacity: 0.35,
-          strokeColor: "#FF0000",
-          strokeOpacity: 0.8,
+          fillColor: "#1E90FF",
+          fillOpacity: 0.5,
+          strokeColor: "#D3D3D3",
+          strokeOpacity: 0.7,
           strokeWeight: 2,
+          zIndex: 1, // Ensure the panels appear above other map elements
         });
         polygon.setMap(map);
         polygon.addListener("click", () => handlePanelClick(panel));
