@@ -3,68 +3,68 @@
 	flex-direction: column;
 	align-items: center;
 	padding: 20px;
-}
-
-.tabs {
+  }
+  
+  .tabs {
 	display: flex;
 	justify-content: center;
 	margin-bottom: 20px;
-}
-
-.tab {
+  }
+  
+  .tab {
 	height: auto;
 	padding: 0px 20px;
 	border: none;
 	background-color: #818cf8;
 	margin: 0 5px;
 	transition: background-color 0.3s ease;
-}
-
-.tab:hover {
+  }
+  
+  .tab:hover {
 	background-color: #c7d2fe;
-}
-
-.active {
+  }
+  
+  .active {
 	background-color: #a5b4fc;
 	font-weight: bold;
-}
-
-.mainContent {
+  }
+  
+  .mainContent {
 	display: flex;
 	flex-wrap: wrap;
 	width: 100%;
 	max-width: 1200px;
 	gap: 20px;
-}
-
-.viewbox {
+  }
+  
+  .viewbox {
 	flex: 3;
 	border: 1px solid #ccc;
 	min-width: 320px;
 	height: 79vh;
-}
-
-.sidebar {
+  }
+  
+  .sidebar {
 	flex: 1;
 	min-width: 320px;
-}
-
-/* Put the input tab on top when the screen shrinks */
-@media (max-width: 716px) {
+  }
+  
+  /* Put the input tab on top when the screen shrinks */
+  @media (max-width: 716px) {
 	.sidebar {
 	  order: -1;
 	}
   }
-
-.content {
+  
+  .content {
 	background-image: linear-gradient(0deg, rgb(129 140 248), rgb(224 231 255));
 	height: 79vh;
 	padding: 20px;
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.input {
+  }
+  
+  .input {
 	display: block;
 	width: 100%;
 	padding: 10px;
@@ -72,4 +72,21 @@
 	border: 1px solid #ccc;
 	border-radius: 4px;
 	box-sizing: border-box;
-}
+  }
+  
+  .solar-stats {
+	background-color: #f0f0f0;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+	margin-top: 20px;
+  }
+  
+  .solar-stats h2 {
+	margin-bottom: 10px;
+  }
+  
+  .solar-stats p {
+	margin: 5px 0;
+  }
+  

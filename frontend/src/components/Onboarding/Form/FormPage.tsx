@@ -1,12 +1,37 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import "./FormPage.css";
 import SolarMap from './SolarMap';
+import secureLocalStorage from "react-secure-storage";
+
+interface SolarData {
+  building_insights: {
+    solarPotential: {
+      maxSunshineHoursPerYear: number;
+      panelCapacityWatts: number;
+      solarPanels: {
+        center: { latitude: number; longitude: number };
+        orientation: string;
+        yearlyEnergyDcKwh: number;
+      }[];
+    };
+  };
+}
 
 const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
   const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
+  const [solarData, setSolarData] = useState<SolarData | null>(null);
+
+  useEffect(() => {
+    const storageItem = secureLocalStorage.getItem("solarData") as string;
+    if (storageItem) {
+      const data = JSON.parse(storageItem);
+      console.log('Loaded solar data:', data); // Debug log
+      setSolarData(data);
+    }
+  }, []);
 
   const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPanelCount(Number(e.target.value));
@@ -60,6 +85,12 @@ const FormPage: React.FC = () => {
     }
   };
 
+  const totalSavings = solarData 
+    ? (panelCount * solarData.building_insights.solarPotential.maxSunshineHoursPerYear * solarData.building_insights.solarPotential.panelCapacityWatts) / 1000 
+    : 0;
+
+  console.log('Total Savings:', totalSavings); // Debug log
+
   return (
     <div className="form-container md:mt-16 mt-0">
       <div className="tabs">
@@ -74,6 +105,14 @@ const FormPage: React.FC = () => {
         </div>
         <div className="sidebar">
           {renderContent()}
+          {activeTab === 'Solar' && solarData && (
+            <div className="solar-stats">
+              <h2>Solar Stats</h2>
+              <p><strong>Max Sunshine Hours/Year:</strong> {solarData.building_insights.solarPotential.maxSunshineHoursPerYear}</p>
+              <p><strong>Panel Capacity (Watts):</strong> {solarData.building_insights.solarPotential.panelCapacityWatts}</p>
+              <p><strong>Total Savings (kWh/year):</strong> {totalSavings.toFixed(2)}</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
