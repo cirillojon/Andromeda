@@ -7,7 +7,8 @@ interface LatLng {
   lng: number;
 }
 
-export interface RoofSegment { // Export the RoofSegment interface
+export interface RoofSegment {
+  // Export the RoofSegment interface
   id: string;
   center: LatLng;
   areaMeters2: number;
@@ -57,35 +58,67 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount, selectedSegment }) => {
             const offsetLng = 0.000005; // width
             return {
               id: `${panel.center.latitude}-${panel.center.longitude}-${index}`, // Ensure unique ID for each panel
-              center: { lat: panel.center.latitude, lng: panel.center.longitude },
+              center: {
+                lat: panel.center.latitude,
+                lng: panel.center.longitude,
+              },
               orientation: panel.orientation,
               yearlyEnergyDcKwh: panel.yearlyEnergyDcKwh,
               corners: [
-                { lat: panel.center.latitude + offsetLat, lng: panel.center.longitude + offsetLng },
-                { lat: panel.center.latitude + offsetLat, lng: panel.center.longitude - offsetLng },
-                { lat: panel.center.latitude - offsetLat, lng: panel.center.longitude - offsetLng },
-                { lat: panel.center.latitude - offsetLat, lng: panel.center.longitude + offsetLng },
+                {
+                  lat: panel.center.latitude + offsetLat,
+                  lng: panel.center.longitude + offsetLng,
+                },
+                {
+                  lat: panel.center.latitude + offsetLat,
+                  lng: panel.center.longitude - offsetLng,
+                },
+                {
+                  lat: panel.center.latitude - offsetLat,
+                  lng: panel.center.longitude - offsetLng,
+                },
+                {
+                  lat: panel.center.latitude - offsetLat,
+                  lng: panel.center.longitude + offsetLng,
+                },
               ],
             };
           });
 
-        const newSegments: RoofSegment[] = solarPotential.roofSegmentStats.map((segment: any, index: number) => {
-          const offsetLat = 0.00001; // height
-          const offsetLng = 0.00001; // width
-          return {
-            id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
-            center: { lat: segment.center.latitude, lng: segment.center.longitude },
-            areaMeters2: segment.stats.areaMeters2,
-            pitchDegrees: segment.pitchDegrees,
-            azimuthDegrees: segment.azimuthDegrees,
-            corners: [
-              { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude + offsetLng },
-              { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude - offsetLng },
-              { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude - offsetLng },
-              { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude + offsetLng },
-            ],
-          };
-        });
+        const newSegments: RoofSegment[] = solarPotential.roofSegmentStats.map(
+          (segment: any, index: number) => {
+            const offsetLat = 0.00001; // height
+            const offsetLng = 0.00001; // width
+            return {
+              id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
+              center: {
+                lat: segment.center.latitude,
+                lng: segment.center.longitude,
+              },
+              areaMeters2: segment.stats.areaMeters2,
+              pitchDegrees: segment.pitchDegrees,
+              azimuthDegrees: segment.azimuthDegrees,
+              corners: [
+                {
+                  lat: segment.center.latitude + offsetLat,
+                  lng: segment.center.longitude + offsetLng,
+                },
+                {
+                  lat: segment.center.latitude + offsetLat,
+                  lng: segment.center.longitude - offsetLng,
+                },
+                {
+                  lat: segment.center.latitude - offsetLat,
+                  lng: segment.center.longitude - offsetLng,
+                },
+                {
+                  lat: segment.center.latitude - offsetLat,
+                  lng: segment.center.longitude + offsetLng,
+                },
+              ],
+            };
+          }
+        );
 
         setSolarPanels(newPanels);
         setRoofSegments(newSegments);
@@ -139,7 +172,9 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount, selectedSegment }) => {
   };
 
   const handleRemovePanel = (panelId: string) => {
-    setSolarPanels((prevPanels) => prevPanels.filter((panel) => panel.id !== panelId));
+    setSolarPanels((prevPanels) =>
+      prevPanels.filter((panel) => panel.id !== panelId)
+    );
     if (selectedPanel?.id === panelId) {
       setSelectedPanel(null);
     }
@@ -165,10 +200,16 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount, selectedSegment }) => {
           onLoad={handleLoad}
         >
           {selectedPanel && (
-            <Marker position={selectedPanel.center} label={`Energy: ${selectedPanel.yearlyEnergyDcKwh} kWh`} />
+            <Marker
+              position={selectedPanel.center}
+              label={`Energy: ${selectedPanel.yearlyEnergyDcKwh} kWh`}
+            />
           )}
           {selectedSegment && (
-            <Marker position={selectedSegment.center} label={`Area: ${selectedSegment.areaMeters2} m²`} />
+            <Marker
+              position={selectedSegment.center}
+              label={`Area: ${selectedSegment.areaMeters2} m²`}
+            />
           )}
         </GoogleMap>
       </div>
