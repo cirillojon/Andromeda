@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import "./FormPage.css";
-import SolarMap, { RoofSegment } from "./SolarMap"; // Import RoofSegment correctly
+import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
 import { Bar } from "react-chartjs-2";
 import {
