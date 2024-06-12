@@ -18,6 +18,7 @@ import { Button } from "../../ui/button";
 import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
+import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 ChartJS.register(
   BarElement,
@@ -443,7 +444,9 @@ const FormPage: React.FC = () => {
         </div>
         <div className="sidebar">
           {renderContent()}
-          <Button onClick={handleSubmit}>Submit</Button>
+          <RegisterLink className="w-full">
+            <Button onClick={handleSubmit}>Submit</Button>
+          </RegisterLink>
         </div>
       </div>
     </div>
