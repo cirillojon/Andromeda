@@ -241,11 +241,7 @@ const FormPage: React.FC = () => {
         </button>
       </div>
       <div className="mainContent">
-        <div className="viewbox">
-          <SolarMap panelCount={panelCount} selectedSegment={selectedSegment} />
-        </div>
-        <div className="sidebar">
-          {renderContent()}
+        <div className="sidebar left-sidebar">
           {activeTab === "Solar" && solarData && (
             <div className="solar-stats">
               <h2>Solar Stats</h2>
@@ -333,6 +329,10 @@ const FormPage: React.FC = () => {
             </div>
           )}
         </div>
+        <div className="viewbox">
+          <SolarMap panelCount={panelCount} selectedSegment={selectedSegment} />
+        </div>
+        <div className="sidebar">{renderContent()}</div>
       </div>
     </div>
   );

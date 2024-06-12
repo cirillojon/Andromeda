@@ -57,10 +57,8 @@
   min-width: 320px;
 }
 
-@media (max-width: 716px) {
-  .sidebar {
-    order: -1;
-  }
+.left-sidebar {
+  order: -1;
 }
 
 .content {
@@ -156,4 +154,10 @@
 
 .roof-segment p {
   margin: 5px 0;
+}
+
+@media (max-width: 716px) {
+  .left-sidebar {
+    order: -1;
+  }
 }
