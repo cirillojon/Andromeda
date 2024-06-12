@@ -7,6 +7,15 @@ interface LatLng {
   lng: number;
 }
 
+export interface RoofSegment { // Export the RoofSegment interface
+  id: string;
+  center: LatLng;
+  areaMeters2: number;
+  pitchDegrees: number;
+  azimuthDegrees: number;
+  corners: LatLng[];
+}
+
 interface SolarPanel {
   id: string;
   center: LatLng;
@@ -17,10 +26,12 @@ interface SolarPanel {
 
 interface SolarMapProps {
   panelCount: number;
+  selectedSegment: RoofSegment | null;
 }
 
-const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
+const SolarMap: React.FC<SolarMapProps> = ({ panelCount, selectedSegment }) => {
   const [solarPanels, setSolarPanels] = useState<SolarPanel[]>([]);
+  const [roofSegments, setRoofSegments] = useState<RoofSegment[]>([]);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [location, setLocation] = useState<LatLng>({ lat: 0, lng: 0 });
   const [selectedPanel, setSelectedPanel] = useState<SolarPanel | null>(null);
@@ -57,7 +68,27 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
               ],
             };
           });
+
+        const newSegments: RoofSegment[] = solarPotential.roofSegmentStats.map((segment: any, index: number) => {
+          const offsetLat = 0.00001; // height
+          const offsetLng = 0.00001; // width
+          return {
+            id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
+            center: { lat: segment.center.latitude, lng: segment.center.longitude },
+            areaMeters2: segment.stats.areaMeters2,
+            pitchDegrees: segment.pitchDegrees,
+            azimuthDegrees: segment.azimuthDegrees,
+            corners: [
+              { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude + offsetLng },
+              { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude - offsetLng },
+              { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude - offsetLng },
+              { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude + offsetLng },
+            ],
+          };
+        });
+
         setSolarPanels(newPanels);
+        setRoofSegments(newSegments);
       }
     };
 
@@ -66,7 +97,7 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
 
   useEffect(() => {
     if (map) {
-      // Clear existing panels
+      // Clear existing polygons
       polygonsRef.current.forEach((polygon) => polygon.setMap(null));
       polygonsRef.current = [];
 
@@ -85,8 +116,23 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
         polygon.addListener("click", () => handlePanelClick(panel));
         polygonsRef.current.push(polygon);
       });
+
+      // Add the selected roof segment
+      if (selectedSegment) {
+        const polygon = new google.maps.Polygon({
+          paths: selectedSegment.corners,
+          fillColor: "#FF6347",
+          fillOpacity: 0.5,
+          strokeColor: "#D3D3D3",
+          strokeOpacity: 0.7,
+          strokeWeight: 2,
+          zIndex: 1, // Ensure the segment appears above other map elements
+        });
+        polygon.setMap(map);
+        polygonsRef.current.push(polygon);
+      }
     }
-  }, [map, solarPanels]);
+  }, [map, solarPanels, selectedSegment]);
 
   const handlePanelClick = (panel: SolarPanel) => {
     setSelectedPanel(panel);
@@ -120,6 +166,9 @@ const SolarMap: React.FC<SolarMapProps> = ({ panelCount }) => {
         >
           {selectedPanel && (
             <Marker position={selectedPanel.center} label={`Energy: ${selectedPanel.yearlyEnergyDcKwh} kWh`} />
+          )}
+          {selectedSegment && (
+            <Marker position={selectedSegment.center} label={`Area: ${selectedSegment.areaMeters2} m²`} />
           )}
         </GoogleMap>
       </div>

@@ -2,12 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import "./FormPage.css";
-import SolarMap from './SolarMap';
+import SolarMap, { RoofSegment } from './SolarMap'; // Import RoofSegment correctly
 import secureLocalStorage from "react-secure-storage";
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Title, Tooltip, Legend);
+
+interface LatLng {
+  lat: number;
+  lng: number;
+}
 
 interface SolarData {
   building_insights: {
@@ -35,6 +40,7 @@ const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Solar');
   const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
   const [solarData, setSolarData] = useState<SolarData | null>(null);
+  const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(null);
 
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
@@ -43,17 +49,42 @@ const FormPage: React.FC = () => {
       console.log('Loaded solar data:', data); // Debug log
       setSolarData(data);
     }
-  
+
     // Simulate manual page reload
     if (!sessionStorage.getItem("reloaded")) {
       sessionStorage.setItem("reloaded", "true");
       window.location.reload();
     }
   }, []);
-  
 
   const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPanelCount(Number(e.target.value));
+  };
+
+  const handleSegmentClick = (segment: SolarData['building_insights']['solarPotential']['roofSegmentStats'][0]) => {
+    if (selectedSegment && selectedSegment.id === `${segment.center.latitude}-${segment.center.longitude}`) {
+      setSelectedSegment(null);
+    } else {
+      const offsetLat = 0.00001; // height
+      const offsetLng = 0.00001; // width
+      const roofSegment: RoofSegment = {
+        id: `${segment.center.latitude}-${segment.center.longitude}`,
+        center: {
+          lat: segment.center.latitude,
+          lng: segment.center.longitude
+        },
+        areaMeters2: segment.stats.areaMeters2,
+        pitchDegrees: segment.pitchDegrees,
+        azimuthDegrees: segment.azimuthDegrees,
+        corners: [
+          { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude + offsetLng },
+          { lat: segment.center.latitude + offsetLat, lng: segment.center.longitude - offsetLng },
+          { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude - offsetLng },
+          { lat: segment.center.latitude - offsetLat, lng: segment.center.longitude + offsetLng },
+        ],
+      };
+      setSelectedSegment(roofSegment);
+    }
   };
 
   const renderContent = () => {
@@ -104,8 +135,8 @@ const FormPage: React.FC = () => {
     }
   };
 
-  const totalSavings = solarData 
-    ? (panelCount * solarData.building_insights.solarPotential.maxSunshineHoursPerYear * solarData.building_insights.solarPotential.panelCapacityWatts) / 1000 
+  const totalSavings = solarData
+    ? (panelCount * solarData.building_insights.solarPotential.maxSunshineHoursPerYear * solarData.building_insights.solarPotential.panelCapacityWatts) / 1000
     : 0;
 
   const maxPanels = 110; // temporary hardcoded value
@@ -141,7 +172,7 @@ const FormPage: React.FC = () => {
       </div>
       <div className="mainContent">
         <div className="viewbox">
-          <SolarMap panelCount={panelCount} />
+          <SolarMap panelCount={panelCount} selectedSegment={selectedSegment} />
         </div>
         <div className="sidebar">
           {renderContent()}
@@ -169,7 +200,7 @@ const FormPage: React.FC = () => {
               {solarData.building_insights.solarPotential.roofSegmentStats.length > 0 && (
               <div className="roof-segments-container">
                 {solarData.building_insights.solarPotential.roofSegmentStats.map((segment, index) => (
-                  <div key={index} className="roof-segment">
+                  <div key={index} className="roof-segment" onClick={() => handleSegmentClick(segment)}>
                     <h3>Roof Segment {index + 1}</h3>
                     <p><strong>Area (m²):</strong> {segment.stats.areaMeters2.toFixed(2)}</p>
                     <p><strong>Pitch (degrees):</strong> {segment.pitchDegrees.toFixed(2)}</p>
