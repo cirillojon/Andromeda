@@ -14,6 +14,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Button } from "../../ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
+import { Input } from "../../ui/input";
+import { Label } from "../../ui/label";
 
 ChartJS.register(
   BarElement,
@@ -53,7 +57,7 @@ interface SolarData {
 
 const FormPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Solar");
-  const [panelCount, setPanelCount] = useState<number>(10); // Default to showing 10 panels
+  const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
@@ -73,7 +77,7 @@ const FormPage: React.FC = () => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
-      console.log("Loaded solar data:", data); // Debug log
+      console.log("Loaded solar data:", data);
       setSolarData(data);
     }
 
@@ -115,8 +119,8 @@ const FormPage: React.FC = () => {
     ) {
       setSelectedSegment(null);
     } else {
-      const offsetLat = 0.00001; // height
-      const offsetLng = 0.00001; // width
+      const offsetLat = 0.00001;
+      const offsetLng = 0.00001;
       const roofSegment: RoofSegment = {
         id: `${segment.center.latitude}-${segment.center.longitude}`,
         center: {
@@ -153,92 +157,115 @@ const FormPage: React.FC = () => {
     switch (activeTab) {
       case "Solar":
         return (
-          <div className="content">
-            <h1 className="scaling-header-text">Solar Data Input</h1>
-            <input
-              type="number"
-              placeholder="Number of Panels"
-              className="input"
-              value={inputValues.solar.panelCount}
-              onChange={(e) => handlePanelCountChange(e)}
-              min="1"
-              step="1"
-            />
-            <input
-              type="text"
-              placeholder="Input 2"
-              className="input"
-              value={inputValues.solar.input2}
-              onChange={(e) => handleInputChange(e, "solar", "input2")}
-            />
-            <input
-              type="text"
-              placeholder="Input 3"
-              className="input"
-              value={inputValues.solar.input3}
-              onChange={(e) => handleInputChange(e, "solar", "input3")}
-            />
-          </div>
+          <Card className="content">
+            <CardHeader>
+              <CardTitle>Solar Data Input</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label htmlFor="panelCount">Number of Panels</Label>
+              <Input
+                id="panelCount"
+                type="number"
+                placeholder="Number of Panels"
+                value={inputValues.solar.panelCount}
+                onChange={(e) => handlePanelCountChange(e)}
+                min="1"
+                step="1"
+              />
+              <Label htmlFor="solarInput2">Input 2</Label>
+              <Input
+                id="solarInput2"
+                type="text"
+                placeholder="Input 2"
+                value={inputValues.solar.input2}
+                onChange={(e) => handleInputChange(e, "solar", "input2")}
+              />
+              <Label htmlFor="solarInput3">Input 3</Label>
+              <Input
+                id="solarInput3"
+                type="text"
+                placeholder="Input 3"
+                value={inputValues.solar.input3}
+                onChange={(e) => handleInputChange(e, "solar", "input3")}
+              />
+            </CardContent>
+          </Card>
         );
       case "Roofing":
         return (
-          <div className="content">
-            <h1 className="scaling-header-text">Roofing Data Input</h1>
-            <input
-              type="text"
-              placeholder="Input 1"
-              className="input"
-              value={inputValues.roofing.input1}
-              onChange={(e) => handleInputChange(e, "roofing", "input1")}
-            />
-            <input
-              type="text"
-              placeholder="Input 2"
-              className="input"
-              value={inputValues.roofing.input2}
-              onChange={(e) => handleInputChange(e, "roofing", "input2")}
-            />
-            <input
-              type="text"
-              placeholder="Input 3"
-              className="input"
-              value={inputValues.roofing.input3}
-              onChange={(e) => handleInputChange(e, "roofing", "input3")}
-            />
-          </div>
+          <Card className="content">
+            <CardHeader>
+              <CardTitle>Roofing Data Input</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label htmlFor="roofingInput1">Input 1</Label>
+              <Input
+                id="roofingInput1"
+                type="text"
+                placeholder="Input 1"
+                value={inputValues.roofing.input1}
+                onChange={(e) => handleInputChange(e, "roofing", "input1")}
+              />
+              <Label htmlFor="roofingInput2">Input 2</Label>
+              <Input
+                id="roofingInput2"
+                type="text"
+                placeholder="Input 2"
+                value={inputValues.roofing.input2}
+                onChange={(e) => handleInputChange(e, "roofing", "input2")}
+              />
+              <Label htmlFor="roofingInput3">Input 3</Label>
+              <Input
+                id="roofingInput3"
+                type="text"
+                placeholder="Input 3"
+                value={inputValues.roofing.input3}
+                onChange={(e) => handleInputChange(e, "roofing", "input3")}
+              />
+            </CardContent>
+          </Card>
         );
       case "Battery":
         return (
-          <div className="content">
-            <h1 className="scaling-header-text">Battery Data Input</h1>
-            <input
-              type="text"
-              placeholder="Input 1"
-              className="input"
-              value={inputValues.battery.input1}
-              onChange={(e) => handleInputChange(e, "battery", "input1")}
-            />
-            <input
-              type="text"
-              placeholder="Input 2"
-              className="input"
-              value={inputValues.battery.input2}
-              onChange={(e) => handleInputChange(e, "battery", "input2")}
-            />
-            <input
-              type="text"
-              placeholder="Input 3"
-              className="input"
-              value={inputValues.battery.input3}
-              onChange={(e) => handleInputChange(e, "battery", "input3")}
-            />
-          </div>
+          <Card className="content">
+            <CardHeader>
+              <CardTitle>Battery Data Input</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label htmlFor="batteryInput1">Input 1</Label>
+              <Input
+                id="batteryInput1"
+                type="text"
+                placeholder="Input 1"
+                value={inputValues.battery.input1}
+                onChange={(e) => handleInputChange(e, "battery", "input1")}
+              />
+              <Label htmlFor="batteryInput2">Input 2</Label>
+              <Input
+                id="batteryInput2"
+                type="text"
+                placeholder="Input 2"
+                value={inputValues.battery.input2}
+                onChange={(e) => handleInputChange(e, "battery", "input2")}
+              />
+              <Label htmlFor="batteryInput3">Input 3</Label>
+              <Input
+                id="batteryInput3"
+                type="text"
+                placeholder="Input 3"
+                value={inputValues.battery.input3}
+                onChange={(e) => handleInputChange(e, "battery", "input3")}
+              />
+            </CardContent>
+          </Card>
         );
       case "HVAC":
         return (
-          <div className="content">
-            <h1 className="scaling-header-text">Coming Soon!</h1>
-          </div>
+          <Card className="content">
+            <CardHeader>
+              <CardTitle>Coming Soon!</CardTitle>
+            </CardHeader>
+          </Card>
         );
       default:
         return null;
@@ -252,8 +279,8 @@ const FormPage: React.FC = () => {
       1000
     : 0;
 
-  const maxPanels = 110; // temporary hardcoded value
-  const maxYearlySavings = 69718; // temporary hardcoded value
+  const maxPanels = 110;
+  const maxYearlySavings = 69718;
 
   const panelsPercentage = (panelCount / maxPanels) * 100;
   const savingsPercentage = (totalSavings / maxYearlySavings) * 100;
@@ -277,131 +304,130 @@ const FormPage: React.FC = () => {
     ],
   };
 
-  console.log("Total Savings:", totalSavings); // Debug log
+  console.log("Total Savings:", totalSavings);
 
   return (
     <div className="form-container md:mt-16 mt-0">
       <div className="tabs">
-        <button
-          className={`tab scaling-header-text ${
-            activeTab === "Solar" ? "active" : ""
-          }`}
+        <Button
+          variant={activeTab === "Solar" ? "default" : "outline"}
           onClick={() => setActiveTab("Solar")}
         >
           Solar
-        </button>
-        <button
-          className={`tab scaling-header-text ${
-            activeTab === "Roofing" ? "active" : ""
-          }`}
+        </Button>
+        <Button
+          variant={activeTab === "Roofing" ? "default" : "outline"}
           onClick={() => setActiveTab("Roofing")}
         >
           Roofing
-        </button>
-        <button
-          className={`tab scaling-header-text ${
-            activeTab === "Battery" ? "active" : ""
-          }`}
+        </Button>
+        <Button
+          variant={activeTab === "Battery" ? "default" : "outline"}
           onClick={() => setActiveTab("Battery")}
         >
           Battery
-        </button>
-        <button
-          className={`tab scaling-header-text ${
-            activeTab === "HVAC" ? "active" : ""
-          }`}
+        </Button>
+        <Button
+          variant={activeTab === "HVAC" ? "default" : "outline"}
           onClick={() => setActiveTab("HVAC")}
         >
           HVAC
-        </button>
+        </Button>
       </div>
       <div className="mainContent">
         <div className="sidebar left-sidebar">
           {activeTab === "Solar" && solarData && (
-            <div className="solar-stats">
-              <h2>Solar Stats</h2>
-              <p>
-                <strong>Max Sunshine Hours/Year:</strong>{" "}
-                {
-                  solarData.building_insights.solarPotential
-                    .maxSunshineHoursPerYear
-                }
-              </p>
-              <p>
-                <strong>Panel Capacity (Watts):</strong>{" "}
-                {solarData.building_insights.solarPotential.panelCapacityWatts}
-              </p>
-              <p>
-                <strong>Total Savings (kWh/year):</strong>{" "}
-                {totalSavings.toFixed(2)}
-              </p>
-              <div className="progress-bar">
+            <Card className="solar-stats">
+              <CardHeader>
+                <CardTitle>Solar Stats</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <p>
-                  Panels Count: {panelCount}/{maxPanels}
+                  <strong>Max Sunshine Hours/Year:</strong>{" "}
+                  {
+                    solarData.building_insights.solarPotential
+                      .maxSunshineHoursPerYear
+                  }
                 </p>
-                <div className="progress">
-                  <div
-                    className="progress-filled"
-                    style={{ width: `${panelsPercentage}%` }}
-                  ></div>
-                </div>
-              </div>
-              <div className="progress-bar">
                 <p>
-                  Yearly Savings: {totalSavings.toFixed(2)} kWh/
-                  {maxYearlySavings} kWh
+                  <strong>Panel Capacity (Watts):</strong>{" "}
+                  {
+                    solarData.building_insights.solarPotential
+                      .panelCapacityWatts
+                  }
                 </p>
-                <div className="progress">
-                  <div
-                    className="progress-filled"
-                    style={{ width: `${savingsPercentage}%` }}
-                  ></div>
+                <p>
+                  <strong>Total Savings (kWh/year):</strong>{" "}
+                  {totalSavings.toFixed(2)}
+                </p>
+                <div className="progress-bar">
+                  <p>
+                    Panels Count: {panelCount}/{maxPanels}
+                  </p>
+                  <div className="progress">
+                    <div
+                      className="progress-filled"
+                      style={{ width: `${panelsPercentage}%` }}
+                    ></div>
+                  </div>
                 </div>
-              </div>
-              <div className="chart-container">
-                <Bar
-                  data={barChartData}
-                  options={{
-                    responsive: true,
-                    plugins: {
-                      legend: { display: false },
-                      title: {
-                        display: true,
-                        text: "Yearly Energy Production by Panel",
+                <div className="progress-bar">
+                  <p>
+                    Yearly Savings: {totalSavings.toFixed(2)} kWh/
+                    {maxYearlySavings} kWh
+                  </p>
+                  <div className="progress">
+                    <div
+                      className="progress-filled"
+                      style={{ width: `${savingsPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <div className="chart-container">
+                  <Bar
+                    data={barChartData}
+                    options={{
+                      responsive: true,
+                      plugins: {
+                        legend: { display: false },
+                        title: {
+                          display: true,
+                          text: "Yearly Energy Production by Panel",
+                        },
                       },
-                    },
-                  }}
-                />
-              </div>
-              {solarData.building_insights.solarPotential.roofSegmentStats
-                .length > 0 && (
-                <div className="roof-segments-container">
-                  {solarData.building_insights.solarPotential.roofSegmentStats.map(
-                    (segment, index) => (
-                      <div
-                        key={index}
-                        className="roof-segment"
-                        onClick={() => handleSegmentClick(segment)}
-                      >
-                        <h3>Roof Segment {index + 1}</h3>
-                        <p>
-                          <strong>Area (m²):</strong>{" "}
-                          {segment.stats.areaMeters2.toFixed(2)}
-                        </p>
-                        <p>
-                          <strong>Pitch (degrees):</strong>{" "}
-                          {segment.pitchDegrees.toFixed(2)}
-                        </p>
-                        <p>
-                          <strong>Azimuth (degrees):</strong>{" "}
-                          {segment.azimuthDegrees.toFixed(2)}
-                        </p>
-                      </div>
-                    )
-                  )}
+                    }}
+                  />
                 </div>
-              )}
-            </div>
+                {solarData.building_insights.solarPotential.roofSegmentStats
+                  .length > 0 && (
+                  <div className="roof-segments-container">
+                    {solarData.building_insights.solarPotential.roofSegmentStats.map(
+                      (segment, index) => (
+                        <div
+                          key={index}
+                          className="roof-segment"
+                          onClick={() => handleSegmentClick(segment)}
+                        >
+                          <h3>Roof Segment {index + 1}</h3>
+                          <p>
+                            <strong>Area (m²):</strong>{" "}
+                            {segment.stats.areaMeters2.toFixed(2)}
+                          </p>
+                          <p>
+                            <strong>Pitch (degrees):</strong>{" "}
+                            {segment.pitchDegrees.toFixed(2)}
+                          </p>
+                          <p>
+                            <strong>Azimuth (degrees):</strong>{" "}
+                            {segment.azimuthDegrees.toFixed(2)}
+                          </p>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )}
         </div>
         <div className="viewbox">
