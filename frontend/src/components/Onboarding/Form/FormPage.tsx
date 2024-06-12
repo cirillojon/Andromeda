@@ -58,6 +58,16 @@ const FormPage: React.FC = () => {
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
+  const [inputValues, setInputValues] = useState<{
+    solar: { panelCount: number; input2: string; input3: string };
+    roofing: { input1: string; input2: string; input3: string };
+    battery: { input1: string; input2: string; input3: string };
+    [key: string]: any;
+  }>({
+    solar: { panelCount: 10, input2: "", input3: "" },
+    roofing: { input1: "", input2: "", input3: "" },
+    battery: { input1: "", input2: "", input3: "" },
+  });
 
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
@@ -75,7 +85,24 @@ const FormPage: React.FC = () => {
   }, []);
 
   const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPanelCount(Number(e.target.value));
+    const newValue = Number(e.target.value);
+    setPanelCount(newValue);
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      solar: { ...prevValues.solar, panelCount: newValue },
+    }));
+  };
+
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    tab: string,
+    inputName: string
+  ) => {
+    const newValue = e.target.value;
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [tab]: { ...prevValues[tab], [inputName]: newValue },
+    }));
   };
 
   const handleSegmentClick = (
@@ -132,31 +159,79 @@ const FormPage: React.FC = () => {
               type="number"
               placeholder="Number of Panels"
               className="input"
-              value={panelCount}
-              onChange={handlePanelCountChange}
+              value={inputValues.solar.panelCount}
+              onChange={(e) => handlePanelCountChange(e)}
               min="1"
               step="1"
             />
-            <input type="text" placeholder="Input 2" className="input" />
-            <input type="text" placeholder="Input 3" className="input" />
+            <input
+              type="text"
+              placeholder="Input 2"
+              className="input"
+              value={inputValues.solar.input2}
+              onChange={(e) => handleInputChange(e, "solar", "input2")}
+            />
+            <input
+              type="text"
+              placeholder="Input 3"
+              className="input"
+              value={inputValues.solar.input3}
+              onChange={(e) => handleInputChange(e, "solar", "input3")}
+            />
           </div>
         );
       case "Roofing":
         return (
           <div className="content">
             <h1 className="scaling-header-text">Roofing Data Input</h1>
-            <input type="text" placeholder="Input 1" className="input" />
-            <input type="text" placeholder="Input 2" className="input" />
-            <input type="text" placeholder="Input 3" className="input" />
+            <input
+              type="text"
+              placeholder="Input 1"
+              className="input"
+              value={inputValues.roofing.input1}
+              onChange={(e) => handleInputChange(e, "roofing", "input1")}
+            />
+            <input
+              type="text"
+              placeholder="Input 2"
+              className="input"
+              value={inputValues.roofing.input2}
+              onChange={(e) => handleInputChange(e, "roofing", "input2")}
+            />
+            <input
+              type="text"
+              placeholder="Input 3"
+              className="input"
+              value={inputValues.roofing.input3}
+              onChange={(e) => handleInputChange(e, "roofing", "input3")}
+            />
           </div>
         );
       case "Battery":
         return (
           <div className="content">
             <h1 className="scaling-header-text">Battery Data Input</h1>
-            <input type="text" placeholder="Input 1" className="input" />
-            <input type="text" placeholder="Input 2" className="input" />
-            <input type="text" placeholder="Input 3" className="input" />
+            <input
+              type="text"
+              placeholder="Input 1"
+              className="input"
+              value={inputValues.battery.input1}
+              onChange={(e) => handleInputChange(e, "battery", "input1")}
+            />
+            <input
+              type="text"
+              placeholder="Input 2"
+              className="input"
+              value={inputValues.battery.input2}
+              onChange={(e) => handleInputChange(e, "battery", "input2")}
+            />
+            <input
+              type="text"
+              placeholder="Input 3"
+              className="input"
+              value={inputValues.battery.input3}
+              onChange={(e) => handleInputChange(e, "battery", "input3")}
+            />
           </div>
         );
       case "HVAC":
