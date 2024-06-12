@@ -153,6 +153,14 @@ const FormPage: React.FC = () => {
     }
   };
 
+  const handleSubmit = () => {
+    secureLocalStorage.setItem("formData", JSON.stringify(inputValues));
+    console.log("Form data saved to local storage:", inputValues);
+
+    const storedData = secureLocalStorage.getItem("formData");
+    console.log("Stored data from local storage:", storedData);
+  };
+
   const renderContent = () => {
     switch (activeTab) {
       case "Solar":
@@ -433,7 +441,10 @@ const FormPage: React.FC = () => {
         <div className="viewbox">
           <SolarMap panelCount={panelCount} selectedSegment={selectedSegment} />
         </div>
-        <div className="sidebar">{renderContent()}</div>
+        <div className="sidebar">
+          {renderContent()}
+          <Button onClick={handleSubmit}>Submit</Button>
+        </div>
       </div>
     </div>
   );
