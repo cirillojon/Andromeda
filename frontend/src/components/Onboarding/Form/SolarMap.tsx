@@ -8,7 +8,6 @@ interface LatLng {
 }
 
 export interface RoofSegment {
-  // Export the RoofSegment interface
   id: string;
   center: LatLng;
   areaMeters2: number;
