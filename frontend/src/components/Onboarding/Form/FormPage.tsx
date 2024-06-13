@@ -67,11 +67,16 @@ const FormPage: React.FC = () => {
     solar: { panelCount: number; input2: string; input3: string };
     roofing: { input1: string; input2: string; input3: string };
     battery: { input1: string; input2: string; input3: string };
+    project_details: {
+      project_name: string;
+      project_type: string;
+    };
     [key: string]: any;
   }>({
     solar: { panelCount: 10, input2: "", input3: "" },
     roofing: { input1: "", input2: "", input3: "" },
     battery: { input1: "", input2: "", input3: "" },
+    project_details: { project_name: "", project_type: "" },
   });
 
   useEffect(() => {
@@ -276,6 +281,36 @@ const FormPage: React.FC = () => {
             </CardHeader>
           </Card>
         );
+      case "Project Details":
+        return (
+          <Card className="content">
+            <CardHeader>
+              <CardTitle>Project Details</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Label htmlFor="detailsInput1">Project Name</Label>
+              <Input
+                id="detailsInput1"
+                type="text"
+                placeholder="Project Name"
+                value={inputValues.project_details.project_name}
+                onChange={(e) =>
+                  handleInputChange(e, "project_details", "project_name")
+                }
+              />
+              <Label htmlFor="detailsInput2">Project Type</Label>
+              <Input
+                id="detailsInput2"
+                type="text"
+                placeholder="Project Type"
+                value={inputValues.project_details.project_type}
+                onChange={(e) =>
+                  handleInputChange(e, "project_details", "project_type")
+                }
+              />
+            </CardContent>
+          </Card>
+        );
       default:
         return null;
     }
@@ -341,6 +376,12 @@ const FormPage: React.FC = () => {
           onClick={() => setActiveTab("HVAC")}
         >
           HVAC
+        </Button>
+        <Button
+          variant={activeTab === "Project Details" ? "default" : "outline"}
+          onClick={() => setActiveTab("Project Details")}
+        >
+          Project Details
         </Button>
       </div>
       <div className="mainContent">

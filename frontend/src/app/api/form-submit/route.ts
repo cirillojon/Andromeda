@@ -21,6 +21,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Form data is missing' }, { status: 400 });
     }
 
+    // Extract and validate required fields
+    const { project_details, financing_detail = {} } = formData;
+
+    if (!project_details || !project_details.project_name || !project_details.project_type) {
+      return NextResponse.json({ error: 'Missing project details' }, { status: 400 });
+    }
+
+    // Create form payload
+    // Eventually we will include more values in here that were included on the for
+    // Parsed from formData like with project_details
+    const formPayload = {
+      user_id,
+      project_name: project_details.project_name,
+      project_type: project_details.project_type,
+      financing_detail,
+    };
+
     const formResponse = await fetch(`${REMOTE_URL}/api/form`, {
       method: 'POST',
       headers: {
@@ -39,17 +56,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Form ID is missing' }, { status: 400 });
     }
 
-    /*
-    const defaultValues = {
-          project_name: "Default Project Name",
-          project_type: "Default Project Type",
-          financing_detail: {},
-          user_id: user_id
-      };
-      const formDataPayload = { form_id, data: defaultValues };
-    */
-    const formDataPayload = { form_id, data: formData };
-
+    const formDataPayload = { form_id, data: formPayload };
 
     const formDataResponse = await fetch(`${REMOTE_URL}/api/form_data`, {
       method: 'POST',
