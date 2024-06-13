@@ -1,8 +1,11 @@
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest } from "next/server";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import fetchDbUser from "./utils/api";
 import { DbUser } from "./utils/interfaces";
+import postNewUser from "./utils/actions/postNewUser";
+import { cookies } from "next/headers";
+import NextCrypto from 'next-crypto';
 
 export async function middleware(req: NextRequest) {
   const user = await getKindeServerSession();
@@ -20,27 +23,11 @@ export async function middleware(req: NextRequest) {
     dbUser === null ||
     (dbUser.message && dbUser.message === "User not found")
   ) {
-    const postUrl = new URL(`/api/user`, req.url);
-    const response = await fetch(postUrl.toString(), {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        email: currentUser?.email,
-        name: currentUser?.given_name,
-        sso_token: currentUser?.id,
-      }),
-    });
-
-    if (!response.ok) {
-      console.error("Failed to create user:", response.statusText);
-      return NextResponse.json(
-        { error: "Failed to create user" },
-        { status: response.status }
-      );
+    const response = await postNewUser(currentUser);
+    if (response === null) {
+      console.error("Failed to create user: ", currentUser.id);
+      return NextResponse.json({ error: "Failed to create user" });
     }
-
     dbUser = await fetchDbUser(currentUser.id);
   }
 
@@ -49,15 +36,43 @@ export async function middleware(req: NextRequest) {
     return NextResponse.json({ error: "User not found" }, { status: 500 });
   }
 
-  const userId = dbUser.id;
-  const response = NextResponse.next();
-  response.headers.set("x-user-id", userId);
-  console.log("User ID added to headers:", userId);
+  const formData = cookies().get("formData");
 
-  return response;
+  if (typeof formData?.value === "string") {
+    const crypto = new NextCrypto('secret key');
+    const decrypted = await crypto.decrypt(formData.value);
+    console.log("decrypted: " + decrypted);
+    if(decrypted){
+      const formSubmitUrl = new URL(
+        "/api/form-submit",
+        process.env.NEXT_FRONTEND_BASE_URL
+      ).toString();
+      try {
+        const response = await fetch(formSubmitUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-id": dbUser.id,
+          },
+          body: decrypted,
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to submit form data");
+        }
+        const returnedResponse = NextResponse.next();
+        returnedResponse.cookies.delete("formData");
+        return returnedResponse;
+      } catch (error) {
+        console.error("Error posting form data:", error);
+      }
+    }
+  }
+
+  return NextResponse.next();
 }
 // Apply middleware to protected routes
 // This applies to the dashboard route and any sub-routes
 export const config = {
-  matcher: ["/dashboard/:path*", "/api/form-submit"],
+  matcher: ["/dashboard/:path*"],
 };

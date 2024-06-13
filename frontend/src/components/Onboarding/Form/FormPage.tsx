@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./FormPage.css";
 import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
@@ -19,6 +19,7 @@ import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
 import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
 
 ChartJS.register(
   BarElement,
@@ -78,6 +79,8 @@ const FormPage: React.FC = () => {
     battery: { input1: "", input2: "", input3: "" },
     project_details: { project_name: "", project_type: "" },
   });
+  const [validationPassed, setValidationPassed] = useState(false);
+  const authButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
@@ -158,13 +161,29 @@ const FormPage: React.FC = () => {
       setSelectedSegment(roofSegment);
     }
   };
+  const validateFields = () => {
+    const { project_name, project_type } = inputValues.project_details;
+    return project_name.trim() !== "" && project_type.trim() !== "";
+  };
 
-  const handleSubmit = () => {
-    secureLocalStorage.setItem("formData", JSON.stringify(inputValues));
+  useEffect(() => {
+    if (validationPassed) {
+      // If validation is passed, click the authentication button
+      authButtonRef.current?.click();
+    }
+  }, [validationPassed]);
+
+  const handleSubmit = async () => {
+    if (!validateFields()) {
+      alert(
+        "Please fill in all required fields in the Project Details section."
+      );
+      setValidationPassed(false);
+      return;
+    }
+    await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
-
-    const storedData = secureLocalStorage.getItem("formData");
-    console.log("Stored data from local storage:", storedData);
+    setValidationPassed(true); // Set the flag to true on successful validation
   };
 
   const renderContent = () => {
@@ -485,9 +504,15 @@ const FormPage: React.FC = () => {
         </div>
         <div className="sidebar">
           {renderContent()}
-          <RegisterLink className="w-full">
+          {validationPassed ? (
+            <RegisterLink className="w-full">
+              <Button ref={authButtonRef}>
+                Proceeding to Authentication...
+              </Button>
+            </RegisterLink>
+          ) : (
             <Button onClick={handleSubmit}>Submit</Button>
-          </RegisterLink>
+          )}
         </div>
       </div>
     </div>
