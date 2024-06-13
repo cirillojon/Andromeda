@@ -16,7 +16,10 @@ export async function middleware(req: NextRequest) {
 
   // Check if the user exists in the database
   let dbUser: DbUser | null = await fetchDbUser(currentUser.id);
-  if (dbUser === null || (dbUser.message && dbUser.message === "User not found")) {
+  if (
+    dbUser === null ||
+    (dbUser.message && dbUser.message === "User not found")
+  ) {
     const postUrl = new URL(`/api/user`, req.url);
     const response = await fetch(postUrl.toString(), {
       method: "POST",
@@ -31,26 +34,30 @@ export async function middleware(req: NextRequest) {
     });
 
     if (!response.ok) {
-      console.error('Failed to create user:', response.statusText);
-      return NextResponse.json({ error: 'Failed to create user' }, { status: response.status });
+      console.error("Failed to create user:", response.statusText);
+      return NextResponse.json(
+        { error: "Failed to create user" },
+        { status: response.status }
+      );
     }
 
     dbUser = await fetchDbUser(currentUser.id);
   }
 
   if (!dbUser) {
-    console.error('User not found after creation attempt');
-    return NextResponse.json({ error: 'User not found' }, { status: 500 });
+    console.error("User not found after creation attempt");
+    return NextResponse.json({ error: "User not found" }, { status: 500 });
   }
 
   const userId = dbUser.id;
   const response = NextResponse.next();
-  response.headers.set('x-user-id', userId);
-  console.log('User ID added to headers:', userId);
+  response.headers.set("x-user-id", userId);
+  console.log("User ID added to headers:", userId);
 
   return response;
 }
-
+// Apply middleware to protected routes
+// This applies to the dashboard route and any sub-routes
 export const config = {
   matcher: ["/dashboard/:path*", "/api/form-submit"],
 };
