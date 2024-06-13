@@ -39,7 +39,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Form ID is missing' }, { status: 400 });
     }
 
+    /*
+    const defaultValues = {
+          project_name: "Default Project Name",
+          project_type: "Default Project Type",
+          financing_detail: {},
+          user_id: user_id
+      };
+      const formDataPayload = { form_id, data: defaultValues };
+    */
     const formDataPayload = { form_id, data: formData };
+
 
     const formDataResponse = await fetch(`${REMOTE_URL}/api/form_data`, {
       method: 'POST',
@@ -53,7 +63,21 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Failed to save form data' }, { status: formDataResponse.status });
     }
 
-    return NextResponse.json({ message: 'Form data saved successfully' }, { status: 200 });
+    const projectPayload = {};
+
+    const projectResponse = await fetch(`${REMOTE_URL}/api/project?user_id=${user_id}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(projectPayload),
+    });
+
+    if (!projectResponse.ok) {
+      return NextResponse.json({ error: 'Failed to create project' }, { status: projectResponse.status });
+    }
+
+    return NextResponse.json({ message: 'Form data and project saved successfully' }, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
