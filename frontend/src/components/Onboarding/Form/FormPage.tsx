@@ -81,6 +81,11 @@ const FormPage: React.FC = () => {
   });
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
+  const [showHeatmap, setShowHeatmap] = useState(false);
+
+  const handleToggleHeatmap = () => {
+    setShowHeatmap(!showHeatmap);
+  };
 
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
@@ -97,15 +102,16 @@ const FormPage: React.FC = () => {
     }
   }, []);
 
-  const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(e.target.value);
+  const handlePanelCountChange = (
+    e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
+  ) => {
+    const newValue = Number((e.target as HTMLInputElement).value);
     setPanelCount(newValue);
     setInputValues((prevValues) => ({
       ...prevValues,
       solar: { ...prevValues.solar, panelCount: newValue },
     }));
   };
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     tab: string,
@@ -157,6 +163,11 @@ const FormPage: React.FC = () => {
             lng: segment.center.longitude + offsetLng,
           },
         ],
+        stats: {
+          areaMeters2: 0,
+          groundAreaMeters2: 0,
+          sunshineQuantiles: [],
+        },
       };
       setSelectedSegment(roofSegment);
     }
@@ -204,6 +215,14 @@ const FormPage: React.FC = () => {
                 onChange={(e) => handlePanelCountChange(e)}
                 min="1"
                 step="1"
+              />
+              <input
+                type="range"
+                min="1"
+                max={maxPanels}
+                value={panelCount}
+                onInput={(e) => handlePanelCountChange(e)}
+                className="slider"
               />
               <Label htmlFor="solarInput2">Input 2</Label>
               <Input
@@ -495,12 +514,19 @@ const FormPage: React.FC = () => {
                     )}
                   </div>
                 )}
+                <Button onClick={handleToggleHeatmap}>
+                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                </Button>
               </CardContent>
             </Card>
           )}
         </div>
         <div className="viewbox">
-          <SolarMap panelCount={panelCount} selectedSegment={selectedSegment} />
+          <SolarMap
+            panelCount={panelCount}
+            selectedSegment={selectedSegment}
+            showHeatmap={showHeatmap}
+          />
         </div>
         <div className="sidebar">
           {renderContent()}
