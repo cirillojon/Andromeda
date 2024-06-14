@@ -208,9 +208,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
             <div>
               <p>
                 <strong>Installation Cost ($):</strong>{" "}
-                <span className="cost">
-                  {calculationResults.installationCostTotal}
-                </span>
+                <span>{calculationResults.installationCostTotal}</span>
               </p>
             </div>
           </div>
