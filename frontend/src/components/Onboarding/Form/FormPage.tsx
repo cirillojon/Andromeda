@@ -399,7 +399,7 @@ const FormPage: React.FC = () => {
       const results = calculateSolarPotential(
         config,
         panelCount,
-        300, // Example monthly average energy bill
+        300, // Example monthly average energy bill  -- lets get this from address page
         0.31, // Example energy cost per kWh
         0.85, // Example DC to AC derate factor
         7000, // Example solar incentives
