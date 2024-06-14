@@ -38,12 +38,14 @@ interface SolarMapProps {
   panelCount: number;
   selectedSegment: RoofSegment | null;
   showHeatmap: boolean;
+  showAllSegments: boolean;
 }
 
 const SolarMap: React.FC<SolarMapProps> = ({
   panelCount,
   selectedSegment,
   showHeatmap,
+  showAllSegments,
 }) => {
   const [solarPanels, setSolarPanels] = useState<SolarPanel[]>([]);
   const [roofSegments, setRoofSegments] = useState<RoofSegment[]>([]);
@@ -169,10 +171,15 @@ const SolarMap: React.FC<SolarMapProps> = ({
           polygonsRef.current.push(polygon);
         });
 
-        // Add the selected roof segment
-        if (selectedSegment) {
+        // Add the selected roof segment or all segments if showAllSegments is true
+        const segmentsToShow = showAllSegments
+          ? roofSegments
+          : selectedSegment
+          ? [selectedSegment]
+          : [];
+        segmentsToShow.forEach((segment) => {
           const polygon = new google.maps.Polygon({
-            paths: selectedSegment.corners,
+            paths: segment.corners,
             fillColor: "#FF6347",
             fillOpacity: 0.5,
             strokeColor: "#D3D3D3",
@@ -182,7 +189,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
           });
           polygon.setMap(map);
           polygonsRef.current.push(polygon);
-        }
+        });
       }
 
       // Add or remove heatmap layer
@@ -252,7 +259,14 @@ const SolarMap: React.FC<SolarMapProps> = ({
         heatmapRef.current.setMap(null);
       }
     }
-  }, [map, solarPanels, roofSegments, selectedSegment, showHeatmap]);
+  }, [
+    map,
+    solarPanels,
+    roofSegments,
+    selectedSegment,
+    showAllSegments,
+    showHeatmap,
+  ]);
 
   const handlePanelClick = (panel: SolarPanel) => {
     setSelectedPanel((prevSelectedPanel) =>

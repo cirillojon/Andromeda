@@ -15,6 +15,8 @@ interface SolarStatsCardProps {
   handleToggleHeatmap: () => void;
   showHeatmap: boolean;
   calculationResults: any;
+  handleToggleShowAllSegments: () => void;
+  showAllSegments: boolean;
 }
 
 const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
@@ -25,6 +27,8 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   handleToggleHeatmap,
   showHeatmap,
   calculationResults,
+  handleToggleShowAllSegments,
+  showAllSegments,
 }) => {
   const [showFinance, setShowFinance] = useState(false);
   const maxYearlySavings = 69718;
@@ -141,12 +145,21 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
           </div>
         )}
         <div className="button-container">
-          <Button onClick={handleToggleHeatmap}>
-            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-          </Button>
-          <Button onClick={() => setShowFinance(!showFinance)}>
-            {showFinance ? "Hide Financial Details" : "Show Financial Details"}
-          </Button>
+          <div className="button-container">
+            <Button onClick={handleToggleHeatmap}>
+              {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+            </Button>
+            <Button onClick={handleToggleShowAllSegments}>
+              {showAllSegments
+                ? "Hide All Roof Segments"
+                : "Show All Roof Segments"}
+            </Button>
+            <Button onClick={() => setShowFinance(!showFinance)}>
+              {showFinance
+                ? "Hide Financial Details"
+                : "Show Financial Details"}
+            </Button>
+          </div>
         </div>
         {showFinance && (
           <div className="solar-potential-details">
