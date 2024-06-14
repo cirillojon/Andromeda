@@ -404,7 +404,8 @@ const FormPage: React.FC = () => {
         0.85, // Example DC to AC derate factor
         7000, // Example solar incentives
         4.0, // Example installation cost per watt
-        20 // Example installation lifespan
+        20, // Example installation lifespan
+        solarData.building_insights.solarPotential.panelCapacityWatts
       );
       setCalculationResults(results);
     }

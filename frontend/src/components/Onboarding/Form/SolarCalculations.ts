@@ -10,10 +10,19 @@ export function calculateSolarPotential(
   dcToAcDerate: number,
   solarIncentives: number,
   installationCostPerWatt: number,
-  installationLifeSpan: number
+  installationLifeSpan: number,
+  panelCapacityWatts: number
 ) {
-  // Hardcoding panelCapacityWatts to 400
-  const panelCapacityWatts = 400;
+  if (!panelCapacityWatts) {
+    console.error("Invalid installation parameters", {
+      panelCount,
+      panelCapacityWatts,
+      installationCostPerWatt,
+    });
+    return; // Early exit if any configuration is invalid
+  }
+
+  console.log(`Panel Capacity Watts: ${panelCapacityWatts}`);
 
   const yearlyEnergyDcKwh =
     (config.yearlyEnergyDcKwh / config.roofSegmentSummaries[0].panelsCount) *
