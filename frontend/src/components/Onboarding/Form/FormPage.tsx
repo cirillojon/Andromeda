@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef } from "react";
 import "./FormPage.css";
 import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
-import { Bar } from "react-chartjs-2";
 import { calculateSolarPotential } from "./SolarCalculations";
 import {
   Chart as ChartJS,
@@ -16,12 +15,12 @@ import {
   Legend,
 } from "chart.js";
 import { Button } from "../../ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "../../ui/card";
-import { Input } from "../../ui/input";
-import { Label } from "../../ui/label";
 import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
-import { SolarPanelConfig } from "./SolarTypes";
+import { SolarPanelConfig, SolarData } from "./SolarTypes";
+import FormTabs from "./SubFormComponents/FormTabs";
+import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
+import FormInputs from "./SubFormComponents/FormInputs";
 
 ChartJS.register(
   BarElement,
@@ -32,32 +31,16 @@ ChartJS.register(
   Legend
 );
 
-interface LatLng {
-  lat: number;
-  lng: number;
-}
 
-interface SolarData {
-  building_insights: {
-    solarPotential: {
-      solarPanelConfigs: SolarPanelConfig[];
-      maxSunshineHoursPerYear: number;
-      panelCapacityWatts: number;
-      solarPanels: {
-        center: { latitude: number; longitude: number };
-        orientation: string;
-        yearlyEnergyDcKwh: number;
-      }[];
-      roofSegmentStats: {
-        stats: {
-          areaMeters2: number;
-        };
-        center: { latitude: number; longitude: number };
-        pitchDegrees: number;
-        azimuthDegrees: number;
-      }[];
-    };
+export interface InputValues {
+  solar: { panelCount: number; input2: string; input3: string };
+  roofing: { input1: string; input2: string; input3: string };
+  battery: { input1: string; input2: string; input3: string };
+  project_details: {
+    project_name: string;
+    project_type: string;
   };
+  [key: string]: any;
 }
 
 interface FormPageProps {
@@ -71,16 +54,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
-  const [inputValues, setInputValues] = useState<{
-    solar: { panelCount: number; input2: string; input3: string };
-    roofing: { input1: string; input2: string; input3: string };
-    battery: { input1: string; input2: string; input3: string };
-    project_details: {
-      project_name: string;
-      project_type: string;
-    };
-    [key: string]: any;
-  }>({
+  const [inputValues, setInputValues] = useState<InputValues>({
     solar: { panelCount: 10, input2: "", input3: "" },
     roofing: { input1: "", input2: "", input3: "" },
     battery: { input1: "", input2: "", input3: "" },
@@ -207,194 +181,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     setValidationPassed(true); // Set the flag to true on successful validation
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "Solar":
-        return (
-          <Card className="content">
-            <CardHeader>
-              <CardTitle>Solar Data Input</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="panelCount">Number of Panels</Label>
-              <Input
-                id="panelCount"
-                type="number"
-                placeholder="Number of Panels"
-                value={inputValues.solar.panelCount}
-                onChange={(e) => handlePanelCountChange(e)}
-                min="1"
-                step="1"
-              />
-              <input
-                type="range"
-                min="1"
-                max={maxPanels}
-                value={panelCount}
-                onInput={(e) => handlePanelCountChange(e)}
-                className="slider"
-              />
-              <Label htmlFor="solarInput2">Input 2</Label>
-              <Input
-                id="solarInput2"
-                type="text"
-                placeholder="Input 2"
-                value={inputValues.solar.input2}
-                onChange={(e) => handleInputChange(e, "solar", "input2")}
-              />
-              <Label htmlFor="solarInput3">Input 3</Label>
-              <Input
-                id="solarInput3"
-                type="text"
-                placeholder="Input 3"
-                value={inputValues.solar.input3}
-                onChange={(e) => handleInputChange(e, "solar", "input3")}
-              />
-            </CardContent>
-          </Card>
-        );
-      case "Roofing":
-        return (
-          <Card className="content">
-            <CardHeader>
-              <CardTitle>Roofing Data Input</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="roofingInput1">Input 1</Label>
-              <Input
-                id="roofingInput1"
-                type="text"
-                placeholder="Input 1"
-                value={inputValues.roofing.input1}
-                onChange={(e) => handleInputChange(e, "roofing", "input1")}
-              />
-              <Label htmlFor="roofingInput2">Input 2</Label>
-              <Input
-                id="roofingInput2"
-                type="text"
-                placeholder="Input 2"
-                value={inputValues.roofing.input2}
-                onChange={(e) => handleInputChange(e, "roofing", "input2")}
-              />
-              <Label htmlFor="roofingInput3">Input 3</Label>
-              <Input
-                id="roofingInput3"
-                type="text"
-                placeholder="Input 3"
-                value={inputValues.roofing.input3}
-                onChange={(e) => handleInputChange(e, "roofing", "input3")}
-              />
-            </CardContent>
-          </Card>
-        );
-      case "Battery":
-        return (
-          <Card className="content">
-            <CardHeader>
-              <CardTitle>Battery Data Input</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="batteryInput1">Input 1</Label>
-              <Input
-                id="batteryInput1"
-                type="text"
-                placeholder="Input 1"
-                value={inputValues.battery.input1}
-                onChange={(e) => handleInputChange(e, "battery", "input1")}
-              />
-              <Label htmlFor="batteryInput2">Input 2</Label>
-              <Input
-                id="batteryInput2"
-                type="text"
-                placeholder="Input 2"
-                value={inputValues.battery.input2}
-                onChange={(e) => handleInputChange(e, "battery", "input2")}
-              />
-              <Label htmlFor="batteryInput3">Input 3</Label>
-              <Input
-                id="batteryInput3"
-                type="text"
-                placeholder="Input 3"
-                value={inputValues.battery.input3}
-                onChange={(e) => handleInputChange(e, "battery", "input3")}
-              />
-            </CardContent>
-          </Card>
-        );
-      case "HVAC":
-        return (
-          <Card className="content">
-            <CardHeader>
-              <CardTitle>Coming Soon!</CardTitle>
-            </CardHeader>
-          </Card>
-        );
-      case "Project Details":
-        return (
-          <Card className="content">
-            <CardHeader>
-              <CardTitle>Project Details</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Label htmlFor="detailsInput1">Project Name</Label>
-              <Input
-                id="detailsInput1"
-                type="text"
-                placeholder="Project Name"
-                value={inputValues.project_details.project_name}
-                onChange={(e) =>
-                  handleInputChange(e, "project_details", "project_name")
-                }
-              />
-              <Label htmlFor="detailsInput2">Project Type</Label>
-              <Input
-                id="detailsInput2"
-                type="text"
-                placeholder="Project Type"
-                value={inputValues.project_details.project_type}
-                onChange={(e) =>
-                  handleInputChange(e, "project_details", "project_type")
-                }
-              />
-            </CardContent>
-          </Card>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const totalSavings = solarData
-    ? (panelCount *
-        solarData.building_insights.solarPotential.maxSunshineHoursPerYear *
-        solarData.building_insights.solarPotential.panelCapacityWatts) /
-      1000
-    : 0;
-
   const maxPanels = 110;
-  const maxYearlySavings = 69718;
-
-  const panelsPercentage = (panelCount / maxPanels) * 100;
-  const savingsPercentage = (totalSavings / maxYearlySavings) * 100;
-
-  const panelData =
-    solarData?.building_insights.solarPotential.solarPanels.slice(
-      0,
-      panelCount
-    );
-
-  const barChartData = {
-    labels: panelData?.map((panel, index) => `Panel ${index + 1}`),
-    datasets: [
-      {
-        label: "Yearly Energy (kWh)",
-        data: panelData?.map((panel) => panel.yearlyEnergyDcKwh),
-        backgroundColor: "rgba(75, 192, 192, 0.2)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
 
   useEffect(() => {
     if (solarData) {
@@ -416,172 +203,24 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   }, [solarData, panelCount, monthlyBill]);
 
   if (!calculationResults) {
-    return <div>Loading...</div>;
+    return <div className="w-screen h-screen">Loading...</div>;
   }
 
   return (
     <div className="form-container md:mt-16 mt-0">
-      <div className="tabs">
-        <Button
-          variant={activeTab === "Solar" ? "default" : "outline"}
-          onClick={() => setActiveTab("Solar")}
-        >
-          Solar
-        </Button>
-        <Button
-          variant={activeTab === "Roofing" ? "default" : "outline"}
-          onClick={() => setActiveTab("Roofing")}
-        >
-          Roofing
-        </Button>
-        <Button
-          variant={activeTab === "Battery" ? "default" : "outline"}
-          onClick={() => setActiveTab("Battery")}
-        >
-          Battery
-        </Button>
-        <Button
-          variant={activeTab === "HVAC" ? "default" : "outline"}
-          onClick={() => setActiveTab("HVAC")}
-        >
-          HVAC
-        </Button>
-        <Button
-          variant={activeTab === "Project Details" ? "default" : "outline"}
-          onClick={() => setActiveTab("Project Details")}
-        >
-          Project Details
-        </Button>
-      </div>
+      <FormTabs activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="mainContent">
         <div className="sidebar left-sidebar">
           {activeTab === "Solar" && solarData && (
-            <Card className="solar-stats">
-              <CardHeader>
-                <CardTitle>Solar Stats</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>
-                  <strong>Max Sunshine Hours/Year:</strong>{" "}
-                  {
-                    solarData.building_insights.solarPotential
-                      .maxSunshineHoursPerYear
-                  }
-                </p>
-                <p>
-                  <strong>Panel Capacity (Watts):</strong>{" "}
-                  {
-                    solarData.building_insights.solarPotential
-                      .panelCapacityWatts
-                  }
-                </p>
-                <p>
-                  <strong>Total Savings (kWh/year):</strong>{" "}
-                  {totalSavings.toFixed(2)}
-                </p>
-                <div className="progress-bar">
-                  <p>
-                    Panels Count: {panelCount}/{maxPanels}
-                  </p>
-                  <div className="progress">
-                    <div
-                      className="progress-filled"
-                      style={{ width: `${panelsPercentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="progress-bar">
-                  <p>
-                    Yearly Savings: {totalSavings.toFixed(2)} kWh/
-                    {maxYearlySavings} kWh
-                  </p>
-                  <div className="progress">
-                    <div
-                      className="progress-filled"
-                      style={{ width: `${savingsPercentage}%` }}
-                    ></div>
-                  </div>
-                </div>
-                <div className="chart-container">
-                  <Bar
-                    data={barChartData}
-                    options={{
-                      responsive: true,
-                      plugins: {
-                        legend: { display: false },
-                        title: {
-                          display: true,
-                          text: "Yearly Energy Production by Panel",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-                {solarData.building_insights.solarPotential.roofSegmentStats
-                  .length > 0 && (
-                  <div className="roof-segments-container">
-                    {solarData.building_insights.solarPotential.roofSegmentStats.map(
-                      (segment, index) => (
-                        <div
-                          key={index}
-                          className="roof-segment"
-                          onClick={() => handleSegmentClick(segment)}
-                        >
-                          <h3>Roof Segment {index + 1}</h3>
-                          <p>
-                            <strong>Area (m²):</strong>{" "}
-                            {segment.stats.areaMeters2.toFixed(2)}
-                          </p>
-                          <p>
-                            <strong>Pitch (degrees):</strong>{" "}
-                            {segment.pitchDegrees.toFixed(2)}
-                          </p>
-                          <p>
-                            <strong>Azimuth (degrees):</strong>{" "}
-                            {segment.azimuthDegrees.toFixed(2)}
-                          </p>
-                        </div>
-                      )
-                    )}
-                  </div>
-                )}
-                <Button onClick={handleToggleHeatmap}>
-                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-                </Button>
-                <div className="solar-potential-analysis">
-                  <h2>Solar Potential Analysis</h2>
-                  <p>
-                    Yearly Energy: {calculationResults.yearlyEnergyDcKwh} kWh
-                  </p>
-                  <p>
-                    Installation Size: {calculationResults.installationSizeKw}{" "}
-                    kW
-                  </p>
-                  <p>
-                    Installation Cost: $
-                    {calculationResults.installationCostTotal}
-                  </p>
-                  <p>
-                    Energy Covered:{" "}
-                    {Math.round(calculationResults.energyCovered * 100)}%
-                  </p>
-                  <p>
-                    Cost Without Solar: $
-                    {calculationResults.totalCostWithoutSolar}
-                  </p>
-                  <p>
-                    Cost With Solar: ${calculationResults.totalCostWithSolar}
-                  </p>
-                  <p>Savings: ${calculationResults.savings}</p>
-                  <p>
-                    Break Even Year:{" "}
-                    {calculationResults.breakEvenYear >= 0
-                      ? `Year ${calculationResults.breakEvenYear}`
-                      : "Not achievable within the lifespan"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+            <SolarStatsCard
+              solarData={solarData}
+              panelCount={panelCount}
+              maxPanels={maxPanels}
+              handleSegmentClick={handleSegmentClick}
+              handleToggleHeatmap={handleToggleHeatmap}
+              showHeatmap={showHeatmap}
+              calculationResults={calculationResults}
+            />
           )}
         </div>
         <div className="viewbox">
@@ -592,7 +231,14 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
           />
         </div>
         <div className="sidebar">
-          {renderContent()}
+          <FormInputs
+            activeTab={activeTab}
+            inputValues={inputValues}
+            handlePanelCountChange={handlePanelCountChange}
+            handleInputChange={handleInputChange}
+            panelCount={panelCount}
+            maxPanels={maxPanels}
+          />
           {validationPassed ? (
             <RegisterLink className="w-full">
               <Button ref={authButtonRef}>

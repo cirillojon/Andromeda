@@ -10,6 +10,29 @@ export interface DataLayersResponse {
   imageryQuality: "HIGH" | "MEDIUM" | "LOW";
 }
 
+export interface SolarData {
+  building_insights: {
+    solarPotential: {
+      solarPanelConfigs: SolarPanelConfig[];
+      maxSunshineHoursPerYear: number;
+      panelCapacityWatts: number;
+      solarPanels: {
+        center: { latitude: number; longitude: number };
+        orientation: string;
+        yearlyEnergyDcKwh: number;
+      }[];
+      roofSegmentStats: {
+        stats: {
+          areaMeters2: number;
+        };
+        center: { latitude: number; longitude: number };
+        pitchDegrees: number;
+        azimuthDegrees: number;
+      }[];
+    };
+  };
+}
+
 export interface Bounds {
   north: number;
   south: number;
