@@ -396,8 +396,6 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     ],
   };
 
-  // console.log("Total Savings:", totalSavings);
-
   useEffect(() => {
     if (solarData) {
       const config: SolarPanelConfig =
