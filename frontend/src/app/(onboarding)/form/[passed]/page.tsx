@@ -10,11 +10,6 @@ const Page = ({ params }: PageProps) => {
   const passed = decodeURIComponent(params.passed).split("&");
   const address = decodeURIComponent(passed[0]);
   const monthlyBill = decodeURIComponent(passed[1]);
-
-  console.log("address: " + address);
-  console.log("monthly bill: " + monthlyBill);
-
-  //pass the address to the form page if needed
   return (
     <div>
       <FormPage monthlyBill={Number(monthlyBill)} />

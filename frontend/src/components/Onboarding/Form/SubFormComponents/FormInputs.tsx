@@ -3,7 +3,18 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { InputValues } from "../SolarTypes";
+
+
+interface InputValues {
+    solar: { panelCount: number; input2: string; input3: string };
+    roofing: { input1: string; input2: string; input3: string };
+    battery: { input1: string; input2: string; input3: string };
+    project_details: {
+      project_name: string;
+      project_type: string;
+    };
+    [key: string]: any;
+  }
 
 interface FormInputsProps {
   activeTab: string;

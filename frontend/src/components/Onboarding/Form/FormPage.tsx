@@ -17,7 +17,7 @@ import {
 import { Button } from "../../ui/button";
 import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
-import { SolarPanelConfig, InputValues, SolarData } from "./SolarTypes";
+import { SolarPanelConfig, SolarData } from "./SolarTypes";
 import FormTabs from "./SubFormComponents/FormTabs";
 import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
 import FormInputs from "./SubFormComponents/FormInputs";
@@ -30,6 +30,18 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
+
+export interface InputValues {
+  solar: { panelCount: number; input2: string; input3: string };
+  roofing: { input1: string; input2: string; input3: string };
+  battery: { input1: string; input2: string; input3: string };
+  project_details: {
+    project_name: string;
+    project_type: string;
+  };
+  [key: string]: any;
+}
 
 interface FormPageProps {
   monthlyBill: number;
