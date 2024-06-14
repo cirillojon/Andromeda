@@ -97,15 +97,16 @@ const FormPage: React.FC = () => {
     }
   }, []);
 
-  const handlePanelCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = Number(e.target.value);
+  const handlePanelCountChange = (
+    e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
+  ) => {
+    const newValue = Number((e.target as HTMLInputElement).value);
     setPanelCount(newValue);
     setInputValues((prevValues) => ({
       ...prevValues,
       solar: { ...prevValues.solar, panelCount: newValue },
     }));
   };
-
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     tab: string,
@@ -204,6 +205,14 @@ const FormPage: React.FC = () => {
                 onChange={(e) => handlePanelCountChange(e)}
                 min="1"
                 step="1"
+              />
+              <input
+                type="range"
+                min="1"
+                max={maxPanels}
+                value={panelCount}
+                onInput={(e) => handlePanelCountChange(e)}
+                className="slider"
               />
               <Label htmlFor="solarInput2">Input 2</Label>
               <Input
