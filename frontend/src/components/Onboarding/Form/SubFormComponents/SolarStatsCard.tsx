@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import "@/components/Onboarding/Form/FormPage.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar } from "react-chartjs-2";
+import { useState } from "react";
 import { SolarData } from "@/components/Onboarding/Form/SolarTypes";
 
 interface SolarStatsCardProps {
@@ -25,6 +26,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   showHeatmap,
   calculationResults,
 }) => {
+  const [showFinance, setShowFinance] = useState(false);
   const maxYearlySavings = 69718;
   const panelsPercentage = (panelCount / maxPanels) * 100;
   const energyProducedPercentage =
@@ -74,7 +76,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
         </div>
         <div className="progress-bar">
           <p>
-            Panels Count: {panelCount}/{maxPanels}
+            <strong>Panels Count:</strong> {panelCount}/{maxPanels}
           </p>
           <div className="progress">
             <div
@@ -141,74 +143,81 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
         <Button onClick={handleToggleHeatmap}>
           {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
         </Button>
-        <div className="solar-potential-details">
-          <div className="progress-bar">
+        <Button onClick={() => setShowFinance(!showFinance)}>
+          {showFinance ? "Hide Financial Details" : "Show Financial Details"}
+        </Button>
+        {showFinance && (
+          <div className="solar-potential-details">
+            <div className="progress-bar">
+              <p>
+                <strong>Cost Without Solar ($):</strong>{" "}
+                {calculationResults.totalCostWithoutSolar}
+              </p>
+              <div className="progress">
+                <div
+                  className="progress-filled bad"
+                  style={{
+                    width: `${
+                      (calculationResults.totalCostWithoutSolar / 100000) * 100
+                    }%`,
+                  }}
+                ></div>
+              </div>
+            </div>
+            <div className="progress-bar">
+              <p>
+                <strong>Cost With Solar ($):</strong>{" "}
+                {calculationResults.totalCostWithSolar}
+              </p>
+              <div className="progress">
+                <div
+                  className="progress-filled good"
+                  style={{
+                    width: `${
+                      (calculationResults.totalCostWithSolar / 100000) * 100
+                    }%`,
+                  }}
+                ></div>
+              </div>
+            </div>
             <p>
-              <strong>Cost Without Solar ($):</strong>{" "}
-              {calculationResults.totalCostWithoutSolar}
+              <strong>Savings ($):</strong>{" "}
+              <span className="savings">{calculationResults.savings}</span>
             </p>
-            <div className="progress">
+            <p>
+              <strong>Break Even Year:</strong>{" "}
+              {calculationResults.breakEvenYear >= 0
+                ? `Year ${calculationResults.breakEvenYear}`
+                : "Not achievable within the lifespan"}
+            </p>
+            <div className="progress-bar">
+              <p>
+                <strong>Installation Size (kW):</strong>{" "}
+                {calculationResults.installationSizeKw}
+              </p>
               <div
-                className="progress-filled bad"
                 style={{
                   width: `${
-                    (calculationResults.totalCostWithoutSolar / 100000) * 100
+                    (calculationResults.installationSizeKw / 10) * 100
+                  }%`,
+                }}
+              ></div>
+            </div>
+            <div className="cost">
+              <p>
+                <strong>Installation Cost ($):</strong>{" "}
+                {calculationResults.installationCostTotal}
+              </p>
+              <div
+                style={{
+                  width: `${
+                    (calculationResults.installationCostTotal / 50000) * 100
                   }%`,
                 }}
               ></div>
             </div>
           </div>
-          <div className="progress-bar">
-            <p>
-              <strong>Cost With Solar ($):</strong>{" "}
-              {calculationResults.totalCostWithSolar}
-            </p>
-            <div className="progress">
-              <div
-                className="progress-filled good"
-                style={{
-                  width: `${
-                    (calculationResults.totalCostWithSolar / 100000) * 100
-                  }%`,
-                }}
-              ></div>
-            </div>
-          </div>
-          <p>
-            <strong>Savings ($):</strong>{" "}
-            <span className="savings">{calculationResults.savings}</span>
-          </p>
-          <p>
-            <strong>Break Even Year:</strong>{" "}
-            {calculationResults.breakEvenYear >= 0
-              ? `Year ${calculationResults.breakEvenYear}`
-              : "Not achievable within the lifespan"}
-          </p>
-          <div className="progress-bar">
-            <p>
-              <strong>Installation Size (kW):</strong>{" "}
-              {calculationResults.installationSizeKw}
-            </p>
-            <div
-              style={{
-                width: `${(calculationResults.installationSizeKw / 10) * 100}%`,
-              }}
-            ></div>
-          </div>
-          <div className="progress-bar">
-            <p>
-              <strong>Installation Cost ($):</strong>{" "}
-              {calculationResults.installationCostTotal}
-            </p>
-            <div
-              style={{
-                width: `${
-                  (calculationResults.installationCostTotal / 50000) * 100
-                }%`,
-              }}
-            ></div>
-          </div>
-        </div>
+        )}
       </CardContent>
     </Card>
   );
