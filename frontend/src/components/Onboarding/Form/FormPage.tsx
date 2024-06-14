@@ -550,69 +550,41 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
                 <Button onClick={handleToggleHeatmap}>
                   {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
                 </Button>
+                <div className="solar-potential-analysis">
+                  <h2>Solar Potential Analysis</h2>
+                  <p>
+                    Yearly Energy: {calculationResults.yearlyEnergyDcKwh} kWh
+                  </p>
+                  <p>
+                    Installation Size: {calculationResults.installationSizeKw}{" "}
+                    kW
+                  </p>
+                  <p>
+                    Installation Cost: $
+                    {calculationResults.installationCostTotal}
+                  </p>
+                  <p>
+                    Energy Covered:{" "}
+                    {Math.round(calculationResults.energyCovered * 100)}%
+                  </p>
+                  <p>
+                    Cost Without Solar: $
+                    {calculationResults.totalCostWithoutSolar}
+                  </p>
+                  <p>
+                    Cost With Solar: ${calculationResults.totalCostWithSolar}
+                  </p>
+                  <p>Savings: ${calculationResults.savings}</p>
+                  <p>
+                    Break Even Year:{" "}
+                    {calculationResults.breakEvenYear >= 0
+                      ? `Year ${calculationResults.breakEvenYear}`
+                      : "Not achievable within the lifespan"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
-          <div>
-            <Card>
-              <CardHeader>
-                <CardTitle>Solar Potential Analysis</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>Yearly Energy: {calculationResults.yearlyEnergyDcKwh} kWh</p>
-                <p>
-                  Installation Size: {calculationResults.installationSizeKw} kW
-                </p>
-                <p>
-                  Installation Cost: ${calculationResults.installationCostTotal}
-                </p>
-                <p>
-                  Energy Covered:{" "}
-                  {Math.round(calculationResults.energyCovered * 100)}%
-                </p>
-                <p>
-                  Cost Without Solar: $
-                  {calculationResults.totalCostWithoutSolar}
-                </p>
-                <p>Cost With Solar: ${calculationResults.totalCostWithSolar}</p>
-                <p>Savings: ${calculationResults.savings}</p>
-                <p>
-                  Break Even Year:{" "}
-                  {calculationResults.breakEvenYear >= 0
-                    ? `Year ${calculationResults.breakEvenYear}`
-                    : "Not achievable within the lifespan"}
-                </p>
-              </CardContent>
-            </Card>
-            <Bar
-              data={{
-                labels: Array.from({ length: 20 }, (_, i) => 2024 + i),
-                datasets: [
-                  {
-                    label: "Cost with Solar",
-                    data: calculationResults.yearlyProductionAcKwh,
-                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    borderWidth: 1,
-                  },
-                  {
-                    label: "Cost without Solar",
-                    data: calculationResults.yearlyCostWithoutSolar,
-                    backgroundColor: "rgba(255, 99, 132, 0.2)",
-                    borderColor: "rgba(255, 99, 132, 1)",
-                    borderWidth: 1,
-                  },
-                ],
-              }}
-              options={{
-                responsive: true,
-                plugins: {
-                  legend: { display: true },
-                  title: { display: true, text: "Cost Analysis for 20 Years" },
-                },
-              }}
-            />
-          </div>
         </div>
         <div className="viewbox">
           <SolarMap
