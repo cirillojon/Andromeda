@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
-import { GoogleMap, Marker, LoadScript } from "@react-google-maps/api";
+import {
+  GoogleMap,
+  Marker,
+  LoadScript,
+  Libraries,
+} from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
 
 interface LatLng {
@@ -233,7 +238,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
             "rgba(0, 0, 255, 1)",
             "rgba(0, 0, 223, 1)",
             "rgba(0, 0, 191, 1)",
-            "rgba(0, 0, 159, 1)",
+            "rgba(0, 0,159, 1)",
             "rgba(0, 0, 127, 1)",
             "rgba(63, 0, 91, 1)",
             "rgba(127, 0, 63, 1)",
@@ -271,8 +276,10 @@ const SolarMap: React.FC<SolarMapProps> = ({
     scrollwheel: false,
   };
 
+  const libraries: Libraries = ["places", "geometry", "visualization"];
+
   return (
-    <LoadScript googleMapsApiKey={apiKey!} libraries={["visualization"]}>
+    <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>
       <div className="map-container">
         <GoogleMap
           mapContainerStyle={{ height: "100%", width: "100%" }}

@@ -194,3 +194,17 @@
   background: #4caf50;
   cursor: pointer;
 }
+
+.solar-potential-analysis {
+  margin-top: 20px;
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+
+.solar-potential-analysis h2 {
+  margin-bottom: 10px;
+}
+
+.solar-potential-analysis p {
+  margin: 5px 0;
+}

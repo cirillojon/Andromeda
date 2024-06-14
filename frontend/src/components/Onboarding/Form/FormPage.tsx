@@ -5,6 +5,7 @@ import "./FormPage.css";
 import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
 import { Bar } from "react-chartjs-2";
+import { calculateSolarPotential } from "./SolarCalculations";
 import {
   Chart as ChartJS,
   BarElement,
@@ -20,6 +21,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
+import { SolarPanelConfig } from "./SolarTypes";
 
 ChartJS.register(
   BarElement,
@@ -38,6 +40,7 @@ interface LatLng {
 interface SolarData {
   building_insights: {
     solarPotential: {
+      solarPanelConfigs: SolarPanelConfig[];
       maxSunshineHoursPerYear: number;
       panelCapacityWatts: number;
       solarPanels: {
@@ -57,7 +60,11 @@ interface SolarData {
   };
 }
 
-const FormPage: React.FC = () => {
+interface FormPageProps {
+  monthlyBill: number;
+}
+
+const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   const [activeTab, setActiveTab] = useState("Solar");
   const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
@@ -82,6 +89,7 @@ const FormPage: React.FC = () => {
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [calculationResults, setCalculationResults] = useState<any>(null);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -112,6 +120,7 @@ const FormPage: React.FC = () => {
       solar: { ...prevValues.solar, panelCount: newValue },
     }));
   };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     tab: string,
@@ -172,6 +181,7 @@ const FormPage: React.FC = () => {
       setSelectedSegment(roofSegment);
     }
   };
+
   const validateFields = () => {
     const { project_name, project_type } = inputValues.project_details;
     return project_name.trim() !== "" && project_type.trim() !== "";
@@ -386,7 +396,28 @@ const FormPage: React.FC = () => {
     ],
   };
 
-  console.log("Total Savings:", totalSavings);
+  useEffect(() => {
+    if (solarData) {
+      const config: SolarPanelConfig =
+        solarData.building_insights.solarPotential.solarPanelConfigs[0];
+      const results = calculateSolarPotential(
+        config,
+        panelCount,
+        Number(monthlyBill), // Use the monthly bill from the props
+        0.31, // Example energy cost per kWh
+        0.85, // Example DC to AC derate factor
+        7000, // Example solar incentives
+        4.0, // Example installation cost per watt
+        20, // Example installation lifespan
+        solarData.building_insights.solarPotential.panelCapacityWatts
+      );
+      setCalculationResults(results);
+    }
+  }, [solarData, panelCount, monthlyBill]);
+
+  if (!calculationResults) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="form-container md:mt-16 mt-0">
@@ -517,6 +548,38 @@ const FormPage: React.FC = () => {
                 <Button onClick={handleToggleHeatmap}>
                   {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
                 </Button>
+                <div className="solar-potential-analysis">
+                  <h2>Solar Potential Analysis</h2>
+                  <p>
+                    Yearly Energy: {calculationResults.yearlyEnergyDcKwh} kWh
+                  </p>
+                  <p>
+                    Installation Size: {calculationResults.installationSizeKw}{" "}
+                    kW
+                  </p>
+                  <p>
+                    Installation Cost: $
+                    {calculationResults.installationCostTotal}
+                  </p>
+                  <p>
+                    Energy Covered:{" "}
+                    {Math.round(calculationResults.energyCovered * 100)}%
+                  </p>
+                  <p>
+                    Cost Without Solar: $
+                    {calculationResults.totalCostWithoutSolar}
+                  </p>
+                  <p>
+                    Cost With Solar: ${calculationResults.totalCostWithSolar}
+                  </p>
+                  <p>Savings: ${calculationResults.savings}</p>
+                  <p>
+                    Break Even Year:{" "}
+                    {calculationResults.breakEvenYear >= 0
+                      ? `Year ${calculationResults.breakEvenYear}`
+                      : "Not achievable within the lifespan"}
+                  </p>
+                </div>
               </CardContent>
             </Card>
           )}
