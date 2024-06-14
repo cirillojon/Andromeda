@@ -255,16 +255,9 @@ const SolarMap: React.FC<SolarMapProps> = ({
   }, [map, solarPanels, roofSegments, selectedSegment, showHeatmap]);
 
   const handlePanelClick = (panel: SolarPanel) => {
-    setSelectedPanel(panel);
-  };
-
-  const handleRemovePanel = (panelId: string) => {
-    setSolarPanels((prevPanels) =>
-      prevPanels.filter((panel) => panel.id !== panelId)
+    setSelectedPanel((prevSelectedPanel) =>
+      prevSelectedPanel?.id === panel.id ? null : panel
     );
-    if (selectedPanel?.id === panelId) {
-      setSelectedPanel(null);
-    }
   };
 
   const mapOptions = {
