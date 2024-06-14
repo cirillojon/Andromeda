@@ -21,6 +21,7 @@ import { SolarPanelConfig, SolarData } from "./SolarTypes";
 import FormTabs from "./SubFormComponents/FormTabs";
 import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
 import FormInputs from "./SubFormComponents/FormInputs";
+import { InputValues } from "./SubFormComponents/FormInputs";
 
 ChartJS.register(
   BarElement,
@@ -30,18 +31,6 @@ ChartJS.register(
   Tooltip,
   Legend
 );
-
-
-export interface InputValues {
-  solar: { panelCount: number; input2: string; input3: string };
-  roofing: { input1: string; input2: string; input3: string };
-  battery: { input1: string; input2: string; input3: string };
-  project_details: {
-    project_name: string;
-    project_type: string;
-  };
-  [key: string]: any;
-}
 
 interface FormPageProps {
   monthlyBill: number;
@@ -55,10 +44,26 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     null
   );
   const [inputValues, setInputValues] = useState<InputValues>({
-    solar: { panelCount: 10, input2: "", input3: "" },
-    roofing: { input1: "", input2: "", input3: "" },
-    battery: { input1: "", input2: "", input3: "" },
+    solar: { panelCount: 10, energyUtilization: "", project_name: "", project_type: "solar" },
+    roofing: {
+      currentRoofType: "",
+      desiredRoofType: "",
+      roofHealth: "",
+      stories: "1",
+      project_name: "",
+      project_type: "roof",
+    },
+    battery: {
+      currentSolarSystemSize: "",
+      expectedUsage: "",
+      numberOfEVs: "",
+      houseType: "",
+      ownership: "",
+      project_name: "",
+      project_type: "battery",
+    },
     project_details: { project_name: "", project_type: "" },
+    annualIncome: "",
   });
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
@@ -104,6 +109,13 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     setInputValues((prevValues) => ({
       ...prevValues,
       [tab]: { ...prevValues[tab], [inputName]: newValue },
+    }));
+  };
+
+  const handleSelectChange = (value: string, tab: string, inputName: string) => {
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [tab]: { ...prevValues[tab], [inputName]: value },
     }));
   };
 
@@ -236,6 +248,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
             inputValues={inputValues}
             handlePanelCountChange={handlePanelCountChange}
             handleInputChange={handleInputChange}
+            handleSelectChange={handleSelectChange}
             panelCount={panelCount}
             maxPanels={maxPanels}
           />
