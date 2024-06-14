@@ -140,12 +140,14 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
             )}
           </div>
         )}
-        <Button onClick={handleToggleHeatmap}>
-          {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-        </Button>
-        <Button onClick={() => setShowFinance(!showFinance)}>
-          {showFinance ? "Hide Financial Details" : "Show Financial Details"}
-        </Button>
+        <div className="button-container">
+          <Button onClick={handleToggleHeatmap}>
+            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+          </Button>
+          <Button onClick={() => setShowFinance(!showFinance)}>
+            {showFinance ? "Hide Financial Details" : "Show Financial Details"}
+          </Button>
+        </div>
         {showFinance && (
           <div className="solar-potential-details">
             <div className="progress-bar">
@@ -203,18 +205,13 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
                 }}
               ></div>
             </div>
-            <div className="cost">
+            <div>
               <p>
                 <strong>Installation Cost ($):</strong>{" "}
-                {calculationResults.installationCostTotal}
+                <span className="cost">
+                  {calculationResults.installationCostTotal}
+                </span>
               </p>
-              <div
-                style={{
-                  width: `${
-                    (calculationResults.installationCostTotal / 50000) * 100
-                  }%`,
-                }}
-              ></div>
             </div>
           </div>
         )}

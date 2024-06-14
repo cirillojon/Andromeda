@@ -85,7 +85,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
-  max-width: 400px; /* Adjust width as needed */
+  max-width: 400px;
 }
 
 .solar-stats h2 {
@@ -93,15 +93,15 @@
 }
 
 .solar-stats p {
-  margin: 4px 0; /* Reduce vertical margin between paragraphs */
+  margin: 4px 0;
 }
 
 .progress-bar {
-  margin-bottom: 8px; /* Reduce bottom margin for progress bars */
+  margin-bottom: 8px;
 }
 
 .progress-bar .progress {
-  height: 10px; /* Adjust height of progress bars */
+  height: 10px;
   background-color: #e0e0e0;
   border-radius: 25px;
   position: relative;
@@ -119,7 +119,7 @@
 }
 
 .chart-container {
-  margin-top: 20px; /* Adjust top margin for chart */
+  margin-top: 20px;
 }
 
 .roof-segments-container {
@@ -230,4 +230,14 @@
   border-radius: 5px;
   border: 1px solid #d66260;
   display: inline-block;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-container .button {
+  width: 100%;
 }
