@@ -569,6 +569,12 @@ const FormPage: React.FC = () => {
                 </p>
                 <p>Cost With Solar: ${calculationResults.totalCostWithSolar}</p>
                 <p>Savings: ${calculationResults.savings}</p>
+                <p>
+                  Break Even Year:{" "}
+                  {calculationResults.breakEvenYear >= 0
+                    ? `Year ${calculationResults.breakEvenYear}`
+                    : "Not achievable within the lifespan"}
+                </p>
               </CardContent>
             </Card>
             <Bar

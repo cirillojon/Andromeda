@@ -10,7 +10,6 @@ export function calculateSolarPotential(
   installationCostPerWatt: number,
   installationLifeSpan: number,
 ) {
-  // Consistent with Google Solar API demo
   const yearlyEnergyDcKwh = config.yearlyEnergyDcKwh;
   const installationSizeKw = (panelCount * config.roofSegmentSummaries[0].panelsCount) / 1000;
   const installationCostTotal = installationCostPerWatt * installationSizeKw * 1000;
@@ -41,6 +40,28 @@ export function calculateSolarPotential(
   const savings = totalCostWithoutSolar - totalCostWithSolar;
   const energyCovered = yearlyProductionAcKwh[0] / yearlyKwhEnergyConsumption;
 
+  // Calculate cumulative costs for each year
+  const cumulativeCostsWithSolar: number[] = [];
+  yearlyUtilityBillEstimates.forEach((billEstimate, i) => {
+    const cumulativeCost = (i === 0 ? billEstimate + installationCostTotal - solarIncentives : billEstimate + cumulativeCostsWithSolar[i - 1]);
+    cumulativeCostsWithSolar.push(cumulativeCost);
+  });
+
+  const cumulativeCostsWithoutSolar: number[] = [];
+  yearlyCostWithoutSolar.forEach((cost, i) => {
+    const cumulativeCost = (i === 0 ? cost : cost + cumulativeCostsWithoutSolar[i - 1]);
+    cumulativeCostsWithoutSolar.push(cumulativeCost);
+  });
+
+  // Determine breakeven year
+  let breakEvenYear = -1;
+  for (let i = 0; i < cumulativeCostsWithSolar.length; i++) {
+    if (cumulativeCostsWithSolar[i] <= cumulativeCostsWithoutSolar[i]) {
+      breakEvenYear = i + 1; // Since index is 0-based and year is 1-based
+      break;
+    }
+  }
+
   return {
     installationSizeKw,
     installationCostTotal,
@@ -50,5 +71,6 @@ export function calculateSolarPotential(
     totalCostWithoutSolar,
     savings,
     energyCovered,
+    breakEvenYear,
   };
 }
