@@ -121,10 +121,6 @@
   margin-top: 20px;
 }
 
-.chart-container {
-  margin-top: 20px;
-}
-
 .roof-segments-container {
   display: flex;
   overflow-x: auto;
@@ -195,16 +191,51 @@
   cursor: pointer;
 }
 
-.solar-potential-analysis {
+.solar-potential-details {
   margin-top: 20px;
   padding: 20px;
   border-top: 1px solid #ccc;
 }
 
-.solar-potential-analysis h2 {
-  margin-bottom: 10px;
+.solar-potential-details p {
+  margin: 5px 0;
 }
 
-.solar-potential-analysis p {
-  margin: 5px 0;
+.progress-bar .progress-filled.good {
+  background-color: green;
+}
+
+.progress-bar .progress-filled.bad {
+  background-color: red;
+}
+
+.savings {
+  font-size: 1.2em;
+  color: green;
+  font-weight: bold;
+  background-color: #e0f7e9;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #a8d5ba;
+  display: inline-block;
+}
+
+.solar-stats {
+  max-width: 400px; /* Adjust width as needed */
+}
+
+.solar-stats p {
+  margin: 4px 0; /* Reduce vertical margin between paragraphs */
+}
+
+.progress-bar {
+  margin-bottom: 8px; /* Reduce bottom margin for progress bars */
+}
+
+.progress-bar .progress {
+  height: 10px; /* Adjust height of progress bars */
+}
+
+.chart-container {
+  margin-top: 20px; /* Adjust top margin for chart */
 }
