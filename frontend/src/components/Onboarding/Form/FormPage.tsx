@@ -40,7 +40,7 @@ interface LatLng {
 interface SolarData {
   building_insights: {
     solarPotential: {
-      solarPanelConfigs: any;
+      solarPanelConfigs: SolarPanelConfig[];
       maxSunshineHoursPerYear: number;
       panelCapacityWatts: number;
       solarPanels: {

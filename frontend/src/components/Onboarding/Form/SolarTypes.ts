@@ -7,7 +7,7 @@ export interface DataLayersResponse {
   annualFluxUrl: string;
   monthlyFluxUrl: string;
   hourlyShadeUrls: string[];
-  imageryQuality: 'HIGH' | 'MEDIUM' | 'LOW';
+  imageryQuality: "HIGH" | "MEDIUM" | "LOW";
 }
 
 export interface Bounds {
@@ -28,7 +28,7 @@ export interface BuildingInsightsResponse {
   statisticalArea: string;
   regionCode: string;
   solarPotential: SolarPotential;
-  imageryQuality: 'HIGH' | 'MEDIUM' | 'LOW';
+  imageryQuality: "HIGH" | "MEDIUM" | "LOW";
 }
 
 export interface SolarPotential {
@@ -65,18 +65,20 @@ export interface RoofSegmentSizeAndSunshineStats {
 
 export interface SolarPanel {
   center: LatLng;
-  orientation: 'LANDSCAPE' | 'PORTRAIT';
+  orientation: "LANDSCAPE" | "PORTRAIT";
   segmentIndex: number;
   yearlyEnergyDcKwh: number;
 }
 
 export interface SolarPanelConfig {
+  panelCapacityWatts: number;
   panelsCount: number;
   yearlyEnergyDcKwh: number;
   roofSegmentSummaries: RoofSegmentSummary[];
 }
 
 export interface RoofSegmentSummary {
+  panelCapacityWatts: number;
   pitchDegrees: number;
   azimuthDegrees: number;
   panelsCount: number;
@@ -94,12 +96,6 @@ export interface LatLngBox {
   ne: LatLng;
 }
 
-export interface Date {
-  year: number;
-  month: number;
-  day: number;
-}
-
 export interface RequestError {
   error: {
     code: number;
@@ -108,4 +104,10 @@ export interface RequestError {
   };
 }
 
-export type LayerId = 'mask' | 'dsm' | 'rgb' | 'annualFlux' | 'monthlyFlux' | 'hourlyShade';
+export type LayerId =
+  | "mask"
+  | "dsm"
+  | "rgb"
+  | "annualFlux"
+  | "monthlyFlux"
+  | "hourlyShade";

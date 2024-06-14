@@ -1,6 +1,6 @@
 import { SolarPanelConfig } from "./SolarTypes";
 
-const DEBUG = false;
+const DEBUG = true;
 
 export function calculateSolarPotential(
   config: SolarPanelConfig,
@@ -12,17 +12,41 @@ export function calculateSolarPotential(
   installationCostPerWatt: number,
   installationLifeSpan: number
 ) {
-  const yearlyEnergyDcKwh = (config.yearlyEnergyDcKwh / config.roofSegmentSummaries[0].panelsCount) * panelCount;
-  if (DEBUG) console.log(`Yearly Energy DC (kWh) for ${panelCount} panels: ${yearlyEnergyDcKwh}`);
+  // Hardcoding panelCapacityWatts to 400
+  const panelCapacityWatts = 400;
 
-  const installationSizeKw = (panelCount * config.roofSegmentSummaries[0].panelsCount) / 1000;
-  const installationCostTotal = installationCostPerWatt * installationSizeKw * 1000;
+  const yearlyEnergyDcKwh =
+    (config.yearlyEnergyDcKwh / config.roofSegmentSummaries[0].panelsCount) *
+    panelCount;
+  if (DEBUG)
+    console.log(
+      `Yearly Energy DC (kWh) for ${panelCount} panels: ${yearlyEnergyDcKwh}`
+    );
 
-  const monthlyKwhEnergyConsumption = monthlyAverageEnergyBill / energyCostPerKwh;
+  const installationSizeKw = (panelCount * panelCapacityWatts) / 1000;
+  if (DEBUG) console.log(`Installation Size (kW): ${installationSizeKw}`);
+
+  const installationCostTotal =
+    installationCostPerWatt * installationSizeKw * 1000;
+  if (DEBUG) console.log(`Installation Cost Total: ${installationCostTotal}`);
+
+  const monthlyKwhEnergyConsumption =
+    monthlyAverageEnergyBill / energyCostPerKwh;
+  if (DEBUG)
+    console.log(
+      `Monthly kWh Energy Consumption: ${monthlyKwhEnergyConsumption}`
+    );
+
   const yearlyKwhEnergyConsumption = monthlyKwhEnergyConsumption * 12;
+  if (DEBUG)
+    console.log(`Yearly kWh Energy Consumption: ${yearlyKwhEnergyConsumption}`);
 
   const initialAcKwhPerYear = yearlyEnergyDcKwh * dcToAcDerate;
-  const yearlyProductionAcKwh = Array.from(Array(installationLifeSpan).keys()).map(
+  if (DEBUG) console.log(`Initial AC kWh Per Year: ${initialAcKwhPerYear}`);
+
+  const yearlyProductionAcKwh = Array.from(
+    Array(installationLifeSpan).keys()
+  ).map(
     (year) => initialAcKwhPerYear * 0.995 ** year // 0.995 is the efficiency depreciation factor per year
   );
 
@@ -30,48 +54,91 @@ export function calculateSolarPotential(
 
   const yearlyUtilityBillEstimates = yearlyProductionAcKwh.map(
     (yearlyKwhEnergyProduced, year) => {
-      const billEnergyKwh = yearlyKwhEnergyConsumption - yearlyKwhEnergyProduced;
-      const billEstimate = (billEnergyKwh * energyCostPerKwh * 1.022 ** year) / 1.04 ** year; // 1.022 is the cost increase factor, 1.04 is the discount rate
+      const billEnergyKwh =
+        yearlyKwhEnergyConsumption - yearlyKwhEnergyProduced;
+      const billEstimate =
+        (billEnergyKwh * energyCostPerKwh * 1.022 ** year) / 1.04 ** year; // 1.022 is the cost increase factor, 1.04 is the discount rate
       return Math.max(billEstimate, 0);
     }
   );
-  const remainingLifetimeUtilityBill = yearlyUtilityBillEstimates.reduce((x, y) => x + y, 0);
-  const totalCostWithSolar = installationCostTotal + remainingLifetimeUtilityBill - solarIncentives;
 
-  const yearlyCostWithoutSolar = Array.from(Array(installationLifeSpan).keys()).map(
-    (year) => (monthlyAverageEnergyBill * 12 * 1.022 ** year) / 1.04 ** year // 1.022 is the cost increase factor, 1.04 is the discount rate
+  if (DEBUG)
+    console.log(`Yearly Utility Bill Estimates:`, yearlyUtilityBillEstimates);
+
+  const remainingLifetimeUtilityBill = yearlyUtilityBillEstimates.reduce(
+    (x, y) => x + y,
+    0
   );
-  const totalCostWithoutSolar = yearlyCostWithoutSolar.reduce((x, y) => x + y, 0);
+  if (DEBUG)
+    console.log(
+      `Remaining Lifetime Utility Bill: ${remainingLifetimeUtilityBill}`
+    );
+
+  const totalCostWithSolar =
+    installationCostTotal + remainingLifetimeUtilityBill - solarIncentives;
+  if (DEBUG) console.log(`Total Cost With Solar: ${totalCostWithSolar}`);
+
+  const yearlyCostWithoutSolar = Array.from(
+    Array(installationLifeSpan).keys()
+  ).map(
+    (year) => (monthlyAverageEnergyBill * 12 * 1.022 ** year) / 1.04 ** year
+  );
+
+  if (DEBUG) console.log(`Yearly Cost Without Solar:`, yearlyCostWithoutSolar);
+
+  const totalCostWithoutSolar = yearlyCostWithoutSolar.reduce(
+    (x, y) => x + y,
+    0
+  );
+  if (DEBUG) console.log(`Total Cost Without Solar: ${totalCostWithoutSolar}`);
 
   const savings = totalCostWithoutSolar - totalCostWithSolar;
-  const energyCovered = yearlyProductionAcKwh[0] / yearlyKwhEnergyConsumption;
+  if (DEBUG) console.log(`Savings: ${savings}`);
 
+  const energyCovered = yearlyProductionAcKwh[0] / yearlyKwhEnergyConsumption;
   if (DEBUG) console.log(`Energy Covered: ${energyCovered * 100}%`);
 
-  // Calculate cumulative costs for each year
   const cumulativeCostsWithSolar: number[] = [];
   yearlyUtilityBillEstimates.forEach((billEstimate, i) => {
-    const cumulativeCost = (i === 0 ? billEstimate + installationCostTotal - solarIncentives : billEstimate + cumulativeCostsWithSolar[i - 1]);
+    const initialCost = i === 0 ? installationCostTotal - solarIncentives : 0;
+    const previousCumulative = cumulativeCostsWithSolar[i - 1] || 0;
+    const cumulativeCost = initialCost + billEstimate + previousCumulative;
+
+    if (isNaN(cumulativeCost)) {
+      console.error(`NaN detected at year ${i + 1}`);
+      console.error(
+        `Initial Cost: ${initialCost}, Bill Estimate: ${billEstimate}, Previous Cumulative: ${previousCumulative}`
+      );
+    }
+
     cumulativeCostsWithSolar.push(cumulativeCost);
   });
 
-  if (DEBUG) console.log(`Cumulative Costs With Solar:`, cumulativeCostsWithSolar);
+  if (DEBUG)
+    console.log(`Cumulative Costs With Solar:`, cumulativeCostsWithSolar);
 
   const cumulativeCostsWithoutSolar: number[] = [];
   yearlyCostWithoutSolar.forEach((cost, i) => {
-    const cumulativeCost = (i === 0 ? cost : cost + cumulativeCostsWithoutSolar[i - 1]);
+    const cumulativeCost =
+      i === 0 ? cost : cost + cumulativeCostsWithoutSolar[i - 1];
     cumulativeCostsWithoutSolar.push(cumulativeCost);
   });
 
-  if (DEBUG) console.log(`Cumulative Costs Without Solar:`, cumulativeCostsWithoutSolar);
+  if (DEBUG)
+    console.log(`Cumulative Costs Without Solar:`, cumulativeCostsWithoutSolar);
 
-  // Determine breakeven year
   let breakEvenYear = -1;
   for (let i = 0; i < cumulativeCostsWithSolar.length; i++) {
     if (cumulativeCostsWithSolar[i] <= cumulativeCostsWithoutSolar[i]) {
       breakEvenYear = i + 1; // Since index is 0-based and year is 1-based
       break;
     }
+  }
+
+  if (DEBUG && breakEvenYear === -1) {
+    console.log(
+      "Break-even point not found within the lifespan of the installation."
+    );
   }
 
   if (DEBUG) console.log(`Break Even Year: ${breakEvenYear}`);
