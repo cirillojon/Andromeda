@@ -390,7 +390,7 @@ const FormPage: React.FC = () => {
     ],
   };
 
-  console.log("Total Savings:", totalSavings);
+  // console.log("Total Savings:", totalSavings);
 
   useEffect(() => {
     if (solarData) {

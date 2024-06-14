@@ -1,6 +1,6 @@
 import { SolarPanelConfig } from "./SolarTypes";
 
-const DEBUG = true;
+const DEBUG = false;
 
 export function calculateSolarPotential(
   config: SolarPanelConfig,
