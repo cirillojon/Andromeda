@@ -1,13 +1,13 @@
-import FormPage from '@/components/Onboarding/Form/FormPage';
+import FormPage from "@/components/Onboarding/Form/FormPage";
 
 interface PageProps {
   params: {
-    passed: string
-  }
+    passed: string;
+  };
 }
 
-const Page = ({params}: PageProps) => {
-  const passed = decodeURIComponent(params.passed).split('&');
+const Page = ({ params }: PageProps) => {
+  const passed = decodeURIComponent(params.passed).split("&");
   const address = decodeURIComponent(passed[0]);
   const monthlyBill = decodeURIComponent(passed[1]);
 
@@ -17,7 +17,7 @@ const Page = ({params}: PageProps) => {
   //pass the address to the form page if needed
   return (
     <div>
-      <FormPage />
+      <FormPage monthlyBill={Number(monthlyBill)} />
     </div>
   );
 };

@@ -60,7 +60,11 @@ interface SolarData {
   };
 }
 
-const FormPage: React.FC = () => {
+interface FormPageProps {
+  monthlyBill: number;
+}
+
+const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   const [activeTab, setActiveTab] = useState("Solar");
   const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
@@ -116,6 +120,7 @@ const FormPage: React.FC = () => {
       solar: { ...prevValues.solar, panelCount: newValue },
     }));
   };
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     tab: string,
@@ -176,6 +181,7 @@ const FormPage: React.FC = () => {
       setSelectedSegment(roofSegment);
     }
   };
+
   const validateFields = () => {
     const { project_name, project_type } = inputValues.project_details;
     return project_name.trim() !== "" && project_type.trim() !== "";
@@ -399,7 +405,7 @@ const FormPage: React.FC = () => {
       const results = calculateSolarPotential(
         config,
         panelCount,
-        300, // Example monthly average energy bill  -- lets get this from address page
+        Number(monthlyBill), // Use the monthly bill from the props
         0.31, // Example energy cost per kWh
         0.85, // Example DC to AC derate factor
         7000, // Example solar incentives
@@ -409,7 +415,7 @@ const FormPage: React.FC = () => {
       );
       setCalculationResults(results);
     }
-  }, [solarData, panelCount]);
+  }, [solarData, panelCount, monthlyBill]);
 
   if (!calculationResults) {
     return <div>Loading...</div>;
@@ -601,13 +607,8 @@ const FormPage: React.FC = () => {
               options={{
                 responsive: true,
                 plugins: {
-                  legend: {
-                    display: true,
-                  },
-                  title: {
-                    display: true,
-                    text: "Cost Analysis for 20 Years",
-                  },
+                  legend: { display: true },
+                  title: { display: true, text: "Cost Analysis for 20 Years" },
                 },
               }}
             />
