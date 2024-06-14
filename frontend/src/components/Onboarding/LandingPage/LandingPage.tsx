@@ -5,6 +5,7 @@ import React from 'react';
 import ScrollingContent from "./ScrollingContent"
 import { LoginLink, RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { cn } from "@/lib/utils";
+import Footer from "../Footer/Footer";
 
 const LandingPage = () => {
   
@@ -82,6 +83,7 @@ const LandingPage = () => {
       <div>
         <ScrollingContent sections={sections}/>
       </div>
+      <Footer/>
     </div>
   );
 };
