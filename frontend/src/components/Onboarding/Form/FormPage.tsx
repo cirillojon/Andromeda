@@ -5,6 +5,7 @@ import "./FormPage.css";
 import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
 import { Bar } from "react-chartjs-2";
+import { calculateSolarPotential } from "./SolarCalculations";
 import {
   Chart as ChartJS,
   BarElement,
@@ -20,6 +21,7 @@ import { Input } from "../../ui/input";
 import { Label } from "../../ui/label";
 import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
+import { SolarPanelConfig } from "./SolarTypes";
 
 ChartJS.register(
   BarElement,
@@ -38,6 +40,7 @@ interface LatLng {
 interface SolarData {
   building_insights: {
     solarPotential: {
+      solarPanelConfigs: any;
       maxSunshineHoursPerYear: number;
       panelCapacityWatts: number;
       solarPanels: {
@@ -82,6 +85,7 @@ const FormPage: React.FC = () => {
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
   const [showHeatmap, setShowHeatmap] = useState(false);
+  const [calculationResults, setCalculationResults] = useState<any>(null);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -388,6 +392,28 @@ const FormPage: React.FC = () => {
 
   console.log("Total Savings:", totalSavings);
 
+  useEffect(() => {
+    if (solarData) {
+      const config: SolarPanelConfig =
+        solarData.building_insights.solarPotential.solarPanelConfigs[0];
+      const results = calculateSolarPotential(
+        config,
+        panelCount,
+        300, // Example monthly average energy bill
+        0.31, // Example energy cost per kWh
+        0.85, // Example DC to AC derate factor
+        7000, // Example solar incentives
+        4.0, // Example installation cost per watt
+        20 // Example installation lifespan
+      );
+      setCalculationResults(results);
+    }
+  }, [solarData, panelCount]);
+
+  if (!calculationResults) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="form-container md:mt-16 mt-0">
       <div className="tabs">
@@ -520,6 +546,65 @@ const FormPage: React.FC = () => {
               </CardContent>
             </Card>
           )}
+          <div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Solar Potential Analysis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p>Yearly Energy: {calculationResults.yearlyEnergyDcKwh} kWh</p>
+                <p>
+                  Installation Size: {calculationResults.installationSizeKw} kW
+                </p>
+                <p>
+                  Installation Cost: ${calculationResults.installationCostTotal}
+                </p>
+                <p>
+                  Energy Covered:{" "}
+                  {Math.round(calculationResults.energyCovered * 100)}%
+                </p>
+                <p>
+                  Cost Without Solar: $
+                  {calculationResults.totalCostWithoutSolar}
+                </p>
+                <p>Cost With Solar: ${calculationResults.totalCostWithSolar}</p>
+                <p>Savings: ${calculationResults.savings}</p>
+              </CardContent>
+            </Card>
+            <Bar
+              data={{
+                labels: Array.from({ length: 20 }, (_, i) => 2024 + i),
+                datasets: [
+                  {
+                    label: "Cost with Solar",
+                    data: calculationResults.yearlyProductionAcKwh,
+                    backgroundColor: "rgba(75, 192, 192, 0.2)",
+                    borderColor: "rgba(75, 192, 192, 1)",
+                    borderWidth: 1,
+                  },
+                  {
+                    label: "Cost without Solar",
+                    data: calculationResults.yearlyCostWithoutSolar,
+                    backgroundColor: "rgba(255, 99, 132, 0.2)",
+                    borderColor: "rgba(255, 99, 132, 1)",
+                    borderWidth: 1,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    display: true,
+                  },
+                  title: {
+                    display: true,
+                    text: "Cost Analysis for 20 Years",
+                  },
+                },
+              }}
+            />
+          </div>
         </div>
         <div className="viewbox">
           <SolarMap
