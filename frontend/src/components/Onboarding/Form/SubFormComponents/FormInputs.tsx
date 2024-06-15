@@ -18,6 +18,7 @@ export interface InputValues {
     energyUtilization: string;
     project_name: string;
     project_type: string;
+    annualIncome: string;
   };
   roofing: {
     currentRoofType: string;
@@ -36,7 +37,6 @@ export interface InputValues {
     project_name: string;
     project_type: string;
   };
-  annualIncome: string;
   [key: string]: any;
 }
 
@@ -252,11 +252,21 @@ const FormInputs: React.FC<FormInputsProps> = ({
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="Whole Home Backup">Whole Home Backup</SelectItem>
-                  <SelectItem value="Essential Backup - 1 Day">Essential Backup - 1 Day</SelectItem>
-                  <SelectItem value="Essential Backup - 2 Days">Essential Backup - 2 Days</SelectItem>
-                  <SelectItem value="Essential Backup - 3 Days">Essential Backup - 3 Days</SelectItem>
-                  <SelectItem value="Essential Backup - 4 Days">Essential Backup - 4 Days</SelectItem>
+                  <SelectItem value="Whole Home Backup">
+                    Whole Home Backup
+                  </SelectItem>
+                  <SelectItem value="Essential Backup - 1 Day">
+                    Essential Backup - 1 Day
+                  </SelectItem>
+                  <SelectItem value="Essential Backup - 2 Days">
+                    Essential Backup - 2 Days
+                  </SelectItem>
+                  <SelectItem value="Essential Backup - 3 Days">
+                    Essential Backup - 3 Days
+                  </SelectItem>
+                  <SelectItem value="Essential Backup - 4 Days">
+                    Essential Backup - 4 Days
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -308,7 +318,9 @@ const FormInputs: React.FC<FormInputsProps> = ({
               <SelectContent>
                 <SelectGroup>
                   <SelectItem value="Owned">Owned</SelectItem>
-                  <SelectItem value="Other (lease, etc)">Other (lease, etc)</SelectItem>
+                  <SelectItem value="Other (lease, etc)">
+                    Other (lease, etc)
+                  </SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>

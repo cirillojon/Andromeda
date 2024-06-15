@@ -27,7 +27,7 @@ const HomeFinancesCard = ({
               <p className="text-lg font-medium">Monthly Expense</p>
             </div>
             <div className="text-2xl font-bold">
-              {financing_detail.monthly_cost
+              {financing_detail?.monthly_cost
                 ? "$" + financing_detail.monthly_cost
                 : "TBD"}
             </div>
@@ -37,7 +37,7 @@ const HomeFinancesCard = ({
               <p className="text-lg font-medium">Total Contribution</p>
             </div>
             <div className="text-2xl font-bold">
-              {financing_detail.total_contribution
+              {financing_detail?.total_contribution
                 ? "$" + financing_detail.total_contribution
                 : "TBD"}
             </div>
@@ -47,7 +47,7 @@ const HomeFinancesCard = ({
               <p className="text-lg font-medium">Remaning Balance</p>
             </div>
             <div className="text-2xl font-bold">
-              {financing_detail.remaining_balance
+              {financing_detail?.remaining_balance
                 ? "$" + financing_detail.remaining_balance
                 : "TBD"}
             </div>
@@ -56,7 +56,7 @@ const HomeFinancesCard = ({
       </CardContent>
       <CardFooter>
         <Link
-          href={`/dashboard/projects/finances/${financing_detail.project_id}`}
+          href={`/dashboard/projects/finances/${financing_detail?.project_id}`}
           className="text-blue-500 hover:underline"
           prefetch={false}
         >

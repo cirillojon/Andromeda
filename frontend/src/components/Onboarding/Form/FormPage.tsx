@@ -44,7 +44,13 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     null
   );
   const [inputValues, setInputValues] = useState<InputValues>({
-    solar: { panelCount: 10, energyUtilization: "", project_name: "", project_type: "solar" },
+    solar: {
+      panelCount: 10,
+      energyUtilization: "",
+      project_name: "",
+      project_type: "solar",
+      annualIncome: "",
+    },
     roofing: {
       currentRoofType: "",
       desiredRoofType: "",
@@ -62,8 +68,6 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       project_name: "",
       project_type: "battery",
     },
-    project_details: { project_name: "", project_type: "" },
-    annualIncome: "",
   });
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
@@ -78,7 +82,6 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
-      console.log("Loaded solar data:", data);
       setSolarData(data);
     }
 
@@ -112,7 +115,11 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     }));
   };
 
-  const handleSelectChange = (value: string, tab: string, inputName: string) => {
+  const handleSelectChange = (
+    value: string,
+    tab: string,
+    inputName: string
+  ) => {
     setInputValues((prevValues) => ({
       ...prevValues,
       [tab]: { ...prevValues[tab], [inputName]: value },
@@ -181,13 +188,14 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   }, [validationPassed]);
 
   const handleSubmit = async () => {
+    /*
     if (!validateFields()) {
       alert(
         "Please fill in all required fields in the Project Details section."
       );
       setValidationPassed(false);
       return;
-    }
+    }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
     setValidationPassed(true); // Set the flag to true on successful validation
