@@ -31,7 +31,6 @@ ChartJS.register(
   Legend
 );
 
-
 export interface InputValues {
   solar: { panelCount: number; input2: string; input3: string };
   roofing: { input1: string; input2: string; input3: string };
@@ -64,6 +63,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   const authButtonRef = useRef<HTMLButtonElement>(null);
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [calculationResults, setCalculationResults] = useState<any>(null);
+  const [showAllSegments, setShowAllSegments] = useState(false);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -156,6 +156,10 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     }
   };
 
+  const handleToggleShowAllSegments = () => {
+    setShowAllSegments((prevShowAllSegments) => !prevShowAllSegments);
+  };
+
   const validateFields = () => {
     const { project_name, project_type } = inputValues.project_details;
     return project_name.trim() !== "" && project_type.trim() !== "";
@@ -220,6 +224,8 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
               handleToggleHeatmap={handleToggleHeatmap}
               showHeatmap={showHeatmap}
               calculationResults={calculationResults}
+              handleToggleShowAllSegments={handleToggleShowAllSegments}
+              showAllSegments={showAllSegments}
             />
           )}
         </div>
@@ -228,6 +234,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
             panelCount={panelCount}
             selectedSegment={selectedSegment}
             showHeatmap={showHeatmap}
+            showAllSegments={showAllSegments}
           />
         </div>
         <div className="sidebar">
