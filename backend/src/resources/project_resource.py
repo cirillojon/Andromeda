@@ -118,25 +118,37 @@ class ProjectResource(Resource):
             return
     
         try:
-            new_project = Project(
-                project_name=project_data["project_name"],
-                project_address=project_data.get("project_address"),
-                project_type=project_data["project_type"],
-                user_id=user_id,
-                status=project_data.get("status"),
-                house_sqft=project_data.get("house_sqft") if project_type == 'solar' else None,
-                solar_electric_bill_kwh=project_data.get("energyUtilization") if project_type == 'solar' else None,
-                solar_panel_amount=project_data.get("panelCount") if project_type == 'solar' else None,
-                solar_panel_wattage=project_data.get("solar_panel_wattage") if project_type == 'solar' else None,
-                solar_microinverter=project_data.get("solar_inverter") if project_type == 'solar' else None,
-                roof_angle=project_data.get("roof_angle") if project_type == 'roofing' else None,
-                roof_current_type=project_data.get("currentRoofType") if project_type == 'roofing' else None,
-                roof_new_type=project_data.get("desiredRoofType") if project_type == 'roofing' else None,
-                roof_current_health=project_data.get("roofHealth") if project_type == 'roofing' else None,
-                houseType=project_data.get("houseType") if project_type == 'battery' else None,
-                ownership=project_data.get("ownership") if project_type == 'battery' else None,
-            )
+            # Create a dictionary with the valid fields for the Project model
+            project_fields = {
+                "project_name": project_data["project_name"],
+                "project_address": project_data.get("project_address"),
+                "project_type": project_data["project_type"],
+                "user_id": user_id,
+                "status": project_data.get("status"),
+            }
     
+            # Add specific fields based on the project type
+            if project_type == 'solar':
+                project_fields.update({
+                    "house_sqft": project_data.get("house_sqft"),
+                    "solar_electric_bill_kwh": project_data.get("energyUtilization"),
+                    "solar_panel_amount": project_data.get("panelCount"),
+                    "solar_panel_wattage": project_data.get("solar_panel_wattage"),
+                    "solar_microinverter": project_data.get("solar_inverter"),
+                })
+            elif project_type == 'roofing':
+                project_fields.update({
+                    "roof_angle": project_data.get("roof_angle"),
+                    "roof_current_type": project_data.get("currentRoofType"),
+                    "roof_new_type": project_data.get("desiredRoofType"),
+                    "roof_current_health": project_data.get("roofHealth"),
+                })
+            elif project_type == 'battery':
+                # Currently no battery fields exist in DB
+                pass
+    
+            new_project = Project(**project_fields)
+        
             db.session.add(new_project)
             db.session.commit()
     
