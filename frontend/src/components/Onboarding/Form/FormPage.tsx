@@ -46,7 +46,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   const [inputValues, setInputValues] = useState<InputValues>({
     solar: {
       panelCount: 10,
-      energyUtilization: "",
+      energyUtilization: 1.5,
       project_name: "",
       project_type: "solar",
       annualIncome: "",
