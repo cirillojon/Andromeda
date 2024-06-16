@@ -8,7 +8,6 @@ from src.models.project_step import ProjectStep
 from src.models.financing_details import FinancingDetail
 from app import app
 
-
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
         try:
@@ -16,12 +15,12 @@ class ProjectResource(Resource):
                 projects = Project.query.filter_by(user_id=user_id).all()
                 if not projects:
                     return {"message": "No projects found for user"}, 404
-                return [project.to_dict() for project in projects]
+                return [project.to_dict() for project in projects], 200
             elif project_id:
                 project = Project.query.get(project_id)
                 if not project:
                     return {"message": "Project not found"}, 404
-                return project.to_dict()
+                return project.to_dict(), 200
             else:
                 return {"message": "User ID or Project ID not provided"}, 400
         except Exception as e:
@@ -49,7 +48,7 @@ class ProjectResource(Resource):
     
         for project_type, project_data in project_types.items():
             if project_data:
-                create_project(project_type, project_data, required_fields, user_id)
+                self.create_project(project_type, project_data, required_fields, user_id)
     
         return {"message": "Projects processed successfully"}, 200
 
@@ -91,8 +90,8 @@ class ProjectResource(Resource):
             app.logger.exception("Error occurred while deleting the project.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
-            
-    def create_project(project_type, project_data, required_fields, user_id):
+
+    def create_project(self, project_type, project_data, required_fields, user_id):
         missing_fields = required_fields - set(project_data.keys())
         empty_fields = [field for field in required_fields if project_data.get(field) == '']
     
@@ -150,5 +149,3 @@ class ProjectResource(Resource):
         except Exception as e:
             app.logger.exception(f"Error occurred while creating {project_type} project.")
             db.session.rollback()
-            return {"message": "Internal server error"}, 500
-    
