@@ -30,167 +30,28 @@ class ProjectResource(Resource):
 
     def post(self):
         user_id = request.args.get('user_id')
-        
+    
         # Fetch the latest form data for the user
         form_data_entry = FormData.query.join(Form).filter(Form.user_id == user_id).order_by(FormData.created_at.desc()).first()
-        
+    
         if not form_data_entry:
             return {"message": "No form data found for the user"}, 404
+    
         data = form_data_entry.data
         required_fields = {"project_name", "project_type", "user_id", "financing_detail"}
-
-        solar_data = data.get('solar', {})
-        roofing_data = data.get('roofing', {})
-        battery_data = data.get('battery', {})
-
-        if (solar_data):
-            missing_fields = required_fields - set(solar_data.keys())
-            empty_fields = [field for field in required_fields if solar_data.get(field) == '']
-            if missing_fields or empty_fields:
-                if missing_fields:
-                    app.logger.info("Solar project data is missing required fields, skipping project creation.")
-                if empty_fields:
-                    app.logger.info("Solar project data is empty, skipping project creation.")
-            else:
-                try:
-                    new_project = Project(
-                        project_name=solar_data["project_name"],
-                        project_address=solar_data.get("project_address"),
-                        project_type=solar_data["project_type"],
-                        user_id=user_id,
-                        status=solar_data.get("status"),
-                        house_sqft=solar_data.get("house_sqft"),
-                        solar_electric_bill_kwh=solar_data.get("solar_electric_bill_kwh"),
-                        solar_panel_amount=solar_data.get("solar_panel_amount"),
-                        solar_panel_wattage=solar_data.get("solar_panel_wattage"),
-                        solar_microinverter=solar_data.get("solar_inverter"),
-                    )
-                    db.session.add(new_project)
-                    db.session.commit()
-
-                    if "financing_detail" in data:
-                        financing_data = solar_data["financing_detail"]
-                        new_detail = FinancingDetail(
-                            user_id=new_project.user_id,
-                            financing_option_id=financing_data.get("financing_option_id"),
-                            project_id=new_project.id,
-                            total_cost=financing_data.get("total_cost"),
-                            monthly_cost=financing_data.get("monthly_cost"),
-                            down_payment=financing_data.get("down_payment"),
-                            total_contribution=financing_data.get("total_contribution"),
-                            remaining_balance=financing_data.get("remaining_balance"),
-                            interest_rate=financing_data.get("interest_rate"),
-                            payment_status=financing_data.get("payment_status"),
-                            payment_due_date=financing_data.get("payment_due_date"),
-                            duration=financing_data.get("duration"),
-                        )
-                        db.session.add(new_detail)
-                        db.session.commit()
-                        new_project.financing_detail_id = new_detail.id
-                        db.session.commit()
-                    app.logger.info("Created solar project: " + str(new_project.id))
-                except Exception as e:
-                    app.logger.exception("Error occurred while creating solar a project.")
-                    db.session.rollback()
-                    return {"message": "Internal server error"}, 500
-            
-        if (roofing_data):
-            missing_fields = required_fields - set(roofing_data.keys())
-            empty_fields = [field for field in required_fields if roofing_data.get(field) == '']
-            if missing_fields or empty_fields:
-                if missing_fields:
-                    app.logger.info("Roofing project data is missing required fields, skipping project creation.")
-                if empty_fields:
-                    app.logger.info("Roofing project data is empty, skipping project creation.")
-            else:
-                try:
-                    new_project = Project(
-                        project_name=roofing_data["project_name"],
-                        project_address=roofing_data.get("project_address"),
-                        project_type=roofing_data["project_type"],
-                        user_id=user_id,
-                        status=roofing_data.get("status"),
-                        house_sqft=roofing_data.get("house_sqft"),
-                        roof_angle=data.get("roof_angle"),
-                        roof_current_type=roofing_data.get("roof_current_type"),
-                        roof_new_type=roofing_data.get("roof_new_type"),
-                        roof_current_health=roofing_data.get("roof_current_health"),
-                    )
-                    db.session.add(new_project)
-                    db.session.commit()
-
-                    if "financing_detail" in data:
-                        financing_data = roofing_data["financing_detail"]
-                        new_detail = FinancingDetail(
-                            user_id=new_project.user_id,
-                            financing_option_id=financing_data.get("financing_option_id"),
-                            project_id=new_project.id,
-                            total_cost=financing_data.get("total_cost"),
-                            monthly_cost=financing_data.get("monthly_cost"),
-                            down_payment=financing_data.get("down_payment"),
-                            total_contribution=financing_data.get("total_contribution"),
-                            remaining_balance=financing_data.get("remaining_balance"),
-                            interest_rate=financing_data.get("interest_rate"),
-                            payment_status=financing_data.get("payment_status"),
-                            payment_due_date=financing_data.get("payment_due_date"),
-                            duration=financing_data.get("duration"),
-                        )
-                        db.session.add(new_detail)
-                        db.session.commit()
-                        new_project.financing_detail_id = new_detail.id
-                        db.session.commit()
-                    app.logger.info("Created roofing project: " + str(new_project.id))
-                except Exception as e:
-                    app.logger.exception("Error occurred while creating roofing a project.")
-                    db.session.rollback()
-                    return {"message": "Internal server error"}, 500
-
-        if (battery_data):
-            missing_fields = required_fields - set(battery_data.keys())
-            empty_fields = [field for field in required_fields if battery_data.get(field) == '']
-            if missing_fields or empty_fields:
-                if missing_fields:
-                    app.logger.info("Battery project data is missing required fields, skipping project creation.")
-                if empty_fields:
-                    app.logger.info("Battery project data is empty, skipping project creation.")
-            else:
-                try:
-                    app.logger.info("CREATING BATTERY PROJECT BY ACCIDENT")
-                    new_project = Project(
-                        project_name=battery_data["project_name"],
-                        project_address=battery_data.get("project_address"),
-                        project_type=battery_data["project_type"],
-                        user_id=user_id,
-                        status=battery_data.get("status"),
-                    )
-                    db.session.add(new_project)
-                    db.session.commit()
-
-                    if "financing_detail" in data:
-                        financing_data = battery_data["financing_detail"]
-                        new_detail = FinancingDetail(
-                            user_id=new_project.user_id,
-                            financing_option_id=financing_data.get("financing_option_id"),
-                            project_id=new_project.id,
-                            total_cost=financing_data.get("total_cost"),
-                            monthly_cost=financing_data.get("monthly_cost"),
-                            down_payment=financing_data.get("down_payment"),
-                            total_contribution=financing_data.get("total_contribution"),
-                            remaining_balance=financing_data.get("remaining_balance"),
-                            interest_rate=financing_data.get("interest_rate"),
-                            payment_status=financing_data.get("payment_status"),
-                            payment_due_date=financing_data.get("payment_due_date"),
-                            duration=financing_data.get("duration"),
-                        )
-                        db.session.add(new_detail)
-                        db.session.commit()
-                        new_project.financing_detail_id = new_detail.id
-                        db.session.commit()
-                    app.logger.info("Created battery project: " + str(new_project.id))
-                except Exception as e:
-                    app.logger.exception("Error occurred while creating battery a project.")
-                    db.session.rollback()
-                    return {"message": "Internal server error"}, 500
+    
+        # Project data types
+        project_types = {
+            'solar': data.get('solar', {}),
+            'roofing': data.get('roofing', {}),
+            'battery': data.get('battery', {})
+        }
+    
+        for project_type, project_data in project_types.items():
+            if project_data:
+                create_project(project_type, project_data, required_fields, user_id)
+    
+        return {"message": "Projects processed successfully"}, 200
 
     def put(self, project_id):
         try:
@@ -230,3 +91,64 @@ class ProjectResource(Resource):
             app.logger.exception("Error occurred while deleting the project.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
+            
+    def create_project(project_type, project_data, required_fields, user_id):
+        missing_fields = required_fields - set(project_data.keys())
+        empty_fields = [field for field in required_fields if project_data.get(field) == '']
+    
+        if missing_fields or empty_fields:
+            if missing_fields:
+                app.logger.info(f"{project_type.capitalize()} project data is missing required fields, skipping project creation.")
+            if empty_fields:
+                app.logger.info(f"{project_type.capitalize()} project data is empty, skipping project creation.")
+            return
+    
+        try:
+            new_project = Project(
+                project_name=project_data["project_name"],
+                project_address=project_data.get("project_address"),
+                project_type=project_data["project_type"],
+                user_id=user_id,
+                status=project_data.get("status"),
+                house_sqft=project_data.get("house_sqft") if project_type == 'solar' else None,
+                solar_electric_bill_kwh=project_data.get("solar_electric_bill_kwh") if project_type == 'solar' else None,
+                solar_panel_amount=project_data.get("solar_panel_amount") if project_type == 'solar' else None,
+                solar_panel_wattage=project_data.get("solar_panel_wattage") if project_type == 'solar' else None,
+                solar_microinverter=project_data.get("solar_inverter") if project_type == 'solar' else None,
+                roof_angle=project_data.get("roof_angle") if project_type == 'roofing' else None,
+                roof_current_type=project_data.get("roof_current_type") if project_type == 'roofing' else None,
+                roof_new_type=project_data.get("roof_new_type") if project_type == 'roofing' else None,
+                roof_current_health=project_data.get("roof_current_health") if project_type == 'roofing' else None,
+            )
+    
+            db.session.add(new_project)
+            db.session.commit()
+    
+            # Initialize financing details with null values
+            new_detail = FinancingDetail(
+                user_id=new_project.user_id,
+                financing_option_id=None,
+                project_id=new_project.id,
+                total_cost=None,
+                monthly_cost=None,
+                down_payment=None,
+                total_contribution=None,
+                remaining_balance=None,
+                interest_rate=None,
+                payment_status=None,
+                payment_due_date=None,
+                duration=None,
+            )
+    
+            db.session.add(new_detail)
+            db.session.commit()
+            new_project.financing_detail_id = new_detail.id
+            db.session.commit()
+    
+            app.logger.info(f"Created {project_type} project: {new_project.id}")
+    
+        except Exception as e:
+            app.logger.exception(f"Error occurred while creating {project_type} project.")
+            db.session.rollback()
+            return {"message": "Internal server error"}, 500
+    
