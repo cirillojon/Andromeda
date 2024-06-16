@@ -9,6 +9,7 @@ import {
 import { ChevronRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavMenu from "./NavMenu";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 const Navbar = () => {
   return (
@@ -76,6 +77,11 @@ const Navbar = () => {
                 >
                   Contact
                 </Link>
+              </SheetClose>
+              <SheetClose>
+                <LoginLink className="flex h-8 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                  Log in
+                </LoginLink>
               </SheetClose>
             </div>
           </SheetContent>
