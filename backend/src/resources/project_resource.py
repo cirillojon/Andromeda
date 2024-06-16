@@ -108,15 +108,21 @@ class ProjectResource(Resource):
 
     def create_project(self, project_type, project_data, required_fields, user_id):
         missing_fields = required_fields - set(project_data.keys())
-        empty_fields = [field for field in required_fields if project_data.get(field) == '']
-    
+        empty_fields = [
+            field for field in required_fields if project_data.get(field) == ""
+        ]
+
         if missing_fields or empty_fields:
             if missing_fields:
-                app.logger.info(f"{project_type.capitalize()} project data is missing required fields, skipping project creation.")
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is missing required fields, skipping project creation."
+                )
             if empty_fields:
-                app.logger.info(f"{project_type.capitalize()} project data is empty, skipping project creation.")
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is empty, skipping project creation."
+                )
             return
-    
+
         try:
             # Create a dictionary with the valid fields for the Project model
             project_fields = {
@@ -126,32 +132,38 @@ class ProjectResource(Resource):
                 "user_id": user_id,
                 "status": project_data.get("status"),
             }
-    
+
             # Add specific fields based on the project type
-            if project_type == 'solar':
-                project_fields.update({
-                    "house_sqft": project_data.get("house_sqft"),
-                    "solar_electric_bill_kwh": project_data.get("energyUtilization"),
-                    "solar_panel_amount": project_data.get("panelCount"),
-                    "solar_panel_wattage": project_data.get("solar_panel_wattage"),
-                    "solar_microinverter": project_data.get("solar_inverter"),
-                })
-            elif project_type == 'roofing':
-                project_fields.update({
-                    "roof_angle": project_data.get("roof_angle"),
-                    "roof_current_type": project_data.get("currentRoofType"),
-                    "roof_new_type": project_data.get("desiredRoofType"),
-                    "roof_current_health": project_data.get("roofHealth"),
-                })
-            elif project_type == 'battery':
+            if project_type == "solar":
+                project_fields.update(
+                    {
+                        "house_sqft": project_data.get("house_sqft"),
+                        "solar_electric_bill_kwh": project_data.get(
+                            "energyUtilization"
+                        ),
+                        "solar_panel_amount": project_data.get("panelCount"),
+                        "solar_panel_wattage": project_data.get("solar_panel_wattage"),
+                        "solar_microinverter": project_data.get("solar_inverter"),
+                    }
+                )
+            elif project_type == "roofing":
+                project_fields.update(
+                    {
+                        "roof_angle": project_data.get("roof_angle"),
+                        "roof_current_type": project_data.get("currentRoofType"),
+                        "roof_new_type": project_data.get("desiredRoofType"),
+                        "roof_current_health": project_data.get("roofHealth"),
+                    }
+                )
+            elif project_type == "battery":
                 # Currently no battery fields exist in DB
                 pass
-    
+
             new_project = Project(**project_fields)
-        
+
             db.session.add(new_project)
             db.session.commit()
-    
+
             # Initialize financing details with null values
             new_detail = FinancingDetail(
                 user_id=new_project.user_id,
@@ -167,14 +179,16 @@ class ProjectResource(Resource):
                 payment_due_date=None,
                 duration=None,
             )
-    
+
             db.session.add(new_detail)
             db.session.commit()
             new_project.financing_detail_id = new_detail.id
             db.session.commit()
-    
+
             app.logger.info(f"Created {project_type} project: {new_project.id}")
-    
+
         except Exception as e:
-            app.logger.exception(f"Error occurred while creating {project_type} project.")
+            app.logger.exception(
+                f"Error occurred while creating {project_type} project."
+            )
             db.session.rollback()
