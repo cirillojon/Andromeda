@@ -69,7 +69,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       project_type: "battery",
     },
     general: {
-      houseSqft: 0,
+      roofSqft: 0,
     },
   });
   const [validationPassed, setValidationPassed] = useState(false);
@@ -111,10 +111,10 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       setSolarData(data);
 
       // Calculate house square footage
-      const houseSqft = getHouseSquareFootage(data);
+      const roofSqft = getHouseSquareFootage(data);
       setInputValues((prevValues) => ({
         ...prevValues,
-        general: { ...prevValues.general, houseSqft: houseSqft },
+        general: { ...prevValues.general, roofSqft: roofSqft },
       }));
     }
 

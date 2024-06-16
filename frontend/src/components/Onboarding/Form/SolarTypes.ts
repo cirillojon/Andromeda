@@ -31,7 +31,7 @@ export interface SolarData {
       }[];
     };
   };
-  houseSqft?: number;
+  roofSqft?: number;
 }
 
 export interface Bounds {
