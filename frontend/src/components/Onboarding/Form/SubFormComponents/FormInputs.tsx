@@ -37,6 +37,9 @@ export interface InputValues {
     project_name: string;
     project_type: string;
   };
+  general: {
+    houseSqft: number;
+  };
   [key: string]: any;
 }
 
