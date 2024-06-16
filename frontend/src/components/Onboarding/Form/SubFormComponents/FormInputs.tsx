@@ -137,7 +137,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             />
             <Label htmlFor="roofingInput1">Current Roof Type</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "roofing", "currentRoofType")
               }
             >
@@ -160,7 +160,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="roofingInput2">Desired Roof Type</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "roofing", "desiredRoofType")
               }
             >
@@ -183,7 +183,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="roofingInput3">Roof Health</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "roofing", "roofHealth")
               }
             >
@@ -202,7 +202,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="roofingInput3">Number of Stories</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "roofing", "stories")
               }
             >
@@ -243,7 +243,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             />
             <Label htmlFor="batteryInput2">Expected Usage</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "battery", "expectedUsage")
               }
             >
@@ -272,7 +272,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="batteryInput3">Number of EVs</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "battery", "numberOfEVs")
               }
             >
@@ -289,7 +289,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="batteryInput3">House Type</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "battery", "houseType")
               }
             >
@@ -308,7 +308,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Select>
             <Label htmlFor="batteryInput3">Ownership</Label>
             <Select
-              onValueChange={(value) =>
+              onValueChange={(value: string) =>
                 handleSelectChange(value, "battery", "ownership")
               }
             >
