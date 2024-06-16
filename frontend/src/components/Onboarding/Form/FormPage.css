@@ -85,6 +85,7 @@
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 20px;
+  max-width: 400px;
 }
 
 .solar-stats h2 {
@@ -92,18 +93,18 @@
 }
 
 .solar-stats p {
-  margin: 5px 0;
+  margin: 4px 0;
 }
 
 .progress-bar {
-  margin: 10px 0;
+  margin-bottom: 8px;
 }
 
-.progress {
+.progress-bar .progress {
+  height: 10px;
   background-color: #e0e0e0;
   border-radius: 25px;
   position: relative;
-  height: 20px;
   width: 100%;
 }
 
@@ -115,10 +116,6 @@
   color: white;
   line-height: 20px;
   transition: width 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
-}
-
-.chart-container {
-  margin-top: 20px;
 }
 
 .chart-container {
@@ -195,16 +192,41 @@
   cursor: pointer;
 }
 
-.solar-potential-analysis {
+.solar-potential-details {
   margin-top: 20px;
   padding: 20px;
   border-top: 1px solid #ccc;
 }
 
-.solar-potential-analysis h2 {
-  margin-bottom: 10px;
+.solar-potential-details p {
+  margin: 5px 0;
 }
 
-.solar-potential-analysis p {
-  margin: 5px 0;
+.progress-bar .progress-filled.good {
+  background-color: green;
+}
+
+.progress-bar .progress-filled.bad {
+  background-color: red;
+}
+
+.savings {
+  font-size: 0.8em;
+  color: green;
+  font-weight: bold;
+  background-color: #e0f7e9;
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #a8d5ba;
+  display: inline-block;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.button-container .button {
+  width: 100%;
 }
