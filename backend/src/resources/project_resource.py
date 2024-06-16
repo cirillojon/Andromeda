@@ -8,6 +8,7 @@ from src.models.project_step import ProjectStep
 from src.models.financing_details import FinancingDetail
 from app import app
 
+
 class ProjectResource(Resource):
     def get(self, user_id=None, project_id=None):
         try:
@@ -28,28 +29,40 @@ class ProjectResource(Resource):
             return {"message": "Internal server error"}, 500
 
     def post(self):
-        user_id = request.args.get('user_id')
-    
+        user_id = request.args.get("user_id")
+
         # Fetch the latest form data for the user
-        form_data_entry = FormData.query.join(Form).filter(Form.user_id == user_id).order_by(FormData.created_at.desc()).first()
-    
+        form_data_entry = (
+            FormData.query.join(Form)
+            .filter(Form.user_id == user_id)
+            .order_by(FormData.created_at.desc())
+            .first()
+        )
+
         if not form_data_entry:
             return {"message": "No form data found for the user"}, 404
-    
+
         data = form_data_entry.data
-        required_fields = {"project_name", "project_type", "user_id", "financing_detail"}
-    
+        required_fields = {
+            "project_name",
+            "project_type",
+            "user_id",
+            "financing_detail",
+        }
+
         # Project data types
         project_types = {
-            'solar': data.get('solar', {}),
-            'roofing': data.get('roofing', {}),
-            'battery': data.get('battery', {})
+            "solar": data.get("solar", {}),
+            "roofing": data.get("roofing", {}),
+            "battery": data.get("battery", {}),
         }
-    
+
         for project_type, project_data in project_types.items():
             if project_data:
-                self.create_project(project_type, project_data, required_fields, user_id)
-    
+                self.create_project(
+                    project_type, project_data, required_fields, user_id
+                )
+
         return {"message": "Projects processed successfully"}, 200
 
     def put(self, project_id):
@@ -77,7 +90,9 @@ class ProjectResource(Resource):
         try:
             steps = ProjectStep.query.filter_by(project_id=project_id).all()
             if steps:
-                return {"message": "Project Steps must be deleted before deleting project"}, 400
+                return {
+                    "message": "Project Steps must be deleted before deleting project"
+                }, 400
 
             project = Project.query.get(project_id)
             if not project:
@@ -93,15 +108,21 @@ class ProjectResource(Resource):
 
     def create_project(self, project_type, project_data, required_fields, user_id):
         missing_fields = required_fields - set(project_data.keys())
-        empty_fields = [field for field in required_fields if project_data.get(field) == '']
-    
+        empty_fields = [
+            field for field in required_fields if project_data.get(field) == ""
+        ]
+
         if missing_fields or empty_fields:
             if missing_fields:
-                app.logger.info(f"{project_type.capitalize()} project data is missing required fields, skipping project creation.")
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is missing required fields, skipping project creation."
+                )
             if empty_fields:
-                app.logger.info(f"{project_type.capitalize()} project data is empty, skipping project creation.")
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is empty, skipping project creation."
+                )
             return
-    
+
         try:
             new_project = Project(
                 project_name=project_data["project_name"],
@@ -109,20 +130,38 @@ class ProjectResource(Resource):
                 project_type=project_data["project_type"],
                 user_id=user_id,
                 status=project_data.get("status"),
-                house_sqft=project_data.get("house_sqft") if project_type == 'solar' else None,
-                solar_electric_bill_kwh=project_data.get("solar_electric_bill_kwh") if project_type == 'solar' else None,
-                solar_panel_amount=project_data.get("solar_panel_amount") if project_type == 'solar' else None,
-                solar_panel_wattage=project_data.get("solar_panel_wattage") if project_type == 'solar' else None,
-                solar_microinverter=project_data.get("solar_inverter") if project_type == 'solar' else None,
-                roof_angle=project_data.get("roof_angle") if project_type == 'roofing' else None,
-                roof_current_type=project_data.get("roof_current_type") if project_type == 'roofing' else None,
-                roof_new_type=project_data.get("roof_new_type") if project_type == 'roofing' else None,
-                roof_current_health=project_data.get("roof_current_health") if project_type == 'roofing' else None,
+                house_sqft=project_data.get("house_sqft")
+                if project_type == "solar"
+                else None,
+                solar_electric_bill_kwh=project_data.get("solar_electric_bill_kwh")
+                if project_type == "solar"
+                else None,
+                solar_panel_amount=project_data.get("solar_panel_amount")
+                if project_type == "solar"
+                else None,
+                solar_panel_wattage=project_data.get("solar_panel_wattage")
+                if project_type == "solar"
+                else None,
+                solar_microinverter=project_data.get("solar_inverter")
+                if project_type == "solar"
+                else None,
+                roof_angle=project_data.get("roof_angle")
+                if project_type == "roofing"
+                else None,
+                roof_current_type=project_data.get("roof_current_type")
+                if project_type == "roofing"
+                else None,
+                roof_new_type=project_data.get("roof_new_type")
+                if project_type == "roofing"
+                else None,
+                roof_current_health=project_data.get("roof_current_health")
+                if project_type == "roofing"
+                else None,
             )
-    
+
             db.session.add(new_project)
             db.session.commit()
-    
+
             # Initialize financing details with null values
             new_detail = FinancingDetail(
                 user_id=new_project.user_id,
@@ -138,14 +177,16 @@ class ProjectResource(Resource):
                 payment_due_date=None,
                 duration=None,
             )
-    
+
             db.session.add(new_detail)
             db.session.commit()
             new_project.financing_detail_id = new_detail.id
             db.session.commit()
-    
+
             app.logger.info(f"Created {project_type} project: {new_project.id}")
-    
+
         except Exception as e:
-            app.logger.exception(f"Error occurred while creating {project_type} project.")
+            app.logger.exception(
+                f"Error occurred while creating {project_type} project."
+            )
             db.session.rollback()
