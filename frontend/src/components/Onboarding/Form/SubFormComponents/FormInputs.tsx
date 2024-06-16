@@ -15,7 +15,7 @@ import {
 export interface InputValues {
   solar: {
     panelCount: number;
-    energyUtilization: string;
+    energyUtilization: number;
     project_name: string;
     project_type: string;
     annualIncome: string;
