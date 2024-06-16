@@ -9,6 +9,7 @@ import {
 import { ChevronRight, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavMenu from "./NavMenu";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 const Navbar = () => {
   return (
@@ -56,7 +57,7 @@ const Navbar = () => {
               <SheetClose asChild>
                 <Link
                   href="/faq"
-                  className="flex h-8 px-4 py-2  rounded-mdtext-sm text-gray-700 hover:bg-gray-100"
+                  className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100"
                 >
                   FAQ
                 </Link>
@@ -64,7 +65,7 @@ const Navbar = () => {
               <SheetClose asChild>
                 <Link
                   href="/mission"
-                  className="flex h-8 rounded-md px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex h-8 rounded-md items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Mission
                 </Link>
@@ -72,10 +73,15 @@ const Navbar = () => {
               <SheetClose asChild>
                 <Link
                   href="/contact"
-                  className="flex h-8 px-4 py-2 rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                  className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Contact
                 </Link>
+              </SheetClose>
+              <SheetClose asChild>
+                <LoginLink className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                  Log in
+                </LoginLink>
               </SheetClose>
             </div>
           </SheetContent>
