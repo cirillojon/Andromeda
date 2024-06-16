@@ -5,7 +5,7 @@ import fetchDbUser from "./utils/api";
 import { DbUser } from "./utils/interfaces";
 import postNewUser from "./utils/actions/postNewUser";
 import { cookies } from "next/headers";
-import NextCrypto from 'next-crypto';
+import NextCrypto from "next-crypto";
 
 export async function middleware(req: NextRequest) {
   const user = await getKindeServerSession();
@@ -39,10 +39,10 @@ export async function middleware(req: NextRequest) {
   const formData = cookies().get("formData");
 
   if (typeof formData?.value === "string") {
-    const crypto = new NextCrypto('secret key');
+    const secretKey = process.env.NEXT_FORMDATA_COOKIES_SK;
+    const crypto = new NextCrypto(secretKey || "secret key");
     const decrypted = await crypto.decrypt(formData.value);
-    console.log("decrypted: " + decrypted);
-    if(decrypted){
+    if (decrypted) {
       const formSubmitUrl = new URL(
         "/api/form-submit",
         process.env.NEXT_FRONTEND_BASE_URL
@@ -56,7 +56,7 @@ export async function middleware(req: NextRequest) {
           },
           body: decrypted,
         });
-  
+
         if (!response.ok) {
           throw new Error("Failed to submit form data");
         }

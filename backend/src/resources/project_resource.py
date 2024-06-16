@@ -16,12 +16,12 @@ class ProjectResource(Resource):
                 projects = Project.query.filter_by(user_id=user_id).all()
                 if not projects:
                     return {"message": "No projects found for user"}, 404
-                return [project.to_dict() for project in projects]
+                return [project.to_dict() for project in projects], 200
             elif project_id:
                 project = Project.query.get(project_id)
                 if not project:
                     return {"message": "Project not found"}, 404
-                return project.to_dict()
+                return project.to_dict(), 200
             else:
                 return {"message": "User ID or Project ID not provided"}, 400
         except Exception as e:
@@ -29,77 +29,41 @@ class ProjectResource(Resource):
             return {"message": "Internal server error"}, 500
 
     def post(self):
-        user_id = request.args.get('user_id')
-        
+        user_id = request.args.get("user_id")
+
         # Fetch the latest form data for the user
-        form_data_entry = FormData.query.join(Form).filter(Form.user_id == user_id).order_by(FormData.created_at.desc()).first()
-        
+        form_data_entry = (
+            FormData.query.join(Form)
+            .filter(Form.user_id == user_id)
+            .order_by(FormData.created_at.desc())
+            .first()
+        )
+
         if not form_data_entry:
             return {"message": "No form data found for the user"}, 404
 
         data = form_data_entry.data
+        required_fields = {
+            "project_name",
+            "project_type",
+            "user_id",
+            "financing_detail",
+        }
 
-        # Validate if all required fields are present in the form data
-        required_fields = {"project_name", "project_type", "user_id", "financing_detail"}
-        missing_fields = required_fields - set(data.keys())
-        if missing_fields:
-            return {"message": f"Missing required fields: {', '.join(missing_fields)}"}, 400
+        # Project data types
+        project_types = {
+            "solar": data.get("solar", {}),
+            "roofing": data.get("roofing", {}),
+            "battery": data.get("battery", {}),
+        }
 
-        try:
-            new_project = Project(
-                project_name=data["project_name"],
-                project_address=data.get("project_address"),
-                project_type=data["project_type"],
-                user_id=data.get("user_id"),
-                installer_id=data.get("installer_id"),
-                site_survey_date=data.get("site_survey_date"),
-                inspection_date=data.get("inspection_date"),
-                install_start_date=data.get("install_start_date"),
-                end_date=data.get("end_date"),
-                status=data.get("status"),
-                financing_type_id=data.get("financing_type_id"),
-                hvac_details=data.get("hvac_details"),
-                house_sqft=data.get("house_sqft"),
-                solar_electric_bill_kwh=data.get("solar_electric_bill_kwh"),
-                solar_panel_amount=data.get("solar_panel_amount"),
-                solar_panel_wattage=data.get("solar_panel_wattage"),
-                solar_yearly_kwh=data.get("solar_yearly_kwh"),
-                solar_battery_type=data.get("solar_battery_type"),
-                solar_microinverter=data.get("solar_microinverter"),
-                roof_angle=data.get("roof_angle"),
-                roof_current_type=data.get("roof_current_type"),
-                roof_new_type=data.get("roof_new_type"),
-                roof_current_health=data.get("roof_current_health"),
-            )
-            db.session.add(new_project)
-            db.session.commit()
-
-            if "financing_detail" in data:
-                financing_data = data["financing_detail"]
-                new_detail = FinancingDetail(
-                    user_id=new_project.user_id,
-                    financing_option_id=financing_data.get("financing_option_id"),
-                    project_id=new_project.id,
-                    total_cost=financing_data.get("total_cost"),
-                    monthly_cost=financing_data.get("monthly_cost"),
-                    down_payment=financing_data.get("down_payment"),
-                    total_contribution=financing_data.get("total_contribution"),
-                    remaining_balance=financing_data.get("remaining_balance"),
-                    interest_rate=financing_data.get("interest_rate"),
-                    payment_status=financing_data.get("payment_status"),
-                    payment_due_date=financing_data.get("payment_due_date"),
-                    duration=financing_data.get("duration"),
+        for project_type, project_data in project_types.items():
+            if project_data:
+                self.create_project(
+                    project_type, project_data, required_fields, user_id
                 )
-                db.session.add(new_detail)
-                db.session.commit()
-                new_project.financing_detail_id = new_detail.id
-                db.session.commit()
 
-            return {"message": "Project created", "project_id": new_project.id}, 201
-        except Exception as e:
-            app.logger.exception("Error occurred while creating a project.")
-            db.session.rollback()
-            return {"message": "Internal server error"}, 500
+        return {"message": "Projects processed successfully"}, 200
 
     def put(self, project_id):
         try:
@@ -126,7 +90,9 @@ class ProjectResource(Resource):
         try:
             steps = ProjectStep.query.filter_by(project_id=project_id).all()
             if steps:
-                return {"message": "Project Steps must be deleted before deleting project"}, 400
+                return {
+                    "message": "Project Steps must be deleted before deleting project"
+                }, 400
 
             project = Project.query.get(project_id)
             if not project:
@@ -139,3 +105,88 @@ class ProjectResource(Resource):
             app.logger.exception("Error occurred while deleting the project.")
             db.session.rollback()
             return {"message": "Internal server error"}, 500
+
+    def create_project(self, project_type, project_data, required_fields, user_id):
+        missing_fields = required_fields - set(project_data.keys())
+        empty_fields = [
+            field for field in required_fields if project_data.get(field) == ""
+        ]
+
+        if missing_fields or empty_fields:
+            if missing_fields:
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is missing required fields, skipping project creation."
+                )
+            if empty_fields:
+                app.logger.info(
+                    f"{project_type.capitalize()} project data is empty, skipping project creation."
+                )
+            return
+
+        try:
+            new_project = Project(
+                project_name=project_data["project_name"],
+                project_address=project_data.get("project_address"),
+                project_type=project_data["project_type"],
+                user_id=user_id,
+                status=project_data.get("status"),
+                house_sqft=project_data.get("house_sqft")
+                if project_type == "solar"
+                else None,
+                solar_electric_bill_kwh=project_data.get("solar_electric_bill_kwh")
+                if project_type == "solar"
+                else None,
+                solar_panel_amount=project_data.get("solar_panel_amount")
+                if project_type == "solar"
+                else None,
+                solar_panel_wattage=project_data.get("solar_panel_wattage")
+                if project_type == "solar"
+                else None,
+                solar_microinverter=project_data.get("solar_inverter")
+                if project_type == "solar"
+                else None,
+                roof_angle=project_data.get("roof_angle")
+                if project_type == "roofing"
+                else None,
+                roof_current_type=project_data.get("roof_current_type")
+                if project_type == "roofing"
+                else None,
+                roof_new_type=project_data.get("roof_new_type")
+                if project_type == "roofing"
+                else None,
+                roof_current_health=project_data.get("roof_current_health")
+                if project_type == "roofing"
+                else None,
+            )
+
+            db.session.add(new_project)
+            db.session.commit()
+
+            # Initialize financing details with null values
+            new_detail = FinancingDetail(
+                user_id=new_project.user_id,
+                financing_option_id=None,
+                project_id=new_project.id,
+                total_cost=None,
+                monthly_cost=None,
+                down_payment=None,
+                total_contribution=None,
+                remaining_balance=None,
+                interest_rate=None,
+                payment_status=None,
+                payment_due_date=None,
+                duration=None,
+            )
+
+            db.session.add(new_detail)
+            db.session.commit()
+            new_project.financing_detail_id = new_detail.id
+            db.session.commit()
+
+            app.logger.info(f"Created {project_type} project: {new_project.id}")
+
+        except Exception as e:
+            app.logger.exception(
+                f"Error occurred while creating {project_type} project."
+            )
+            db.session.rollback()

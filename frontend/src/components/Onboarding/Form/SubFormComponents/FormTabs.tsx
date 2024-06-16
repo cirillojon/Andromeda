@@ -35,12 +35,6 @@ const FormTabs: React.FC<TabsProps> = ({ activeTab, setActiveTab }) => {
       >
         HVAC
       </Button>
-      <Button
-        variant={activeTab === "Project Details" ? "default" : "outline"}
-        onClick={() => setActiveTab("Project Details")}
-      >
-        Project Details
-      </Button>
     </div>
   );
 };
