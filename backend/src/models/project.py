@@ -32,6 +32,7 @@ class Project(db.Model):
     solar_yearly_kwh = db.Column(db.Integer)
     solar_battery_type = db.Column(db.String(50))
     solar_microinverter = db.Column(db.String(50))
+    solar_annual_income = db.Column(db.Integer)
 
     # Roofing fields
     roof_angle = db.Column(db.Float)
@@ -78,6 +79,7 @@ class Project(db.Model):
             "solar_yearly_kwh": self.solar_yearly_kwh,
             "solar_battery_type": self.solar_battery_type,
             "solar_microinverter": self.solar_microinverter,
+            "solar_annual_income": self.solar_annual_income,
             "roof_angle": self.roof_angle,
             "roof_current_type": self.roof_current_type,
             "roof_new_type": self.roof_new_type,
