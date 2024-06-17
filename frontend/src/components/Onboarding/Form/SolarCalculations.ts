@@ -5,6 +5,7 @@ const DEBUG = false;
 export function calculateSolarPotential(
   config: SolarPanelConfig,
   panelCount: number,
+  maxPanels: number,
   monthlyAverageEnergyBill: number,
   energyCostPerKwh: number,
   dcToAcDerate: number,
@@ -18,6 +19,7 @@ export function calculateSolarPotential(
     console.log("Parameters:", {
       config,
       panelCount,
+      maxPanels,
       monthlyAverageEnergyBill,
       energyCostPerKwh,
       dcToAcDerate,
@@ -42,6 +44,14 @@ export function calculateSolarPotential(
   if (DEBUG)
     console.log(
       `Yearly Energy DC (kWh) for ${panelCount} panels: ${yearlyEnergyDcKwh}`
+    );
+
+  const maxYearlyEnergyDcKwh =
+    (config.yearlyEnergyDcKwh / config.roofSegmentSummaries[0].panelsCount) *
+    maxPanels;
+  if (DEBUG)
+    console.log(
+      `Max Yearly Energy DC (kWh) for: ${maxPanels} panels: ${maxYearlyEnergyDcKwh}`
     );
 
   const installationSizeKw = (panelCount * panelCapacityWatts) / 1000;
@@ -168,6 +178,7 @@ export function calculateSolarPotential(
     installationSizeKw,
     installationCostTotal,
     yearlyEnergyDcKwh,
+    maxYearlyEnergyDcKwh,
     yearlyProductionAcKwh,
     totalCostWithSolar,
     totalCostWithoutSolar,
