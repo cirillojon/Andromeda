@@ -13,6 +13,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
+interface NavMenuProps {
+  setActiveSection: (value: string) => void;
+}
+
 const services = [
   {
     title: "Solar",
@@ -43,7 +47,7 @@ const handlePointerEvents = (event: any) => {
   event.preventDefault();
 };
 
-const NavMenu = () => {
+const NavMenu: React.FC<NavMenuProps> = ({ setActiveSection}) => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-3 lg:gap-6">
@@ -69,13 +73,13 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="#faq">FAQ</a></Button>
+          <Button variant={"ghost"} onClick={() => setActiveSection("faq")}>FAQ</Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="#mission">Mission</a></Button>
+          <Button variant={"ghost"} onClick={()=> setActiveSection("mission")}>Mission</Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-            <Button variant={"ghost"}><a href="#contact">Contact</a></Button>
+            <Button variant={"ghost"} onClick={() => setActiveSection("contact")}>Contact</Button>
         </NavigationMenuItem>
         <NavigationMenuItem className={navigationMenuTriggerStyle()}>
           <LoginLink>
