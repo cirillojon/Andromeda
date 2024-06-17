@@ -13,10 +13,11 @@ import NavMenu from "./NavMenu";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 interface NavbarProps {
+  isLoggedIn: boolean;
   setActiveSection: (value: string) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ setActiveSection}) => {
+const Navbar: React.FC<NavbarProps> = ({ setActiveSection, isLoggedIn }) => {
   return (
     <div className="absolute w-full flex-col">
       <header className="inset-x-0 top-0 flex items-center h-16 gap-4 bg-transparent px-4 md:px-6">
@@ -27,7 +28,10 @@ const Navbar: React.FC<NavbarProps> = ({ setActiveSection}) => {
           </Link>
         </div>
         <nav className="hidden ml-auto flex-col gap-6 font-medium md:flex md:flex-row md:items-center md:gap-5 lg:gap-8">
-          <NavMenu setActiveSection={setActiveSection}/>
+          <NavMenu
+            setActiveSection={setActiveSection}
+            isLoggedIn={isLoggedIn}
+          />
         </nav>
         <Sheet>
           <SheetTrigger asChild>
@@ -84,9 +88,17 @@ const Navbar: React.FC<NavbarProps> = ({ setActiveSection}) => {
                 </button>
               </SheetClose>
               <SheetClose asChild>
-                <LoginLink className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
-                  Log in
-                </LoginLink>
+                {isLoggedIn ? (
+                  <Button className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                    <Link href="/dashboard" className="w-full">
+                      My Dashboard
+                    </Link>
+                  </Button>
+                ) : (
+                  <LoginLink className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
+                    Log In
+                  </LoginLink>
+                )}
               </SheetClose>
             </div>
           </SheetContent>
