@@ -83,7 +83,7 @@ const page = async () => {
               )}
             >
               <Plus className="mr-1" />
-              <Link href="/" className="justify-start">
+              <Link href="/form" className="justify-start">
                 Project
               </Link>
             </div>
