@@ -33,10 +33,10 @@ const Page = () => {
       />
       <div className="pt-16 md:pt-0">
         <section id="landing">
-          <LandingPage />
+          <LandingPage setActiveSection={setActiveSection}/>
         </section>
         <section id="mission">
-          <MissionPage />
+          <MissionPage setActiveSection={setActiveSection}/>
         </section>
         <section id="faq">
           <FAQPage />

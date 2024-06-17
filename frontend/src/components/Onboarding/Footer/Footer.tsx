@@ -12,19 +12,6 @@ const Footer: React.FC = () => {
             Using Andromeda gives you the power to fully customize your project.
           </p>
           <p className="mb-8">Take advantage of transparent financing today.</p>
-          <div className="flex justify-center items-center space-x-4">
-            <a href="/waitlist">
-              <button className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-400 transition duration-300">
-                Join Waitlist
-              </button>
-            </a>
-            <span className="font-bold text-white">or</span>
-            <a href="/contact">
-              <button className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-400 transition duration-300">
-                Contact Us
-              </button>
-            </a>
-          </div>
         </div>
 
         <hr className="border-gray-700 mb-8" />
