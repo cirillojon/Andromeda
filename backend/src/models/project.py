@@ -1,6 +1,7 @@
 from app import db
 from src.utils.json import json_serial, safe_json_serial
 
+
 class Project(db.Model):
     __tablename__ = "projects"
     id = db.Column(db.Integer, primary_key=True)
@@ -17,25 +18,40 @@ class Project(db.Model):
     end_date = db.Column(db.Date)
     status = db.Column(db.String(50))
     financing_type_id = db.Column(db.Integer, db.ForeignKey("financing_options.id"))
-    financing_detail_id = db.Column(db.Integer, db.ForeignKey("financing_details.id"), nullable=True)
+    financing_detail_id = db.Column(
+        db.Integer, db.ForeignKey("financing_details.id"), nullable=True
+    )
+
     hvac_details = db.Column(db.String(255))
+
+    # Solar fields
     solar_electric_bill_kwh = db.Column(db.Float)
     solar_panel_amount = db.Column(db.Integer)
     solar_panel_wattage = db.Column(db.Integer)
     solar_yearly_kwh = db.Column(db.Integer)
     solar_battery_type = db.Column(db.String(50))
     solar_microinverter = db.Column(db.String(50))
+
+    # Roofing fields
     roof_angle = db.Column(db.Float)
     roof_current_type = db.Column(db.String(50))
     roof_new_type = db.Column(db.String(50))
     roof_current_health = db.Column(db.String(255))
-    
+    roof_stories = db.Column(db.String(50))
+
+    # Battery fields
+    battery_current_solar_system_size = db.Column(db.String(255))
+    battery_expected_usage = db.Column(db.String(255))
+    battery_number_of_evs = db.Column(db.String(255))
+    battery_house_type = db.Column(db.String(255))
+    battery_ownership = db.Column(db.String(255))
+
     financing_detail = db.relationship(
         "FinancingDetail",
         foreign_keys=[financing_detail_id],
         backref=db.backref("project", uselist=False),
         cascade="all, delete-orphan",
-        single_parent=True
+        single_parent=True,
     )
 
     def to_dict(self):
@@ -64,6 +80,14 @@ class Project(db.Model):
             "roof_current_type": self.roof_current_type,
             "roof_new_type": self.roof_new_type,
             "roof_current_health": self.roof_current_health,
+            "roof_stories": self.roof_stories,
+            "battery_current_solar_system_size": self.battery_current_solar_system_size,
+            "battery_expected_usage": self.battery_expected_usage,
+            "battery_number_of_evs": self.battery_number_of_evs,
+            "battery_house_type": self.battery_house_type,
+            "battery_ownership": self.battery_ownership,
             "financing_type_id": self.financing_type_id,
-            "financing_detail": self.financing_detail.to_dict() if self.financing_detail else None,
+            "financing_detail": self.financing_detail.to_dict()
+            if self.financing_detail
+            else None,
         }

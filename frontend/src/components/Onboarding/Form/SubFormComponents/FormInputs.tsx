@@ -232,6 +232,14 @@ const FormInputs: React.FC<FormInputsProps> = ({
             <CardTitle>Battery Data Input</CardTitle>
           </CardHeader>
           <CardContent>
+            <Label htmlFor="batteryInput0">Battery Project Name</Label>
+            <Input
+              id="batteryInput0"
+              type="text"
+              placeholder="John's Big Battery"
+              value={inputValues.battery.project_name}
+              onChange={(e) => handleInputChange(e, "battery", "project_name")}
+            />
             <Label htmlFor="batteryInput1">
               Current Solar System Size -kW-
             </Label>

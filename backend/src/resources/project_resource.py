@@ -109,7 +109,9 @@ class ProjectResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def create_project(self, project_type, project_data, required_fields, user_id, general_data):
+    def create_project(
+        self, project_type, project_data, required_fields, user_id, general_data
+    ):
         missing_fields = required_fields - set(project_data.keys())
         empty_fields = [
             field for field in required_fields if project_data.get(field) == ""
@@ -136,12 +138,20 @@ class ProjectResource(Resource):
                 "status": project_data.get("status"),
             }
 
+            # Add general fields
+            project_fields.update(
+                {
+                    "roof_sqft": general_data.get("roofSqft"),
+                }
+            )
+
             # Add specific fields based on the project type
             if project_type == "solar":
                 project_fields.update(
                     {
-                        "roof_sqft": general_data.get("roofSqft"),
-                        "solar_electric_bill_kwh": self.convert_to_none(project_data.get("energyUtilization")),
+                        "solar_electric_bill_kwh": self.convert_to_none(
+                            project_data.get("energyUtilization")
+                        ),
                         "solar_panel_amount": project_data.get("panelCount"),
                         "solar_panel_wattage": project_data.get("solar_panel_wattage"),
                         "solar_microinverter": project_data.get("solar_inverter"),
@@ -154,11 +164,21 @@ class ProjectResource(Resource):
                         "roof_current_type": project_data.get("currentRoofType"),
                         "roof_new_type": project_data.get("desiredRoofType"),
                         "roof_current_health": project_data.get("roofHealth"),
+                        "roof_stories": project_data.get("stories"),
                     }
                 )
             elif project_type == "battery":
-                # Currently no battery fields exist in DB
-                pass
+                project_fields.update(
+                    {
+                        "battery_current_solar_system_size": project_data.get(
+                            "currentSolarSystemSize"
+                        ),
+                        "battery_expected_usage": project_data.get("expectedUsage"),
+                        "battery_number_of_evs": project_data.get("numberOfEVs"),
+                        "battery_house_type": project_data.get("houseType"),
+                        "battery_ownership": project_data.get("ownership"),
+                    }
+                )
 
             new_project = Project(**project_fields)
 
