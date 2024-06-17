@@ -40,6 +40,7 @@ export interface InputValues {
   general: {
     roofSqft: number;
     project_address: string;
+    monthlyBill: number;
   };
   [key: string]: any;
 }
