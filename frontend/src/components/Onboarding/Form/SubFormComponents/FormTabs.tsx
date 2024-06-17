@@ -72,14 +72,18 @@ const FormTabs: React.FC<TabsProps> = ({
           </Button>
         </div>
         {isLoggedIn ? (
-          <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
-            <Link href="/dashboard">My Dashboard</Link>
-          </Button>
+          <Link href="/dashboard">
+            <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
+              My Dashboard
+            </Button>
+          </Link>
         ) : (
           <nav className="flex justify-end ml-auto">
-            <Button className="right-4 text-gray-900 bg-gray-200 hover:bg-gray-500">
-              <LoginLink>Login</LoginLink>
-            </Button>
+            <LoginLink>
+              <Button className="right-4 text-gray-900 bg-gray-200 hover:bg-gray-500">
+                Login
+              </Button>
+            </LoginLink>
           </nav>
         )}
       </nav>

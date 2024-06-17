@@ -89,11 +89,11 @@ const Navbar: React.FC<NavbarProps> = ({ setActiveSection, isLoggedIn }) => {
               </SheetClose>
               <SheetClose asChild>
                 {isLoggedIn ? (
-                  <Button className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
-                    <Link href="/dashboard" className="w-full">
+                  <Link href="/dashboard" className="w-full">
+                    <Button className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
                       My Dashboard
-                    </Link>
-                  </Button>
+                    </Button>
+                  </Link>
                 ) : (
                   <LoginLink className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">
                     Log In

@@ -115,13 +115,17 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
         </div>
         <div className="flex ml-auto items-center mr-8">
           {isLoggedIn ? (
-            <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
-              <Link href="/dashboard">My Dashboard</Link>
-            </Button>
+            <Link href="/dashboard">
+              <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
+                My Dashboard
+              </Button>
+            </Link>
           ) : (
-            <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
-              <LoginLink>Login</LoginLink>
-            </Button>
+            <LoginLink>
+              <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
+                Login
+              </Button>
+            </LoginLink>
           )}
         </div>
       </nav>

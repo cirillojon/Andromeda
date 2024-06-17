@@ -90,11 +90,17 @@ const NavMenu: React.FC<NavMenuProps> = ({ setActiveSection, isLoggedIn }) => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           {isLoggedIn ? (
-            <Button className="text-gray-900 bg-white w-full hover:bg-gray-500">
-              <Link href="/dashboard" className="w-full">My Dashboard</Link>
-            </Button>
+            <Link href="/dashboard" className="w-full">
+              <Button className="text-gray-900 bg-white w-full hover:bg-gray-500">
+                My Dashboard
+              </Button>
+            </Link>
           ) : (
-            <LoginLink>Log In</LoginLink>
+            <LoginLink>
+              <Button className="text-gray-900 bg-white w-full hover:bg-gray-500">
+                Log In
+              </Button>
+            </LoginLink>
           )}
         </NavigationMenuItem>
       </NavigationMenuList>
