@@ -12,12 +12,12 @@ const getAllProjectsByUserId = async (
   try {
     const response = await fetch(getProjectsUrl.toString());
     if (!response.ok) {
-      throw new Error(`Error fetching installer: ${response.statusText}`);
+      throw new Error(`Error fetching projects: ${response.statusText}`);
     }
     const projects: Project[] = await response.json();
     return projects;
   } catch (error) {
-    console.error(`Failed to fetch installer with id: ${userId}`, error);
+    console.error(`Failed to fetch projects for user, id: ${userId}`, error);
     return null;
   }
 };
