@@ -19,7 +19,6 @@ export interface InputValues {
     project_name: string;
     project_type: string;
     annualIncome: string;
-    project_address: string;
   };
   roofing: {
     currentRoofType: string;
@@ -28,7 +27,6 @@ export interface InputValues {
     stories: string;
     project_name: string;
     project_type: string;
-    project_address: string;
   };
   battery: {
     currentSolarSystemSize: string;
@@ -38,10 +36,10 @@ export interface InputValues {
     ownership: string;
     project_name: string;
     project_type: string;
-    project_address: string;
   };
   general: {
     roofSqft: number;
+    project_address: string;
   };
   [key: string]: any;
 }

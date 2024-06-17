@@ -58,7 +58,6 @@ const FormPage: React.FC<FormPageProps> = ({
       project_name: "",
       project_type: "solar",
       annualIncome: "",
-      project_address: address,
     },
     roofing: {
       currentRoofType: "",
@@ -67,7 +66,6 @@ const FormPage: React.FC<FormPageProps> = ({
       stories: "1",
       project_name: "",
       project_type: "roof",
-      project_address: address,
     },
     battery: {
       currentSolarSystemSize: "",
@@ -77,10 +75,10 @@ const FormPage: React.FC<FormPageProps> = ({
       ownership: "",
       project_name: "",
       project_type: "battery",
-      project_address: address,
     },
     general: {
       roofSqft: 0,
+      project_address: address,
     },
   });
   const [validationPassed, setValidationPassed] = useState(false);
@@ -338,7 +336,9 @@ const FormPage: React.FC<FormPageProps> = ({
                       </Button>
                     </RegisterLink>
                   ) : (
-                    <Button onClick={handleSubmit}>Save this Configuration</Button>
+                    <Button onClick={handleSubmit}>
+                      Save this Configuration
+                    </Button>
                   )}
                 </div>
               )}
