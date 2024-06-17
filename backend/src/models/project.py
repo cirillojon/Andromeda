@@ -8,6 +8,7 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     project_name = db.Column(db.String(255), nullable=False)
     project_address = db.Column(db.String(255))
+    monthly_bill = db.Column(db.Float)
     roof_sqft = db.Column(db.Float)
     project_type = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
@@ -61,6 +62,7 @@ class Project(db.Model):
             "project_name": self.project_name,
             "project_address": self.project_address,
             "roof_sqft": self.roof_sqft,
+            "monthly_bill": self.monthly_bill,
             "project_type": self.project_type,
             "user_id": self.user_id,
             "installer_id": self.installer_id,

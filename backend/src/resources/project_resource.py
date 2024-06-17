@@ -138,6 +138,7 @@ class ProjectResource(Resource):
                 # General data
                 "project_address": general_data.get("project_address"),
                 "roof_sqft": general_data.get("roofSqft"),
+                "monthly_bill": general_data.get("monthlyBill"),
             }
 
             # Add specific fields based on the project type
