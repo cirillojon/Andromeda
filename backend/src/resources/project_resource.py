@@ -151,7 +151,9 @@ class ProjectResource(Resource):
                         "solar_panel_amount": project_data.get("panelCount"),
                         "solar_panel_wattage": project_data.get("solar_panel_wattage"),
                         "solar_microinverter": project_data.get("solar_inverter"),
-                        "solar_annual_income": project_data.get("annualIncome")
+                        "solar_annual_income": self.convert_to_none(
+                            project_data.get("annualIncome")
+                        ),
                     }
                 )
             elif project_type == "roofing":
