@@ -338,7 +338,7 @@ const FormPage: React.FC<FormPageProps> = ({
                       </Button>
                     </RegisterLink>
                   ) : (
-                    <Button onClick={handleSubmit}>Submit</Button>
+                    <Button onClick={handleSubmit}>Save this Configuration</Button>
                   )}
                 </div>
               )}
