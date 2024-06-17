@@ -132,18 +132,13 @@ class ProjectResource(Resource):
             # Create a dictionary with the valid fields for the Project model
             project_fields = {
                 "project_name": project_data["project_name"],
-                "project_address": project_data.get("project_address"),
                 "project_type": project_data["project_type"],
                 "user_id": user_id,
                 "status": project_data.get("status"),
+                # General data
+                "project_address": general_data.get("project_address"),
+                "roof_sqft": general_data.get("roofSqft"),
             }
-
-            # Add general fields
-            project_fields.update(
-                {
-                    "roof_sqft": general_data.get("roofSqft"),
-                }
-            )
 
             # Add specific fields based on the project type
             if project_type == "solar":
