@@ -22,6 +22,7 @@ import FormTabs from "./SubFormComponents/FormTabs";
 import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
 import FormInputs from "./SubFormComponents/FormInputs";
 import { InputValues } from "./SubFormComponents/FormInputs";
+import Link from "next/link";
 
 ChartJS.register(
   BarElement,
@@ -38,7 +39,11 @@ interface FormPageProps {
   address: string;
 }
 
-const FormPage: React.FC<FormPageProps> = ({ monthlyBill, isLoggedIn, address }) => {
+const FormPage: React.FC<FormPageProps> = ({
+  monthlyBill,
+  isLoggedIn,
+  address,
+}) => {
   const [activeTab, setActiveTab] = useState("Solar");
   const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
@@ -271,7 +276,11 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill, isLoggedIn, address })
 
   return (
     <div className="flex flex-col min-h-screen">
-      <FormTabs activeTab={activeTab} setActiveTab={setActiveTab} isLoggedIn={isLoggedIn}/>
+      <FormTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isLoggedIn={isLoggedIn}
+      />
       <div className="flex-grow flex mt-4">
         <div className="mainContent flex-grow flex">
           <div className="sidebar left-sidebar">
@@ -308,14 +317,30 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill, isLoggedIn, address })
               maxPanels={maxPanels}
             />
             <div className="mb-10">
-              {validationPassed ? (
-                <RegisterLink className="w-full">
-                  <Button ref={authButtonRef}>
-                    Proceeding to Authentication...
-                  </Button>
-                </RegisterLink>
+              {isLoggedIn ? (
+                <div>
+                  {validationPassed ? (
+                    <Link href={"/dashboard"} className="w-full">
+                      <Button ref={authButtonRef}>
+                        Proceeding to Dashboard...
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Button onClick={handleSubmit}>Create New Project</Button>
+                  )}
+                </div>
               ) : (
-                <Button onClick={handleSubmit}>Submit</Button>
+                <div>
+                  {validationPassed ? (
+                    <RegisterLink className="w-full">
+                      <Button ref={authButtonRef}>
+                        Proceeding to Authentication...
+                      </Button>
+                    </RegisterLink>
+                  ) : (
+                    <Button onClick={handleSubmit}>Submit</Button>
+                  )}
+                </div>
               )}
             </div>
           </div>
