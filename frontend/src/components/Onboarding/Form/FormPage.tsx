@@ -68,6 +68,9 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       project_name: "",
       project_type: "battery",
     },
+    general: {
+      roofSqft: 0,
+    },
   });
   const [validationPassed, setValidationPassed] = useState(false);
   const authButtonRef = useRef<HTMLButtonElement>(null);
@@ -79,11 +82,40 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     setShowHeatmap(!showHeatmap);
   };
 
+  function convertMetersToSqFeet(areaMeters2: number): number {
+    const SQ_METERS_TO_SQ_FEET = 10.7639;
+    return areaMeters2 * SQ_METERS_TO_SQ_FEET;
+  }
+
+  function getHouseSquareFootage(data: SolarData): number {
+    let totalAreaMeters2 = 0;
+
+    if (data.building_insights && data.building_insights.solarPotential) {
+      const wholeRoofStats =
+        data.building_insights.solarPotential.roofSegmentStats;
+      if (wholeRoofStats) {
+        totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
+          return acc + segment.stats.areaMeters2;
+        }, 0);
+      }
+    }
+
+    const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
+    return totalAreaSqFeet;
+  }
+
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
       setSolarData(data);
+
+      // Calculate house square footage
+      const roofSqft = getHouseSquareFootage(data);
+      setInputValues((prevValues) => ({
+        ...prevValues,
+        general: { ...prevValues.general, roofSqft: roofSqft },
+      }));
     }
 
     // Simulate manual page reload

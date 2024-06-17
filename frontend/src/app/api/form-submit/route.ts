@@ -28,7 +28,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract and validate required fields
-    const { solar, roofing, battery, financing_detail = {} } = formData;
+    const {
+      solar,
+      roofing,
+      battery,
+      general,
+      financing_detail = {},
+    } = formData;
 
     const projects = [solar, roofing, battery];
     const countProjects = projects.filter(
@@ -88,6 +94,9 @@ export async function POST(request: NextRequest) {
           ...battery,
           financing_detail,
           user_id,
+        },
+        general: {
+          ...general,
         },
       },
     };
