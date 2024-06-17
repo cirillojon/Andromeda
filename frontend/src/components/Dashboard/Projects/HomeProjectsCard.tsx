@@ -47,7 +47,7 @@ const HomeProjectsCard = async () => {
               )}
             >
               <Plus className="flex" />
-              <Link href="/" className="justify-start">
+              <Link href="/form" className="justify-start">
                 Project
               </Link>
             </div>

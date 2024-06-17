@@ -1,7 +1,5 @@
 "use client";
 import * as React from "react";
-import Link from "next/link";
-
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -10,10 +8,15 @@ import {
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from "./navigation-menu";
 import { Button } from "@/components/ui/button";
 import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import Link from "next/link";
+
+interface NavMenuProps {
+  isLoggedIn: boolean;
+  setActiveSection: (value: string) => void;
+}
 
 const services = [
   {
@@ -45,7 +48,7 @@ const handlePointerEvents = (event: any) => {
   event.preventDefault();
 };
 
-const NavMenu = () => {
+const NavMenu: React.FC<NavMenuProps> = ({ setActiveSection, isLoggedIn }) => {
   return (
     <NavigationMenu>
       <NavigationMenuList className="gap-3 lg:gap-6">
@@ -71,20 +74,34 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="/faq">FAQ</a></Button>
+          <Button variant={"ghost"} onClick={() => setActiveSection("faq")}>
+            FAQ
+          </Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
+          <Button variant={"ghost"} onClick={() => setActiveSection("mission")}>
+            Mission
+          </Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
-            <Button variant={"ghost"}><a href="/mission">Contact</a></Button>
-          </Link>
+          <Button variant={"ghost"} onClick={() => setActiveSection("contact")}>
+            Contact
+          </Button>
         </NavigationMenuItem>
-        <NavigationMenuItem className={navigationMenuTriggerStyle()}>
-          <LoginLink>
-            Log In
-          </LoginLink>
+        <NavigationMenuItem>
+          {isLoggedIn ? (
+            <Link href="/dashboard" className="w-full">
+              <Button className="text-gray-900 bg-white w-full hover:bg-gray-500">
+                My Dashboard
+              </Button>
+            </Link>
+          ) : (
+            <LoginLink>
+              <Button className="text-gray-900 bg-white w-full hover:bg-gray-500">
+                Log In
+              </Button>
+            </LoginLink>
+          )}
         </NavigationMenuItem>
       </NavigationMenuList>
     </NavigationMenu>

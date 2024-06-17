@@ -19,6 +19,7 @@ export interface InputValues {
     project_name: string;
     project_type: string;
     annualIncome: string;
+    project_address: string;
   };
   roofing: {
     currentRoofType: string;
@@ -27,6 +28,7 @@ export interface InputValues {
     stories: string;
     project_name: string;
     project_type: string;
+    project_address: string;
   };
   battery: {
     currentSolarSystemSize: string;
@@ -36,6 +38,7 @@ export interface InputValues {
     ownership: string;
     project_name: string;
     project_type: string;
+    project_address: string;
   };
   general: {
     roofSqft: number;
@@ -110,11 +113,11 @@ const FormInputs: React.FC<FormInputsProps> = ({
               value={inputValues.annualIncome}
               onChange={(e) => handleInputChange(e, "solar", "annualIncome")}
             />
-            <Label htmlFor="solarInput3">Energy Utilization - kW/day</Label>
+            <Label htmlFor="solarInput3">Energy Utilization - kW/month</Label>
             <Input
               id="solarInput3"
               type="text"
-              placeholder="1.5"
+              placeholder="1000"
               value={inputValues.solar.energyUtilization}
               onChange={(e) =>
                 handleInputChange(e, "solar", "energyUtilization")
