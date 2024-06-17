@@ -13,7 +13,7 @@ import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
 const Navbar = () => {
   return (
-    <div className="flex w-full flex-col">
+    <div className="absolute w-full flex-col">
       <header className="inset-x-0 top-0 flex items-center h-16 gap-4 bg-transparent px-4 md:px-6">
         <div className="flex items-center">
           <Image src="/assets/Logo.png" alt="logo" width={40} height={40} />
@@ -55,28 +55,29 @@ const Navbar = () => {
             <div className="border-t border-gray-200 border-2 m-6" />
             <div className="py-1">
               <SheetClose asChild>
-                <Link
-                  href="/faq"
-                  className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100"
+                <a
+                  href="#faq"
+                  className="flex h-8 rounded-md items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   FAQ
-                </Link>
+                </a>
               </SheetClose>
               <SheetClose asChild>
                 <Link
-                  href="/mission"
+                  href="#mission"
                   className="flex h-8 rounded-md items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 >
                   Mission
                 </Link>
               </SheetClose>
               <SheetClose asChild>
-                <Link
-                  href="/contact"
+                <Button
                   className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100"
                 >
-                  Contact
-                </Link>
+                  <a href="#contact" className="w-full">
+                    Contact
+                  </a>
+                </Button>
               </SheetClose>
               <SheetClose asChild>
                 <LoginLink className="flex h-8 px-4 py-2 items-center rounded-md text-sm text-gray-700 hover:bg-gray-100">

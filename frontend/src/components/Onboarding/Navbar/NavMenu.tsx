@@ -1,7 +1,5 @@
 "use client";
 import * as React from "react";
-import Link from "next/link";
-
 import { cn } from "@/lib/utils";
 import {
   NavigationMenu,
@@ -71,15 +69,13 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="/faq">FAQ</a></Button>
+          <Button variant={"ghost"}><a href="#faq">FAQ</a></Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Button variant={"ghost"}><a href="/mission">Mission</a></Button>
+          <Button variant={"ghost"}><a href="#mission">Mission</a></Button>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <Link href="/contact" legacyBehavior passHref>
-            <Button variant={"ghost"}><a href="/mission">Contact</a></Button>
-          </Link>
+            <Button variant={"ghost"}><a href="#contact">Contact</a></Button>
         </NavigationMenuItem>
         <NavigationMenuItem className={navigationMenuTriggerStyle()}>
           <LoginLink>

@@ -11,8 +11,16 @@ import postSolarData from "@/utils/actions/postSolarData";
 import { Input } from "@/components/ui/input";
 import { ButtonGooey } from "@/components/ui/button-gooey";
 import secureLocalStorage from "react-secure-storage";
+import Image from "next/image";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
 
-const AddressPage: React.FC = () => {
+interface AddressPageProps {
+  isLoggedIn: boolean;
+}
+
+const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
   const [address, setAddress] = useState("");
   const [latitude, setLatitude] = useState(27.9517);
   const [longitude, setLongitude] = useState(-82.4588);
@@ -87,72 +95,92 @@ const AddressPage: React.FC = () => {
     if (response.data) {
       secureLocalStorage.setItem("solarData", JSON.stringify(response.data));
     }
-    
+
     // Clear the reload flag
     sessionStorage.removeItem("reloaded");
-  
+
     router.push(
       `/form/${encodeURIComponent(address)}&${encodeURIComponent(monthlyBill)}`
     );
   };
-  
 
   return (
-    <div
-      className="gap-[16px] flex justify-between p-[16px] mt-16"
-      style={{ height: "calc(100vh - 64px)" }}
-    >
-      <div className="flex flex-1 rounded-lg overflow-hidden border-r-10 drop-shadow-lg">
-        <GoogleMap
-          options={mapOptions}
-          zoom={zoom}
-          center={mapCenter}
-          mapTypeId={google.maps.MapTypeId.ROADMAP}
-          mapContainerStyle={{
-            height: "100%",
-            width: "100%",
-            borderRadius: "10px",
-          }}
-          onLoad={() => console.log("Map Loaded")}
-        >
-          <MarkerF
-            position={mapCenter}
-            onLoad={() => console.log("Marker Loaded")}
-            visible={markerVisible}
-          />
-        </GoogleMap>
-      </div>
-      <div className="flex-initial w-1/3 justify-between p-[16px] bg-white rounded-xl">
-        <div className="text-4xl text-slate-700 font-bold mb-10">
-          Start Your Journey
+    <div className="w-full flex flex-col">
+      <nav className="flex bg-gray-900 p-4 shadow-md">
+        <div className="flex items-center space-x-4">
+          <Image src="/assets/Logo.png" alt="logo" width={40} height={40} />
+          <Link href="/" className="font-semibold text-3xl text-white">
+            <span>andromeda</span>
+          </Link>
         </div>
-        <PlacesAutocomplete
-          onAddressSelect={(address) => {
-            getGeocode({ address: address }).then((results) => {
-              const { lat, lng } = getLatLng(results[0]);
-              setLatitude(lat);
-              setLongitude(lng);
-            });
-            setAddress(address);
-            setTimeout(() => setZoom(16), 500);
-            setTimeout(() => setMarkerVisible(true), 1600);
-          }}
-        />
-        <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
-        <div className="flex">
-          <Input
-            value={monthlyBill}
-            onChange={(e) => setMonthlyBill(e.target.value)}
-            className="w-full"
-            placeholder="450"
-          />
-          <div className="absolute right-12 mt-2 items-center text-slate-700">
-            /mo
+        <div className="flex ml-auto items-center mr-8">
+          {isLoggedIn ? (
+            <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
+              <Link href="/dashboard">My Dashboard</Link>
+            </Button>
+          ) : (
+            <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
+              <LoginLink>Login</LoginLink>
+            </Button>
+          )}
+        </div>
+      </nav>
+      <div
+        className="gap-[16px] flex justify-between p-[16px]"
+        style={{ height: "calc(100vh - 64px)" }}
+      >
+        <div className="flex flex-1 rounded-lg overflow-hidden border-r-10 drop-shadow-lg">
+          <GoogleMap
+            options={mapOptions}
+            zoom={zoom}
+            center={mapCenter}
+            mapTypeId={google.maps.MapTypeId.ROADMAP}
+            mapContainerStyle={{
+              height: "100%",
+              width: "100%",
+              borderRadius: "10px",
+            }}
+            onLoad={() => console.log("Map Loaded")}
+          >
+            <MarkerF
+              position={mapCenter}
+              onLoad={() => console.log("Marker Loaded")}
+              visible={markerVisible}
+            />
+          </GoogleMap>
+        </div>
+        <div className="flex-initial w-1/3 justify-between p-[16px] bg-white rounded-xl">
+          <div className="text-4xl text-slate-700 font-bold mb-10">
+            Start Your Journey
           </div>
+          <PlacesAutocomplete
+            onAddressSelect={(address) => {
+              getGeocode({ address: address }).then((results) => {
+                const { lat, lng } = getLatLng(results[0]);
+                setLatitude(lat);
+                setLongitude(lng);
+              });
+              setAddress(address);
+              setTimeout(() => setZoom(16), 500);
+              setTimeout(() => setMarkerVisible(true), 1600);
+            }}
+          />
+          <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
+          <div className="flex">
+            <Input
+              value={monthlyBill}
+              onChange={(e) => setMonthlyBill(e.target.value)}
+              className="w-full"
+              placeholder="450"
+            />
+            <div className="absolute right-12 mt-2 items-center text-slate-700">
+              /mo
+            </div>
+          </div>
+          <button onClick={handleSubmit} className="w-full mt-6 justify-start">
+            <ButtonGooey input="Get Started" />
+          </button>
         </div>
-        <button onClick={handleSubmit} className="w-full mt-6 justify-start">
-          <ButtonGooey input="Get Started" />
-        </button>
       </div>
     </div>
   );

@@ -1,11 +1,35 @@
+import ContactPage from "@/components/Onboarding/ContactPage/ContactPage";
+import FAQPage from "@/components/Onboarding/FAQPage/FAQPage";
+import Footer from "@/components/Onboarding/Footer/Footer";
 import LandingPage from "@/components/Onboarding/LandingPage/LandingPage";
+import MissionPage from "@/components/Onboarding/MissionPage/MissionPage";
+import Navbar from "@/components/Onboarding/Navbar/Navbar";
+import WaitlistPage from "@/components/Onboarding/WaitlistPage/WaitlistPage";
 
-const page = () => {
+const Page = () => {
   return (
     <div>
-      <LandingPage />
+      <Navbar />
+      <div className="pt-16 md:pt-0">
+        <section id="landing">
+          <LandingPage />
+        </section>
+        <section id="mission">
+          <MissionPage />
+        </section>
+        <section id="faq">
+          <FAQPage />
+        </section>
+        <section id="contact">
+          <ContactPage />
+        </section>
+        <section id="waitlist">
+          <WaitlistPage />
+        </section>
+        <Footer />
+      </div>
     </div>
   );
-}
+};
 
-export default page;
+export default Page;

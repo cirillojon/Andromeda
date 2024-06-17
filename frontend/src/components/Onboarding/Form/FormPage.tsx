@@ -34,9 +34,11 @@ ChartJS.register(
 
 interface FormPageProps {
   monthlyBill: number;
+  isLoggedIn: boolean;
+  address: string;
 }
 
-const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
+const FormPage: React.FC<FormPageProps> = ({ monthlyBill, isLoggedIn, address }) => {
   const [activeTab, setActiveTab] = useState("Solar");
   const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
@@ -44,12 +46,14 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
     null
   );
   const [inputValues, setInputValues] = useState<InputValues>({
+    //add address to this object
     solar: {
       panelCount: 10,
       energyUtilization: "",
       project_name: "",
       project_type: "solar",
       annualIncome: "",
+      project_address: address,
     },
     roofing: {
       currentRoofType: "",
@@ -58,6 +62,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       stories: "1",
       project_name: "",
       project_type: "roof",
+      project_address: address,
     },
     battery: {
       currentSolarSystemSize: "",
@@ -67,6 +72,7 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
       ownership: "",
       project_name: "",
       project_type: "battery",
+      project_address: address,
     },
     general: {
       roofSqft: 0,
@@ -264,51 +270,55 @@ const FormPage: React.FC<FormPageProps> = ({ monthlyBill }) => {
   }
 
   return (
-    <div className="form-container md:mt-16 mt-0">
-      <FormTabs activeTab={activeTab} setActiveTab={setActiveTab} />
-      <div className="mainContent">
-        <div className="sidebar left-sidebar">
-          {activeTab === "Solar" && solarData && (
-            <SolarStatsCard
-              solarData={solarData}
+    <div className="flex flex-col min-h-screen">
+      <FormTabs activeTab={activeTab} setActiveTab={setActiveTab} isLoggedIn={isLoggedIn}/>
+      <div className="flex-grow flex mt-4">
+        <div className="mainContent flex-grow flex">
+          <div className="sidebar left-sidebar">
+            {activeTab === "Solar" && solarData && (
+              <SolarStatsCard
+                solarData={solarData}
+                panelCount={panelCount}
+                maxPanels={maxPanels}
+                handleSegmentClick={handleSegmentClick}
+                handleToggleHeatmap={handleToggleHeatmap}
+                showHeatmap={showHeatmap}
+                calculationResults={calculationResults}
+                handleToggleShowAllSegments={handleToggleShowAllSegments}
+                showAllSegments={showAllSegments}
+              />
+            )}
+          </div>
+          <div className="viewbox flex-grow">
+            <SolarMap
               panelCount={panelCount}
-              maxPanels={maxPanels}
-              handleSegmentClick={handleSegmentClick}
-              handleToggleHeatmap={handleToggleHeatmap}
+              selectedSegment={selectedSegment}
               showHeatmap={showHeatmap}
-              calculationResults={calculationResults}
-              handleToggleShowAllSegments={handleToggleShowAllSegments}
               showAllSegments={showAllSegments}
             />
-          )}
-        </div>
-        <div className="viewbox">
-          <SolarMap
-            panelCount={panelCount}
-            selectedSegment={selectedSegment}
-            showHeatmap={showHeatmap}
-            showAllSegments={showAllSegments}
-          />
-        </div>
-        <div className="sidebar">
-          <FormInputs
-            activeTab={activeTab}
-            inputValues={inputValues}
-            handlePanelCountChange={handlePanelCountChange}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
-            panelCount={panelCount}
-            maxPanels={maxPanels}
-          />
-          {validationPassed ? (
-            <RegisterLink className="w-full">
-              <Button ref={authButtonRef}>
-                Proceeding to Authentication...
-              </Button>
-            </RegisterLink>
-          ) : (
-            <Button onClick={handleSubmit}>Submit</Button>
-          )}
+          </div>
+          <div className="sidebar">
+            <FormInputs
+              activeTab={activeTab}
+              inputValues={inputValues}
+              handlePanelCountChange={handlePanelCountChange}
+              handleInputChange={handleInputChange}
+              handleSelectChange={handleSelectChange}
+              panelCount={panelCount}
+              maxPanels={maxPanels}
+            />
+            <div className="mb-10">
+              {validationPassed ? (
+                <RegisterLink className="w-full">
+                  <Button ref={authButtonRef}>
+                    Proceeding to Authentication...
+                  </Button>
+                </RegisterLink>
+              ) : (
+                <Button onClick={handleSubmit}>Submit</Button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
