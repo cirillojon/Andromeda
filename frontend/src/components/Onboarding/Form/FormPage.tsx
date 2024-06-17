@@ -79,6 +79,7 @@ const FormPage: React.FC<FormPageProps> = ({
     general: {
       roofSqft: 0,
       project_address: address,
+      monthlyBill: monthlyBill,
     },
   });
   const [validationPassed, setValidationPassed] = useState(false);
