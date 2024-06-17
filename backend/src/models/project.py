@@ -7,7 +7,7 @@ class Project(db.Model):
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     project_name = db.Column(db.String(255), nullable=False)
     project_address = db.Column(db.String(255))
-    house_sqft = db.Column(db.Float)
+    roof_sqft = db.Column(db.Float)
     project_type = db.Column(db.String(255), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     installer_id = db.Column(db.Integer, db.ForeignKey("installers.id"))
@@ -44,7 +44,7 @@ class Project(db.Model):
             "created_at": json_serial(self.created_at),
             "project_name": self.project_name,
             "project_address": self.project_address,
-            "house_sqft": self.house_sqft,
+            "roof_sqft": self.roof_sqft,
             "project_type": self.project_type,
             "user_id": self.user_id,
             "installer_id": self.installer_id,
