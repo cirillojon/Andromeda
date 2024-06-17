@@ -137,7 +137,7 @@ class ProjectResource(Resource):
             if project_type == "solar":
                 project_fields.update(
                     {
-                        "house_sqft": project_data.get("house_sqft"),
+                        "roof_sqft": project_data.get("roof_sqft"),
                         "solar_electric_bill_kwh": project_data.get(
                             "energyUtilization"
                         ),

@@ -22,7 +22,7 @@ export interface Project {
     install_start_date?: string;
     financing_detail_id?: string;
     created_at: string;
-    house_sqft?: string;
+    roof_sqft?: string;
     hvac_details?: string;
     solar_electric_bill_kwh?: string;
     sola_panel_amount?: string;
