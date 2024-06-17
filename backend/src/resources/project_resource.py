@@ -50,6 +50,9 @@ class ProjectResource(Resource):
             "financing_detail",
         }
 
+        # General data
+        general_data = data.get("general", {})
+
         # Project data types
         project_types = {
             "solar": data.get("solar", {}),
@@ -60,7 +63,7 @@ class ProjectResource(Resource):
         for project_type, project_data in project_types.items():
             if project_data:
                 self.create_project(
-                    project_type, project_data, required_fields, user_id
+                    project_type, project_data, required_fields, user_id, general_data
                 )
 
         return {"message": "Projects processed successfully"}, 200
@@ -106,7 +109,7 @@ class ProjectResource(Resource):
             db.session.rollback()
             return {"message": "Internal server error"}, 500
 
-    def create_project(self, project_type, project_data, required_fields, user_id):
+    def create_project(self, project_type, project_data, required_fields, user_id, general_data):
         missing_fields = required_fields - set(project_data.keys())
         empty_fields = [
             field for field in required_fields if project_data.get(field) == ""
@@ -137,10 +140,8 @@ class ProjectResource(Resource):
             if project_type == "solar":
                 project_fields.update(
                     {
-                        "roof_sqft": project_data.get("roof_sqft"),
-                        "solar_electric_bill_kwh": project_data.get(
-                            "energyUtilization"
-                        ),
+                        "roof_sqft": general_data.get("roofSqft"),
+                        "solar_electric_bill_kwh": project_data.get("energyUtilization"),
                         "solar_panel_amount": project_data.get("panelCount"),
                         "solar_panel_wattage": project_data.get("solar_panel_wattage"),
                         "solar_microinverter": project_data.get("solar_inverter"),
