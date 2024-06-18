@@ -37,7 +37,7 @@ class WaitlistResource(Resource):
 
     def post(self):
         data = request.get_json()
-        required_fields = {"service_interest", "location", "contact_email", "contact_phone"}
+        required_fields = {"service_interest", "location", "contact_email", "name", "contact_phone"}
         missing_fields = required_fields - set(data.keys())
         if missing_fields:
             message = f"Missing required fields: {', '.join(missing_fields)}"
