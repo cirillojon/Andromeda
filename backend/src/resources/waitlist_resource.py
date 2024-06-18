@@ -30,14 +30,19 @@ class WaitlistResource(Resource):
                     "contact_phone": waitlist.contact_phone,
                     "location": waitlist.location,
                     "service_interest": waitlist.service_interest,
-                    
                 }
                 for waitlist in waitlists
             ]
 
     def post(self):
         data = request.get_json()
-        required_fields = {"service_interest", "location", "contact_email", "name", "contact_phone"}
+        required_fields = {
+            "service_interest",
+            "location",
+            "contact_email",
+            "name",
+            "contact_phone",
+        }
         missing_fields = required_fields - set(data.keys())
         if missing_fields:
             message = f"Missing required fields: {', '.join(missing_fields)}"
@@ -52,7 +57,10 @@ class WaitlistResource(Resource):
         try:
             db.session.add(new_waitlist)
             db.session.commit()
-            return {"message": "Waitlist entry created", "waitlist_id": new_waitlist.id}, 201
+            return {
+                "message": "Waitlist entry created",
+                "waitlist_id": new_waitlist.id,
+            }, 201
         except Exception as e:
             app.logger.exception("Error occurred while creating an waitlist.")
             db.session.rollback()
@@ -69,7 +77,9 @@ class WaitlistResource(Resource):
         waitlist.contact_email = data.get("contact_email", waitlist.contact_email)
         waitlist.contact_phone = data.get("contact_phone", waitlist.contact_phone)
         waitlist.location = data.get("location", waitlist.location)
-        waitlist.service_interest = data.get("service_interest", waitlist.service_interest)
+        waitlist.service_interest = data.get(
+            "service_interest", waitlist.service_interest
+        )
         try:
             db.session.commit()
             return {"message": "Waitlist entry updated"}, 200
