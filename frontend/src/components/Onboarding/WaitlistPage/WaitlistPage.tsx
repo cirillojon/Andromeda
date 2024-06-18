@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, FormEvent, ChangeEvent } from "react";
+import Image from "next/image";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { cn } from "@/lib/utils";
@@ -10,11 +11,11 @@ const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const WaitlistPage = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    name: '',
-    contactPhone: '',
-    location: '',
-    serviceInterest: '',
+    email: "",
+    name: "",
+    contactPhone: "",
+    location: "",
+    serviceInterest: "",
   });
   const [isFormValid, setIsFormValid] = useState(false);
   const [emailAsterisk, setEmailAsterisk] = useState(true);
@@ -31,19 +32,19 @@ const WaitlistPage = () => {
     }));
 
     // Validate the inputs
-    if (name === 'email') setEmailAsterisk(!emailRegex.test(value));
-    if (name === 'name') setNameAsterisk(!value);
-    if (name === 'contactPhone') setContactPhoneAsterisk(!value);
-    if (name === 'location') setLocationAsterisk(!value);
-    if (name === 'serviceInterest') setServiceInterestAsterisk(!value);
+    if (name === "email") setEmailAsterisk(!emailRegex.test(value));
+    if (name === "name") setNameAsterisk(!value);
+    if (name === "contactPhone") setContactPhoneAsterisk(!value);
+    if (name === "location") setLocationAsterisk(!value);
+    if (name === "serviceInterest") setServiceInterestAsterisk(!value);
 
     // Check overall form validity
     setIsFormValid(
       emailRegex.test(formData.email) &&
-      formData.name.length > 0 &&
-      formData.contactPhone.length > 0 &&
-      formData.location.length > 0 &&
-      formData.serviceInterest.length > 0
+        formData.name.length > 0 &&
+        formData.contactPhone.length > 0 &&
+        formData.location.length > 0 &&
+        formData.serviceInterest.length > 0
     );
   };
 
@@ -68,7 +69,10 @@ const WaitlistPage = () => {
           toast.error("Failed to create waitlist entry");
         }
       } catch (error) {
-        console.error("An error occurred while creating the waitlist entry:", error);
+        console.error(
+          "An error occurred while creating the waitlist entry:",
+          error
+        );
         toast.error("An error occurred while creating the waitlist entry");
       }
     }
@@ -77,9 +81,9 @@ const WaitlistPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center dark:bg-gray-900">
       <div className="max-w-md w-full mx-auto rounded-2xl p-4 md:p-8 shadow-input bg-gray-50 dark:bg-black border-2 drop-shadow-lg">
-        <h2 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
+        <h1 className="font-bold text-xl text-neutral-800 dark:text-neutral-200">
           Join Our Waitlist
-        </h2>
+        </h1>
         <p className="text-neutral-600 text-sm max-w-sm mt-2 dark:text-neutral-300">
           Enter your details below to join our waitlist!
         </p>
@@ -177,6 +181,24 @@ const WaitlistPage = () => {
             <BottomGradient />
           </button>
         </form>
+        <div className="flex flex-col items-center text-center">
+          <span className="text-neutral-600 text-sm dark:text-neutral-300 mt-8">
+            Romeo is initially launching in the Tampa and Orlando areas. Enter
+            your email above to be alerted when we go live!
+          </span>
+          <span className="text-neutral-600 text-sm dark:text-neutral-300 mt-4">
+            The first 100 homeowners to sign-up will receive a promotional offer
+            upon launch.
+          </span>
+        </div>
+      </div>
+      <div className="hidden md:block md:w-1/2">
+        <Image
+          src="/assets/hero/florida_better.jpg"
+          alt="Florida Map"
+          width={500}
+          height={200}
+        />
       </div>
     </div>
   );
