@@ -248,6 +248,7 @@ const FormPage: React.FC<FormPageProps> = ({
     setValidationPassed(true); // Set the flag to true on successful validation
   };
 
+  // This will change, and be based off of some formula
   const maxPanels = 110;
 
   useEffect(() => {
@@ -257,6 +258,7 @@ const FormPage: React.FC<FormPageProps> = ({
       const results = calculateSolarPotential(
         config,
         panelCount,
+        maxPanels,
         Number(monthlyBill), // Use the monthly bill from the props
         0.31, // Example energy cost per kWh
         0.85, // Example DC to AC derate factor

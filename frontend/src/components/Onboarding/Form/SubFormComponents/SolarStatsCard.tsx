@@ -31,10 +31,11 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   showAllSegments,
 }) => {
   const [showFinance, setShowFinance] = useState(false);
-  const maxYearlySavings = 69718;
   const panelsPercentage = (panelCount / maxPanels) * 100;
   const energyProducedPercentage =
-    (calculationResults.yearlyEnergyDcKwh / maxYearlySavings) * 100;
+    (calculationResults.yearlyEnergyDcKwh /
+      calculationResults.maxYearlyEnergyDcKwh) *
+    100;
 
   const panelData =
     solarData.building_insights.solarPotential.solarPanels.slice(0, panelCount);
@@ -69,7 +70,8 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
         <div className="progress-bar">
           <p>
             <strong>Yearly Energy Produced (kWh):</strong>{" "}
-            {calculationResults.yearlyEnergyDcKwh.toFixed(2)}/{maxYearlySavings}
+            {calculationResults.yearlyEnergyDcKwh.toFixed(2)}/
+            {calculationResults.maxYearlyEnergyDcKwh}
           </p>
           <div className="progress">
             <div
