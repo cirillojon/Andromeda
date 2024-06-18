@@ -7,6 +7,13 @@ import { Asterisk } from "lucide-react";
 import { toast } from "sonner";
 
 const WaitlistPage = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    name: '',
+    contactPhone: '',
+    location: '',
+    serviceInterest: '',
+  });
   const [isFormValid, setIsFormValid] = useState(false);
   const [emailAsterisk, setEmailAsterisk] = useState(true);
   const [nameAsterisk, setNameAsterisk] = useState(true);
@@ -40,10 +47,10 @@ const WaitlistPage = () => {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
+    setFormData((prevFormData) => ({
+      ...prevFormData,
       [name]: value,
-    });
+    }));
     handleInput();
   };
 
