@@ -1,10 +1,12 @@
 "use client";
-import React, { useRef, useState, FormEvent, ChangeEvent } from "react";
+import React, { useState, FormEvent, ChangeEvent } from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { cn } from "@/lib/utils";
 import { Asterisk } from "lucide-react";
 import { toast } from "sonner";
+
+const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const WaitlistPage = () => {
   const [formData, setFormData] = useState({
@@ -21,37 +23,28 @@ const WaitlistPage = () => {
   const [locationAsterisk, setLocationAsterisk] = useState(true);
   const [serviceInterestAsterisk, setServiceInterestAsterisk] = useState(true);
 
-  const handleInput = () => {
-    const email = document.getElementById("email") as HTMLInputElement;
-    const name = document.getElementById("name") as HTMLInputElement;
-    const contactPhone = document.getElementById("contactPhone") as HTMLInputElement;
-    const location = document.getElementById("location") as HTMLInputElement;
-    const serviceInterest = document.getElementById("serviceInterest") as HTMLInputElement;
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    setEmailAsterisk(!emailRegex.test(email.value));
-    setNameAsterisk(!name.value);
-    setContactPhoneAsterisk(!contactPhone.value);
-    setLocationAsterisk(!location.value);
-    setServiceInterestAsterisk(!serviceInterest.value);
-
-    setIsFormValid(
-      emailRegex.test(email.value) &&
-      name.value.length > 0 &&
-      contactPhone.value.length > 0 &&
-      location.value.length > 0 &&
-      serviceInterest.value.length > 0
-    );
-  };
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
-    handleInput();
+
+    // Validate the inputs
+    if (name === 'email') setEmailAsterisk(!emailRegex.test(value));
+    if (name === 'name') setNameAsterisk(!value);
+    if (name === 'contactPhone') setContactPhoneAsterisk(!value);
+    if (name === 'location') setLocationAsterisk(!value);
+    if (name === 'serviceInterest') setServiceInterestAsterisk(!value);
+
+    // Check overall form validity
+    setIsFormValid(
+      emailRegex.test(formData.email) &&
+      formData.name.length > 0 &&
+      formData.contactPhone.length > 0 &&
+      formData.location.length > 0 &&
+      formData.serviceInterest.length > 0
+    );
   };
 
   const handleSubmit = async (event: FormEvent) => {
