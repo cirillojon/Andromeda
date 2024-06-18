@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useState, FormEvent } from "react";
+import React, { useRef, useState, FormEvent, ChangeEvent } from "react";
 import { Label } from "../../ui/label";
 import { Input } from "../../ui/input";
 import { cn } from "@/lib/utils";
@@ -36,6 +36,15 @@ const WaitlistPage = () => {
       location.value.length > 0 &&
       serviceInterest.value.length > 0
     );
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+    handleInput();
   };
 
   const handleSubmit = async (event: FormEvent) => {
@@ -88,7 +97,7 @@ const WaitlistPage = () => {
                 placeholder="John Doe"
                 type="text"
                 name="name"
-                onInput={handleInput}
+                onInput={handleInputChange}
               />
             </LabelInputContainer>
           </div>
@@ -105,7 +114,7 @@ const WaitlistPage = () => {
                 placeholder="(123) 456-7890"
                 type="text"
                 name="contactPhone"
-                onInput={handleInput}
+                onInput={handleInputChange}
               />
             </LabelInputContainer>
           </div>
@@ -122,7 +131,7 @@ const WaitlistPage = () => {
                 placeholder="City, State"
                 type="text"
                 name="location"
-                onInput={handleInput}
+                onInput={handleInputChange}
               />
             </LabelInputContainer>
           </div>
@@ -139,7 +148,7 @@ const WaitlistPage = () => {
                 placeholder="Solar Panels, Roofing, etc."
                 type="text"
                 name="serviceInterest"
-                onInput={handleInput}
+                onInput={handleInputChange}
               />
             </LabelInputContainer>
           </div>
@@ -155,7 +164,7 @@ const WaitlistPage = () => {
               placeholder="homeimprovement@test.com"
               type="email"
               name="email"
-              onInput={handleInput}
+              onInput={handleInputChange}
               onEmptied={() => setEmailAsterisk(true)}
             />
           </LabelInputContainer>
