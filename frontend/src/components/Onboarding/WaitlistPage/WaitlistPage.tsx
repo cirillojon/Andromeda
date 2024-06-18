@@ -40,11 +40,17 @@ const WaitlistPage = () => {
 
     // Check overall form validity
     setIsFormValid(
-      emailRegex.test(formData.email) &&
-        formData.name.length > 0 &&
-        formData.contactPhone.length > 0 &&
-        formData.location.length > 0 &&
-        formData.serviceInterest.length > 0
+      emailRegex.test(name === "email" ? value : formData.email) &&
+        (name === "name" ? value.length > 0 : formData.name.length > 0) &&
+        (name === "contactPhone"
+          ? value.length > 0
+          : formData.contactPhone.length > 0) &&
+        (name === "location"
+          ? value.length > 0
+          : formData.location.length > 0) &&
+        (name === "serviceInterest"
+          ? value.length > 0
+          : formData.serviceInterest.length > 0)
     );
   };
 
