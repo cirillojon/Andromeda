@@ -10,6 +10,7 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
+import BalanceChart from "./BalanceChart";
 
 const PlaidDashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -67,65 +68,76 @@ const PlaidDashboard = () => {
         Connect a bank account
       </button>
       {data && (
-        <div className="grid gap-4">
-          <h2 className="text-xl font-semibold mb-2">Plaid Financial Data</h2>
-          {data.accounts.map((account: any) => (
-            <Card className="w-full drop-shadow-md" key={account.account_id}>
-              <CardHeader>
-                <CardTitle>{account.name}</CardTitle>
-                <CardDescription>{account.official_name}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid gap-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-medium">Current Balance</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Plaid Financial Data</h2>
+            {data.accounts.map((account: any) => (
+              <Card
+                className="w-full drop-shadow-md mb-4"
+                key={account.account_id}
+              >
+                <CardHeader>
+                  <CardTitle>{account.name}</CardTitle>
+                  <CardDescription>{account.official_name}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-medium">Current Balance</p>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {account.balances.current
+                          ? "$" + account.balances.current
+                          : "N/A"}
+                      </div>
                     </div>
-                    <div className="text-2xl font-bold">
-                      {account.balances.current
-                        ? "$" + account.balances.current
-                        : "N/A"}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-medium">Available Balance</p>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {account.balances.available
+                          ? "$" + account.balances.available
+                          : "N/A"}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-medium">Currency</p>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {account.balances.iso_currency_code}
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-medium">Account Type</p>
+                      </div>
+                      <div className="text-2xl font-bold">{account.type}</div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-lg font-medium">Account Subtype</p>
+                      </div>
+                      <div className="text-2xl font-bold">
+                        {account.subtype}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-medium">Available Balance</p>
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {account.balances.available
-                        ? "$" + account.balances.available
-                        : "N/A"}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-medium">Currency</p>
-                    </div>
-                    <div className="text-2xl font-bold">
-                      {account.balances.iso_currency_code}
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-medium">Account Type</p>
-                    </div>
-                    <div className="text-2xl font-bold">{account.type}</div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-lg font-medium">Account Subtype</p>
-                    </div>
-                    <div className="text-2xl font-bold">{account.subtype}</div>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <p className="text-sm text-gray-500">
-                  Account ID: {account.account_id}
-                </p>
-              </CardFooter>
-            </Card>
-          ))}
+                </CardContent>
+                <CardFooter>
+                  <p className="text-sm text-gray-500">
+                    Account ID: {account.account_id}
+                  </p>
+                </CardFooter>
+              </Card>
+            ))}
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold mb-2">Account Balances</h2>
+            <BalanceChart data={data} />
+          </div>
         </div>
       )}
     </div>
