@@ -52,6 +52,10 @@ const PlaidDashboard = () => {
       body: JSON.stringify({ access_token: accessToken }),
     });
     const transactionsResult = await transactionsResponse.json();
+
+    // Log the response data
+    console.log("Plaid Response:", transactionsResult);
+
     setData(transactionsResult);
   };
 
