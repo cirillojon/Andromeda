@@ -11,6 +11,8 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import BalanceChart from "./BalanceChart";
+import AccountTypePieChart from "./AccountTypePieChart";
+import TransactionLineChart from "./TransactionLineChart";
 
 const PlaidDashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -58,7 +60,7 @@ const PlaidDashboard = () => {
   });
 
   return (
-    <div className="p-4">
+    <div className="flex flex-col p-4 h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Finances</h1>
       <button
         onClick={() => open()}
@@ -68,8 +70,8 @@ const PlaidDashboard = () => {
         Connect a bank account
       </button>
       {data && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <div>
+        <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex-1 lg:w-1/3">
             <h2 className="text-xl font-semibold mb-2">Plaid Financial Data</h2>
             {data.accounts.map((account: any) => (
               <Card
@@ -134,9 +136,19 @@ const PlaidDashboard = () => {
               </Card>
             ))}
           </div>
-          <div>
-            <h2 className="text-xl font-semibold mb-2">Account Balances</h2>
-            <BalanceChart data={data} />
+          <div className="flex-1 lg:w-2/3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+            <div className="h-60">
+              <h2 className="text-xl font-semibold mb-2">Account Balances</h2>
+              <BalanceChart data={data} />
+            </div>
+            <div className="h-60">
+              <h2 className="text-xl font-semibold mb-2">Account Types</h2>
+              <AccountTypePieChart data={data} />
+            </div>
+            <div className="h-60">
+              <h2 className="text-xl font-semibold mb-2">Transaction Trends</h2>
+              <TransactionLineChart data={data} />
+            </div>
           </div>
         </div>
       )}
