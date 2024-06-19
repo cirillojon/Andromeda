@@ -53,7 +53,7 @@ Currently whenever a push is made to version/1.0.0, the website will be redploye
    To start the server (with logging enabled):
     ```bash
     # add the --reload flag for hot reloading (maybe not best for prod)
-    gunicorn --workers=2 --bind=0.0.0.0:8000 --log-level=debug app:app
+    gunicorn --workers=1 --bind=0.0.0.0:8000 --log-level=debug app:app
     ```
     How to restart server: (If the server isn't using the reload flag)
 
