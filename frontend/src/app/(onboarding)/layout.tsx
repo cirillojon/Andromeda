@@ -12,6 +12,7 @@ const roboto = Roboto({
 export const metadata: Metadata = {
   title: "andromeda",
   description: "",
+  verification: { google: "lu8WIOtJxUBccG-EoS8dRiQSBv6nxM2P6O55MzlZYvM" },
 };
 
 export default function RootLayout({
@@ -21,6 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={roboto.className}>
+      <meta name="google-site-verification" content="lu8WIOtJxUBccG-EoS8dRiQSBv6nxM2P6O55MzlZYvM" />
       <body>
         <main>
           {children}
