@@ -13,6 +13,7 @@ import {
 import BalanceChart from "./BalanceChart";
 import AccountTypePieChart from "./AccountTypePieChart";
 import TransactionLineChart from "./TransactionLineChart";
+import ProductsOverviewChart from "./ProductsOverviewChart";
 
 const PlaidDashboard = () => {
   const [data, setData] = useState<any>(null);
@@ -137,17 +138,21 @@ const PlaidDashboard = () => {
             ))}
           </div>
           <div className="flex-1 lg:w-2/3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-            <div className="h-60">
+            <div className="h-48">
               <h2 className="text-xl font-semibold mb-2">Account Balances</h2>
               <BalanceChart data={data} />
             </div>
-            <div className="h-60">
+            <div className="h-48">
               <h2 className="text-xl font-semibold mb-2">Account Types</h2>
               <AccountTypePieChart data={data} />
             </div>
-            <div className="h-60">
+            <div className="h-48">
               <h2 className="text-xl font-semibold mb-2">Transaction Trends</h2>
               <TransactionLineChart data={data} />
+            </div>
+            <div className="h-48">
+              <h2 className="text-xl font-semibold mb-2">Products Overview</h2>
+              <ProductsOverviewChart data={data} />
             </div>
           </div>
         </div>
