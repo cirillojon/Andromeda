@@ -45,7 +45,7 @@ const FormPage: React.FC<FormPageProps> = ({
   address,
 }) => {
   const [activeTab, setActiveTab] = useState("Solar");
-  const [panelCount, setPanelCount] = useState<number>(1);
+  const [panelCount, setPanelCount] = useState<number>(10);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
