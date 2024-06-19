@@ -16,7 +16,7 @@ const page = async () => {
   const user = await getKindeServerSession();
   const currentUser = await user.getUser();
   if (!currentUser) {
-    //handle this correctly
+    // Handle this correctly
     return null;
   }
 
@@ -24,14 +24,21 @@ const page = async () => {
   let projects: Project[] = [];
 
   if (dbUser != null) {
-    const getProjectsUrl = new URL(
-      `/api/project/user/${dbUser.id}`,
-      process.env.NEXT_FRONTEND_BASE_URL
-    );
+    try {
+      const getProjectsUrl = new URL(
+        `/api/project/user/${dbUser.id}`,
+        process.env.NEXT_FRONTEND_BASE_URL
+      );
 
-    projects = await fetch(getProjectsUrl.toString())
-      .then((res) => res.json())
-      .then((data) => data);
+      const response = await fetch(getProjectsUrl.toString());
+      if (response.ok) {
+        projects = await response.json();
+      } else {
+        console.error("Failed to fetch projects:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
   }
 
   console.log("PROJECTS:", projects);
@@ -42,8 +49,7 @@ const page = async () => {
         <span className="text-gray-500">Your active or pending projects.</span>
       </div>
       <div className="mb-6 rounded-lg">
-        {projects.filter((project) => project.status === "PENDING").length >
-        0 ? (
+        {projects.filter((project) => project.status === "PENDING").length > 0 ? (
           projects
             .filter((project) => project.status === "PENDING")
             .map((project) => (
@@ -52,9 +58,7 @@ const page = async () => {
                   <CardHeader className="p-2">
                     <div className="grid grid-cols-2 items-center">
                       <div>
-                        <CardTitle className="mb-2">
-                          {project.project_name}
-                        </CardTitle>
+                        <CardTitle className="mb-2">{project.project_name}</CardTitle>
                         <CardDescription>{project.status}</CardDescription>
                       </div>
                       <div className="flex flex-col justify-end items-end space-y-2">
@@ -91,16 +95,11 @@ const page = async () => {
         )}
       </div>
       <div className="grid grid-rows-2">
-        <span className="text-3xl font-bold items-start">
-          Inactive Projects
-        </span>
-        <span className="text-gray-500">
-          Your completed or canceled projects.
-        </span>
+        <span className="text-3xl font-bold items-start">Inactive Projects</span>
+        <span className="text-gray-500">Your completed or canceled projects.</span>
       </div>
       <div className="mb-36 rounded-lg">
-        {projects.filter((project) => project.status === "COMPLETE").length >
-        0 ? (
+        {projects.filter((project) => project.status === "COMPLETE").length > 0 ? (
           projects
             .filter((project) => project.status === "COMPLETE")
             .map((project) => (
