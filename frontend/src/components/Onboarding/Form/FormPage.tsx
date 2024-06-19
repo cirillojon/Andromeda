@@ -45,11 +45,13 @@ const FormPage: React.FC<FormPageProps> = ({
   address,
 }) => {
   const [activeTab, setActiveTab] = useState("Solar");
-  const [panelCount, setPanelCount] = useState<number>(10);
+  const [panelCount, setPanelCount] = useState<number>(1);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
+  // This will change, and be based off of some formula
+  const maxPanels = 110;
   const [inputValues, setInputValues] = useState<InputValues>({
     //add address to this object
     solar: {
@@ -87,6 +89,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [calculationResults, setCalculationResults] = useState<any>(null);
   const [showAllSegments, setShowAllSegments] = useState(false);
+  const [maximizeSavings, setMaximizeSavings] = useState(false);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -134,6 +137,42 @@ const FormPage: React.FC<FormPageProps> = ({
       window.location.reload();
     }
   }, []);
+
+  useEffect(() => {
+    if (maximizeSavings && solarData) {
+      const config: SolarPanelConfig =
+        solarData.building_insights.solarPotential.solarPanelConfigs[0];
+      let maxConfiguration;
+      let maxSavings = 0;
+      let newPanelCount = 0;
+
+      for (let i = 1; i <= maxPanels; i++) {
+        const results = calculateSolarPotential(
+          config,
+          i, // Use the current panel count in the loop
+          maxPanels,
+          Number(monthlyBill), // Use the monthly bill from the props
+          0.31, // Example energy cost per kWh
+          0.85, // Example DC to AC derate factor
+          7000, // Example solar incentives
+          4.0, // Example installation cost per watt
+          20, // Example installation lifespan
+          solarData.building_insights.solarPotential.panelCapacityWatts
+        );
+
+        if (results && results.savings > maxSavings) {
+          maxSavings = results.savings;
+          maxConfiguration = results;
+          newPanelCount = i;
+        }
+      }
+
+      if (maxConfiguration) {
+        setCalculationResults(maxConfiguration);
+        setPanelCount(newPanelCount);
+      }
+    }
+  }, [maximizeSavings, solarData, monthlyBill, maxPanels]);
 
   const handlePanelCountChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
@@ -248,9 +287,6 @@ const FormPage: React.FC<FormPageProps> = ({
     setValidationPassed(true); // Set the flag to true on successful validation
   };
 
-  // This will change, and be based off of some formula
-  const maxPanels = 110;
-
   useEffect(() => {
     if (solarData) {
       const config: SolarPanelConfig =
@@ -296,6 +332,8 @@ const FormPage: React.FC<FormPageProps> = ({
                 calculationResults={calculationResults}
                 handleToggleShowAllSegments={handleToggleShowAllSegments}
                 showAllSegments={showAllSegments}
+                maximizeSavings={maximizeSavings}
+                setMaximizeSavings={setMaximizeSavings}
               />
             )}
           </div>
