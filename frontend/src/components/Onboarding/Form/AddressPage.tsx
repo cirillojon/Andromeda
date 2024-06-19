@@ -27,6 +27,9 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
   const [zoom, setZoom] = useState(13);
   const [markerVisible, setMarkerVisible] = useState(false);
   const [monthlyBill, setMonthlyBill] = useState("");
+  const [billError, setBillError] = useState("");
+  const [emptyAddress, setEmptyAddress] = useState("");
+  const [emptyBill, setEmptyBill] = useState("");
   const router = useRouter();
 
   const libraries = useMemo(() => ["places"], []);
@@ -49,7 +52,6 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
     libraries: libraries as any,
   });
 
-  //make this a skeleton
   if (!isLoaded) {
     return (
       <div
@@ -77,6 +79,7 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
               /mo
             </div>
           </div>
+          {billError && <div className="text-red-500 mt-2">{billError}</div>}
         </div>
       </div>
     );
@@ -84,13 +87,20 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
 
   const handleSubmit = async () => {
     if (!address) {
-      alert("Please enter an address");
+      setEmptyAddress("Please enter an address");
       return;
     }
+    setEmptyAddress("");
     if (!monthlyBill) {
-      alert("Please enter a monthly bill");
+      setEmptyBill("Please enter a monthly bill");
       return;
     }
+    setEmptyBill("");
+    if (isNaN(Number(monthlyBill))) {
+      setBillError("Please enter a valid number for the monthly bill");
+      return;
+    }
+    setBillError("");
     const response = await postSolarData(address, longitude, latitude);
     if (response.data) {
       secureLocalStorage.setItem("solarData", JSON.stringify(response.data));
@@ -169,11 +179,12 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
               setTimeout(() => setMarkerVisible(true), 1600);
             }}
           />
+          {emptyAddress && <div className="text-red-500 mt-2 ml-2">{emptyAddress}</div>}
           <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
           <div className="flex">
             <Input
               value={monthlyBill}
-              onChange={(e) => setMonthlyBill(e.target.value)}
+              onChange={(e) => setMonthlyBill(e.target.value.replaceAll(',',''))}
               className="w-full"
               placeholder="450"
             />
@@ -181,8 +192,10 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
               /mo
             </div>
           </div>
-          <button onClick={handleSubmit} className="w-full mt-6 justify-start">
-            <ButtonGooey input="Get Started" />
+          {billError && <div className="text-red-500 mt-2 ml-2">{billError}</div>}
+          {emptyBill && <div className="text-red-500 mt-2 ml-2">{emptyBill}</div>}
+          <button onClick={handleSubmit} className="mt-6 justify-start w-40">
+            <ButtonGooey input="Get Started"/>
           </button>
         </div>
       </div>
