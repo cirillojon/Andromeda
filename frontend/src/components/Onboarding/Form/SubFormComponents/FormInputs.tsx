@@ -91,7 +91,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
               id="solarInput1"
               type="number"
               placeholder="Number of Panels"
-              value={inputValues.solar.panelCount}
+              value={panelCount}
               onChange={(e) => handlePanelCountChange(e)}
               min="1"
               step="1"
