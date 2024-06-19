@@ -107,15 +107,15 @@ const FormInputs: React.FC<FormInputsProps> = ({
             <Label htmlFor="solarInput2">Annual Income</Label>
             <Input
               id="solarInput2"
-              type="text"
-              placeholder="60,000"
+              type="number"
+              placeholder="60000"
               value={inputValues.annualIncome}
               onChange={(e) => handleInputChange(e, "solar", "annualIncome")}
             />
             <Label htmlFor="solarInput3">Energy Utilization - kW/month</Label>
             <Input
               id="solarInput3"
-              type="text"
+              type="number"
               placeholder="1000"
               value={inputValues.solar.energyUtilization}
               onChange={(e) =>
@@ -247,7 +247,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             </Label>
             <Input
               id="batteryInput1"
-              type="text"
+              type="number"
               placeholder="10"
               value={inputValues.battery.currentSolarSystemSize}
               onChange={(e) =>

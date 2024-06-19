@@ -68,6 +68,7 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
           <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
           <div className="flex">
             <Input
+              type="number"
               value={monthlyBill}
               onChange={(e) => setMonthlyBill(e.target.value)}
               className="w-full"
