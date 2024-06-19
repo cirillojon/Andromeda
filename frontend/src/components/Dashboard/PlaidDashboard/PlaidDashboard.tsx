@@ -2,9 +2,17 @@
 
 import React, { useEffect, useState } from "react";
 import { usePlaidLink } from "react-plaid-link";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
 
 const PlaidDashboard = () => {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [linkToken, setLinkToken] = useState(null);
 
   useEffect(() => {
@@ -49,15 +57,75 @@ const PlaidDashboard = () => {
   });
 
   return (
-    <div>
-      <h1>Finances</h1>
-      <button onClick={() => open()} disabled={!ready}>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-4">Finances</h1>
+      <button
+        onClick={() => open()}
+        disabled={!ready}
+        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+      >
         Connect a bank account
       </button>
       {data && (
-        <div>
-          <h2>Plaid Financial Data</h2>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
+        <div className="grid gap-4">
+          <h2 className="text-xl font-semibold mb-2">Plaid Financial Data</h2>
+          {data.accounts.map((account: any) => (
+            <Card className="w-full drop-shadow-md" key={account.account_id}>
+              <CardHeader>
+                <CardTitle>{account.name}</CardTitle>
+                <CardDescription>{account.official_name}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-medium">Current Balance</p>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {account.balances.current
+                        ? "$" + account.balances.current
+                        : "N/A"}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-medium">Available Balance</p>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {account.balances.available
+                        ? "$" + account.balances.available
+                        : "N/A"}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-medium">Currency</p>
+                    </div>
+                    <div className="text-2xl font-bold">
+                      {account.balances.iso_currency_code}
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-medium">Account Type</p>
+                    </div>
+                    <div className="text-2xl font-bold">{account.type}</div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-medium">Account Subtype</p>
+                    </div>
+                    <div className="text-2xl font-bold">{account.subtype}</div>
+                  </div>
+                </div>
+              </CardContent>
+              <CardFooter>
+                <p className="text-sm text-gray-500">
+                  Account ID: {account.account_id}
+                </p>
+              </CardFooter>
+            </Card>
+          ))}
         </div>
       )}
     </div>
