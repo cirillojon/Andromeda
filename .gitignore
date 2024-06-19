@@ -5,6 +5,7 @@
 /.pnp
 .pnp.js
 .yarn/install-state.gz
+/frontend/node_modules
 
 # testing
 /coverage
@@ -12,6 +13,7 @@
 # next.js
 /.next/
 /out/
+/frontend/.next/
 
 # production
 /build
@@ -19,6 +21,8 @@
 # misc
 .DS_Store
 *.pem
+postgres/data
+.vscode
 
 # debug
 npm-debug.log*
@@ -26,6 +30,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # vercel
@@ -34,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# python
+env/
+__pycache__/
+backend/app.py.save
+backend/logs

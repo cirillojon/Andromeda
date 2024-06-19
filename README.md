@@ -1,36 +1,392 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Andromeda
+
+Current URL: [https://romeo-kappa.vercel.app/](https://romeo-kappa.vercel.app/)
+
+Currently whenever a push is made to version/1.0.0, the website will be redployed at this url with the latest changes.
+
+![Vercel](https://therealsujitk-vercel-badge.vercel.app/?app=romeo)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js
+- Docker (optional, only if running backend locally)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Setup
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Clone the repository:**
+    ```bash
+    git clone https://github.com/cirillojon/Andromeda
+    cd Andromeda
+    ```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+2. **Frontend Development:**
+    Navigate to the frontend directory, install dependencies, and start the development server:
+    ```bash
+    cd frontend
+    npm install
+    npm run dev
+    ```
 
-## Learn More
+    - The Next.js development server runs on port 3000 and is accessible at `http://localhost:3000`.
 
-To learn more about Next.js, take a look at the following resources:
+3. **Backend Development:**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+    For backend development, it is HIGHLY recommended to use the `Remote - SSH` extension in VSCode. This allows you to edit files directly on the server. You can use Docker and look at the [Docker](#working-with-docker) section for creating the project.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+    The backend is hosted on a Digital Ocean droplet. To access the server:
+    ```bash
+    ssh root@167.71.165.9
+    ```
+    The password is shared in the Discord `important-info` channel.
 
-## Deploy on Vercel
+    Once logged in, activate the Python virtual environment:
+    ```bash
+    source venv/bin/activate
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+    Navigate to the backend directory.
+    (Note that the flask server should already be running via gunicorn on port 8000.)
+    (Starting the server *should* be un-needed unless the server is offline for some reason)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   To start the server (with logging enabled):
+    ```bash
+    # add the --reload flag for hot reloading (maybe not best for prod)
+    gunicorn --workers=2 --bind=0.0.0.0:8000 --log-level=debug app:app
+    ```
+    How to restart server: (If the server isn't using the reload flag)
+
+    ```bash
+    To get the running gunicorn process:
+    ps aux | grep gunicorn
+
+    To gracefully restart: (Recommended to propogate changes without taking down server)
+    kill -HUP <pid>
+
+    To completely stop: 
+    kill <pid>
+    ```
+
+    The backend will have logs outputted to `stdout` and log files located at `/etc/logs`. If you're starting the backend from scratch, make sure to create this directory before running!
+
+    Adding a New API Endpoint to `app.py`
+
+    Create a new resource class to handle the API logic. For instance, if you want to add a Task endpoint with GET and POST options:
+    ```python
+    class Task(Resource):
+        def get(self):
+            return {"tasks": "List of tasks"}
+    
+        def post(self):
+                data = request.get_json()  # Parses the JSON data
+                if not data or 'task' not in data:
+                    return {"message": "No task provided"}, 400
+                task_description = data['task']
+                return {"message": f"Task added: {task_description}"}, 201
+    ```
+
+    Add the new resource to your API by updating the api.add_resource() calls:
+    ```python
+    # Registering the new Task resource
+    api.add_resource(Task, '/api/task')
+    ```
+    
+    To test that the api is working properly, you can simply do: 
+
+    For a get request:
+    ```bash
+    curl http://167.71.165.9/api/task
+    ```
+    and verify that you get a valid response:
+    ```bash
+    {
+        "tasks": "List of tasks"
+    }
+    ```
+
+    However for api testing, I highly reccomend using postman
+    For example, to test this POST request in postman:
+    in the url field put: `http://167.71.165.9/api/task`
+    make it a `POST` request
+    Then in the body, select `raw`, and `json`, and add this:
+    ```bash
+    {
+        "task" : "Test"
+    }
+    ```
+    The correct response for this api should look like:
+    ```bash
+    {
+        "message": "Task added: Test"
+    }
+    ```
+
+    You can go to the console in postman to see the full details of your request:
+    ```bash
+    POST /api/task HTTP/1.1
+    Content-Type: application/json
+    User-Agent: PostmanRuntime/7.37.3
+    Accept: */*
+    Postman-Token: 7ed648e7-dcb6-47ed-9ae4-5cfa29ef98b3
+    Host: 167.71.165.9
+    Accept-Encoding: gzip, deflate, br
+    Connection: keep-alive
+    Content-Length: 27
+     
+    {
+    "task" : "Test"
+    }
+     
+    HTTP/1.1 201 CREATED
+    Server: nginx/1.24.0 (Ubuntu)
+    Date: Wed, 22 May 2024 23:19:14 GMT
+    Content-Type: application/json
+    Content-Length: 32
+    Connection: keep-alive
+     
+    {"message": "Task added: Test"}
+    ```   
+
+    To make a new API endpoint accessible by the frontend, update the `next.config.mjs` file with the new endpoint, for example:
+    ```javascript
+    {
+        source: "/api/user",
+        destination: "http://167.71.165.9/api/user",
+    },
+    ```
+
+    ### Postgres notes:
+    
+    enter postgres shell:
+    ```bash
+    venvroot@ubuntu-s-1vcpu-1gb-nyc3-01:~/romeo# sudo -i -u postgres
+    ```
+
+    enter home_improvement db as db_user:
+    ```bash
+    postgres@ubuntu-s-1vcpu-1gb-nyc3-01:~$ psql -d home_improvement -U db_user
+    ```
+
+    list info about this db
+    ```sql
+    home_improvement=> \dt
+            List of relations
+    Schema | Name | Type  |  Owner   
+    --------+------+-------+----------
+    public | task | table | postgres
+    (1 row)
+    ```
+
+    select contents from a table
+    ```sql
+    home_improvement=> SELECT * FROM task;
+    id | description 
+    ----+-------------
+    3 | test
+    4 | test
+    5 | test
+    6 | test
+    7 | test
+    8 | test
+    9 | test
+    10 | test
+    (8 rows)
+
+    home_improvement=>
+    ```
+
+    restart/start/stop postgres:
+    ```bash
+    sudo systemctl restart postgresql
+    sudo systemctl start postgresql
+    sudo systemctl stop postgresql
+    ```
+
+    log into super user shell
+    ```bash
+    psql
+    ```
+
+    create a new db and user:
+    ```bash
+    CREATE DATABASE home_improvement;
+    CREATE USER db_user WITH PASSWORD 'your_password';
+    GRANT ALL PRIVILEGES ON DATABASE home_improvement TO db_user;
+    ```
+
+    grant perms to our user everywhere:
+    ```bash
+    GRANT ALL PRIVILEGES ON SCHEMA public TO db_user;
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO db_user;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO db_user;
+    ```
+
+    edit conf file:
+    ```bash
+    sudo nano /etc/postgresql/12/main/pg_hba.conf
+    ```
+
+    In our flask app, we connect to our db using SQLAlchemy:
+    ```python
+    # Configure the SQLAlchemy part of the app instance using environment variables
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
+
+    # Create the SQLAlchemy db instance
+    db = SQLAlchemy(app)
+    ```
+
+    We should see this output if we succeeded: 
+    ```bash
+    [2024-05-24 19:14:16 +0000] [8389] [INFO] Connected to: postgresql://db_user:password@localhost/home_improvement
+    ```
+
+    We can use this db session to create tables, and make changes to them
+
+    For example, 
+
+    We can define a tabel model as a python class
+    ```python
+    # Define a new model
+    # give it a name and relevant columns
+    class Task(db.Model):
+        __tablename__ = 'task'
+        __table_args__ = {'schema': 'public'}
+        id = db.Column(db.Integer, primary_key=True)
+        description = db.Column(db.String(200), nullable=False)
+    ```
+
+    When we initialize our flask app, any models that we define that don't yet exist
+    in the db we connected to, will be created using:
+    ```python
+    db.create_all()
+    ```
+
+    We can now refer to this model in our code to access and edit its contents:
+    ```python
+    # Get contents
+    Task.query.all()
+    ```
+    Exampe output:
+    ```bash
+     [{'id': 3, 'description': 'test'}, {'id': 4, 'description': 'test'},
+     ```
+
+    We can also reference specific elements:
+
+    ```python
+    Task.query.get(task_id)
+    ```
+
+    We can add elements to this table, using our db session:
+    ```python
+    db.session.add(Task(description="description string"))
+    db.session.commit()
+    ```
+
+    We can also delete similarly
+    ```python
+    db.session.delete(Task.query.get({an id number goes here}))
+    db.session.commit()
+    ```
+
+    Migrations:
+
+    ```bash
+    pip install Flask-Migrate
+
+    # import 
+    from flask_migrate import Migrate
+
+    # Initialize migrate
+    migrate = Migrate(app, db)
+
+    flask db init
+    flask db migrate -m "Added sso_token to users"
+    flask db upgrade
+    ```
+
+    ### nginx notes: (this is already done this is just for documentation)
+
+    create file in /etc/nginx/sites-enabled/ called {project-name}
+    containing:
+    ```javascript
+        server {
+            listen 80;
+            server_name 167.71.165.9;   <--- this will eventually be changed to hold our domain
+
+            location / {
+                proxy_pass http://localhost:8000;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+            }
+        }
+    ```
+    nginx commands:
+    ```bash
+    check nginx conf file syntax:
+    sudo nginx -t
+
+    create link to sites-enabled:
+    sudo ln -s /etc/nginx/sites-available/home-improvement /etc/nginx/sites-enabled/
+
+    reload nginx once ready:
+    sudo systemctl reload nginx
+    ```
+5. **Optional: Local Backend Development**
+    To run the backend locally, update the `remote_url` variable in the `next.config.mjs` file to point to either `http://backend:5000` or `http://nginx:80` (the nginx is probably better) instead of the server IP.
+
+    Make sure to add an `.env` file with the below specification:
+    ```
+    POSTGRES_DEFAULT_PASSWORD=<PUT_DEFAULT_PASSWORD_HERE>
+    ```
+
+    Build and start all containers from the root of project:
+    ```bash
+    # add -d for detaching output from terminal
+    # add --remove-orphans to remove dangling containers
+    docker compose up --build
+    ```
+
+    Docker should then spin up 4 services which are below:
+    - Backend
+    - Frontend
+    - PostgreSQL
+    - Nginx
+
+    The frontend will be available from port 3000 and the backend from port 5000. Nginx's reverse proxy is available from 127.0.0.1 and Postgres is available from port 5432.
+
+    To take down the containers (if you didn't use the `-d` flag for spinning up the containers, press control-c to give SIGINT) use the below command:
+    ```bash
+    # --rmi to remove built images (to clean up when spinning up again)
+    # --volumes to remove all (un)named volumes (for clean up when spinning up again)
+    docker compose down
+    ```
+
+## Application Structure
+
+### Frontend
+
+The frontend is currently built using **Next.js** and **TypeScript**
+
+Notable libraries:
+
+- **Tailwind CSS**
+- **Radix UI**
+- **shadcn/ui**
+
+**Vercel** is currently being used for hosting the frontend
+
+### Backend
+
+Our backend is currently running on a **Ubuntu 24.04 LTS** server running in a digital ocean droplet
+
+- **Python** - Language
+- **Flask** - Web framework
+- **NGINX** - Reverse proxy
+- **Gunicorn** Serves the Flask application on the droplet
+- **PostgreSQL**: Database
+
+
