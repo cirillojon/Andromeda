@@ -145,28 +145,60 @@ const FormPage: React.FC<FormPageProps> = ({
       let maxConfiguration;
       let maxSavings = 0;
       let newPanelCount = 0;
-
-      for (let i = 1; i <= maxPanels; i++) {
-        const results = calculateSolarPotential(
-          config,
-          i, // Use the current panel count in the loop
-          maxPanels,
-          Number(monthlyBill), // Use the monthly bill from the props
-          0.31, // Example energy cost per kWh
-          0.85, // Example DC to AC derate factor
-          7000, // Example solar incentives
-          4.0, // Example installation cost per watt
-          20, // Example installation lifespan
-          solarData.building_insights.solarPotential.panelCapacityWatts
-        );
-
-        if (results && results.savings > maxSavings) {
-          maxSavings = results.savings;
-          maxConfiguration = results;
-          newPanelCount = i;
+  
+      const phi = (1 + Math.sqrt(5)) / 2;
+      let low = 1;
+      let high = maxPanels;
+      let c = high - Math.floor((high - low) / phi);
+      let d = low + Math.floor((high - low) / phi);
+  
+      const evaluate = (panels: number) => calculateSolarPotential(
+        config,
+        panels,
+        maxPanels,
+        Number(monthlyBill),
+        0.31,
+        0.85,
+        7000,
+        4.0,
+        20,
+        solarData.building_insights.solarPotential.panelCapacityWatts
+      );
+  
+      let resultC = evaluate(c);
+      let resultD = evaluate(d);
+  
+      while (low < high) {
+        if (resultC && resultD) {
+          if (resultC.savings > resultD.savings) {
+            high = d;
+            d = c;
+            c = high - Math.floor((high - low) / phi);
+            resultD = resultC;
+            resultC = evaluate(c);
+          } else {
+            low = c;
+            c = d;
+            d = low + Math.floor((high - low) / phi);
+            resultC = resultD;
+            resultD = evaluate(d);
+          }
+        } else {
+          break;
         }
       }
-
+  
+      if (resultC && resultC.savings > maxSavings) {
+        maxSavings = resultC.savings;
+        maxConfiguration = resultC;
+        newPanelCount = c;
+      }
+      if (resultD && resultD.savings > maxSavings) {
+        maxSavings = resultD.savings;
+        maxConfiguration = resultD;
+        newPanelCount = d;
+      }
+  
       if (maxConfiguration) {
         setCalculationResults(maxConfiguration);
         setPanelCount(newPanelCount);
