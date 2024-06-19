@@ -75,6 +75,13 @@ const PlaidDashboard = () => {
     localStorage.setItem("plaidData", JSON.stringify(transactionsResult));
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("plaidData");
+    localStorage.removeItem("accessToken");
+    setData(null);
+    setAccessToken(null);
+  };
+
   const { open, ready, error } = usePlaidLink({
     token: linkToken,
     onSuccess,
@@ -90,6 +97,14 @@ const PlaidDashboard = () => {
           className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
         >
           Connect a bank account
+        </button>
+      )}
+      {accessToken && (
+        <button
+          onClick={handleLogout}
+          className="mb-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-700 transition"
+        >
+          Logout
         </button>
       )}
       {data && (
