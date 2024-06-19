@@ -17,17 +17,30 @@ import ProductsOverviewChart from "./ProductsOverviewChart";
 
 const PlaidDashboard = () => {
   const [data, setData] = useState<any>(null);
-  const [linkToken, setLinkToken] = useState(null);
+  const [linkToken, setLinkToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch the link token from your server
-    const fetchLinkToken = async () => {
-      const response = await fetch("/api/plaid/create_link_token");
-      const result = await response.json();
-      setLinkToken(result.link_token);
-    };
+    const storedData = localStorage.getItem("plaidData");
+    const storedAccessToken = localStorage.getItem("accessToken");
 
-    fetchLinkToken();
+    if (storedData) {
+      setData(JSON.parse(storedData));
+    }
+
+    if (storedAccessToken) {
+      setAccessToken(storedAccessToken);
+    }
+
+    if (!storedAccessToken) {
+      const fetchLinkToken = async () => {
+        const response = await fetch("/api/plaid/create_link_token");
+        const result = await response.json();
+        setLinkToken(result.link_token);
+      };
+
+      fetchLinkToken();
+    }
   }, []);
 
   const onSuccess = async (public_token: string, metadata: any) => {
@@ -42,6 +55,8 @@ const PlaidDashboard = () => {
     });
     const exchangeResult = await exchangeResponse.json();
     const accessToken = exchangeResult.access_token;
+    setAccessToken(accessToken);
+    localStorage.setItem("accessToken", accessToken);
 
     // Use access token to fetch transactions
     const transactionsResponse = await fetch("/api/plaid/transactions", {
@@ -57,6 +72,7 @@ const PlaidDashboard = () => {
     console.log("Plaid Response:", transactionsResult);
 
     setData(transactionsResult);
+    localStorage.setItem("plaidData", JSON.stringify(transactionsResult));
   };
 
   const { open, ready, error } = usePlaidLink({
@@ -67,13 +83,15 @@ const PlaidDashboard = () => {
   return (
     <div className="flex flex-col p-4 h-screen overflow-y-auto">
       <h1 className="text-2xl font-bold mb-4">Finances</h1>
-      <button
-        onClick={() => open()}
-        disabled={!ready}
-        className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
-      >
-        Connect a bank account
-      </button>
+      {!accessToken && (
+        <button
+          onClick={() => open()}
+          disabled={!ready}
+          className="mb-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 transition"
+        >
+          Connect a bank account
+        </button>
+      )}
       {data && (
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="flex-1 lg:w-1/3">
