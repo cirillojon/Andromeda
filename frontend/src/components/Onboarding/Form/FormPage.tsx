@@ -307,14 +307,23 @@ const FormPage: React.FC<FormPageProps> = ({
 
   useEffect(() => {
     if (validationPassed) {
+      // If validation is passed, click the authentication button
       authButtonRef.current?.click();
     }
   }, [validationPassed]);
 
   const handleSubmit = async () => {
+    /*
+    if (!validateFields()) {
+      alert(
+        "Please fill in all required fields in the Project Details section."
+      );
+      setValidationPassed(false);
+      return;
+    }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
-    setValidationPassed(true);
+    setValidationPassed(true); // Set the flag to true on successful validation
   };
 
   useEffect(() => {
@@ -325,12 +334,12 @@ const FormPage: React.FC<FormPageProps> = ({
         config,
         panelCount,
         maxPanels,
-        Number(monthlyBill),
-        0.31,
-        0.85,
-        7000,
-        4.0,
-        20,
+        Number(monthlyBill), // Use the monthly bill from the props
+        0.31, // Example energy cost per kWh
+        0.85, // Example DC to AC derate factor
+        7000, // Example solar incentives
+        4.0, // Example installation cost per watt
+        20, // Example installation lifespan
         solarData.building_insights.solarPotential.panelCapacityWatts
       );
       setCalculationResults(results);
