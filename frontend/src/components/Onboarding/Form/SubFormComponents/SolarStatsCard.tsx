@@ -174,6 +174,11 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
         </div>
         {showFinance && (
           <div className="solar-potential-details">
+            <p>
+              <em>
+                All financial calculations are based on a 20-year lifespan.
+              </em>
+            </p>
             <div className="progress-bar">
               <p>
                 <strong>Cost Without Solar ($):</strong>{" "}
