@@ -57,6 +57,14 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
     ],
   };
 
+  const handleMaximizeSavingsClick = () => {
+    console.log("Maximize Savings clicked");
+    setMaximizeSavings(!maximizeSavings);
+    setShowFinance(true);
+    console.log("maximizeSavings state:", !maximizeSavings);
+    console.log("showFinance state:", true);
+  };
+
   return (
     <Card className="solar-stats">
       <CardHeader>
@@ -151,24 +159,18 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
           </div>
         )}
         <div className="button-container">
-          <div className="button-container">
-            <Button onClick={handleToggleHeatmap}>
-              {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-            </Button>
-            <Button onClick={handleToggleShowAllSegments}>
-              {showAllSegments
-                ? "Hide All Roof Segments"
-                : "Show All Roof Segments"}
-            </Button>
-            <Button onClick={() => setShowFinance(!showFinance)}>
-              {showFinance
-                ? "Hide Financial Details"
-                : "Show Financial Details"}
-            </Button>
-            <Button onClick={() => {setMaximizeSavings(!maximizeSavings); setShowFinance(true)}}>
-              Maximize Savings
-            </Button>
-          </div>
+          <Button onClick={handleToggleHeatmap}>
+            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+          </Button>
+          <Button onClick={handleToggleShowAllSegments}>
+            {showAllSegments
+              ? "Hide All Roof Segments"
+              : "Show All Roof Segments"}
+          </Button>
+          <Button onClick={() => setShowFinance(!showFinance)}>
+            {showFinance ? "Hide Financial Details" : "Show Financial Details"}
+          </Button>
+          <Button onClick={handleMaximizeSavingsClick}>Maximize Savings</Button>
         </div>
         {showFinance && (
           <div className="solar-potential-details">

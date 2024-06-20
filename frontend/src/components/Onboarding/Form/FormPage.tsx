@@ -50,10 +50,8 @@ const FormPage: React.FC<FormPageProps> = ({
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
-  // This will change, and be based off of some formula
   const maxPanels = 110;
   const [inputValues, setInputValues] = useState<InputValues>({
-    //add address to this object
     solar: {
       panelCount: 10,
       energyUtilization: "",
@@ -140,44 +138,47 @@ const FormPage: React.FC<FormPageProps> = ({
 
   useEffect(() => {
     if (maximizeSavings && solarData) {
+      console.log("Maximize savings triggered");
       const config: SolarPanelConfig =
         solarData.building_insights.solarPotential.solarPanelConfigs[0];
       let maxConfiguration;
       let maxSavings = 0;
       let newPanelCount = 0;
-  
+
       const phi = (1 + Math.sqrt(5)) / 2;
       let low = 1;
       let high = maxPanels;
       let c = high - Math.floor((high - low) / phi);
       let d = low + Math.floor((high - low) / phi);
-  
-      const evaluate = (panels: number) => calculateSolarPotential(
-        config,
-        panels,
-        maxPanels,
-        Number(monthlyBill),
-        0.31,
-        0.85,
-        7000,
-        4.0,
-        20,
-        solarData.building_insights.solarPotential.panelCapacityWatts
-      );
-  
+
+      const evaluate = (panels: number) =>
+        calculateSolarPotential(
+          config,
+          panels,
+          maxPanels,
+          Number(monthlyBill),
+          0.31,
+          0.85,
+          7000,
+          4.0,
+          20,
+          solarData.building_insights.solarPotential.panelCapacityWatts
+        );
+
       let resultC = evaluate(c);
       let resultD = evaluate(d);
-  
+
       while (low < high) {
+        console.log(`Evaluating: c=${c}, d=${d}`);
         if (resultC && resultD) {
           if (resultC.savings > resultD.savings) {
-            high = d;
+            high = d - 1; // Ensure convergence
             d = c;
             c = high - Math.floor((high - low) / phi);
             resultD = resultC;
             resultC = evaluate(c);
           } else {
-            low = c;
+            low = c + 1; // Ensure convergence
             c = d;
             d = low + Math.floor((high - low) / phi);
             resultC = resultD;
@@ -186,8 +187,13 @@ const FormPage: React.FC<FormPageProps> = ({
         } else {
           break;
         }
+
+        // Exit condition to avoid infinite loop
+        if (high <= low) {
+          break;
+        }
       }
-  
+
       if (resultC && resultC.savings > maxSavings) {
         maxSavings = resultC.savings;
         maxConfiguration = resultC;
@@ -198,8 +204,9 @@ const FormPage: React.FC<FormPageProps> = ({
         maxConfiguration = resultD;
         newPanelCount = d;
       }
-  
+
       if (maxConfiguration) {
+        console.log("Max configuration found:", maxConfiguration);
         setCalculationResults(maxConfiguration);
         setPanelCount(newPanelCount);
       }
@@ -300,23 +307,14 @@ const FormPage: React.FC<FormPageProps> = ({
 
   useEffect(() => {
     if (validationPassed) {
-      // If validation is passed, click the authentication button
       authButtonRef.current?.click();
     }
   }, [validationPassed]);
 
   const handleSubmit = async () => {
-    /*
-    if (!validateFields()) {
-      alert(
-        "Please fill in all required fields in the Project Details section."
-      );
-      setValidationPassed(false);
-      return;
-    }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
-    setValidationPassed(true); // Set the flag to true on successful validation
+    setValidationPassed(true);
   };
 
   useEffect(() => {
@@ -327,12 +325,12 @@ const FormPage: React.FC<FormPageProps> = ({
         config,
         panelCount,
         maxPanels,
-        Number(monthlyBill), // Use the monthly bill from the props
-        0.31, // Example energy cost per kWh
-        0.85, // Example DC to AC derate factor
-        7000, // Example solar incentives
-        4.0, // Example installation cost per watt
-        20, // Example installation lifespan
+        Number(monthlyBill),
+        0.31,
+        0.85,
+        7000,
+        4.0,
+        20,
         solarData.building_insights.solarPotential.panelCapacityWatts
       );
       setCalculationResults(results);
