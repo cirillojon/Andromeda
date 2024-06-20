@@ -44,35 +44,53 @@ const PlaidDashboard = () => {
   }, []);
 
   const onSuccess = async (public_token: string, metadata: any) => {
-    console.log("Public Token:", public_token);
-    // Exchange public token for access token
-    const exchangeResponse = await fetch("/api/plaid/exchange_public_token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ public_token: public_token }),
-    });
-    const exchangeResult = await exchangeResponse.json();
-    const accessToken = exchangeResult.access_token;
-    setAccessToken(accessToken);
-    localStorage.setItem("accessToken", accessToken);
+    try {
+      console.log("Public Token:", public_token);
+      // Exchange public token for access token
+      const exchangeResponse = await fetch("/api/plaid/exchange_public_token", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ public_token: public_token }),
+      });
 
-    // Use access token to fetch transactions
-    const transactionsResponse = await fetch("/api/plaid/transactions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ access_token: accessToken }),
-    });
-    const transactionsResult = await transactionsResponse.json();
+      if (!exchangeResponse.ok) {
+        throw new Error(
+          `Exchange Public Token Error: ${exchangeResponse.statusText}`
+        );
+      }
 
-    // Log the response data
-    console.log("Plaid Response:", transactionsResult);
+      const exchangeResult = await exchangeResponse.json();
+      const accessToken = exchangeResult.access_token;
+      setAccessToken(accessToken);
+      localStorage.setItem("accessToken", accessToken);
 
-    setData(transactionsResult);
-    localStorage.setItem("plaidData", JSON.stringify(transactionsResult));
+      // Use access token to fetch transactions
+      const transactionsResponse = await fetch("/api/plaid/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ access_token: accessToken }),
+      });
+
+      if (!transactionsResponse.ok) {
+        throw new Error(
+          `Fetch Transactions Error: ${transactionsResponse.statusText}`
+        );
+      }
+
+      const transactionsResult = await transactionsResponse.json();
+      console.log("Plaid Response:", transactionsResult);
+
+      setData(transactionsResult);
+      localStorage.setItem("plaidData", JSON.stringify(transactionsResult));
+    } catch (error) {
+      const typedError = error as Error;
+      console.error("Plaid API Error:", typedError.message);
+      alert(`An error occurred: ${typedError.message}`);
+    }
   };
 
   const handleLogout = () => {
