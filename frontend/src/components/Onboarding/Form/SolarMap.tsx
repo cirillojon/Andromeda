@@ -6,6 +6,7 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
+import { createPalette, normalize, rgbToColor } from "./SubFormComponents/Visualize";
 
 interface LatLng {
   lat: number;
@@ -32,6 +33,9 @@ interface SolarPanel {
   orientation: "LANDSCAPE" | "PORTRAIT";
   yearlyEnergyDcKwh: number;
   corners: LatLng[];
+  azimuth: number;
+  minEnergy: number;
+  maxEnergy: number;
 }
 
 interface SolarMapProps {
@@ -73,8 +77,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
         const newPanels: SolarPanel[] = solarPotential.solarPanels
           .slice(0, panelCount)
           .map((panel: any, index: number) => {
-            const offsetLat = 0.000005; // height
-            const offsetLng = 0.000005; // width
+            const [w, h] = [solarPotential.panelWidthMeters / 2, solarPotential.panelHeightMeters / 2];
             return {
               id: `${panel.center.latitude}-${panel.center.longitude}-${index}`, // Ensure unique ID for each panel
               center: {
@@ -85,29 +88,34 @@ const SolarMap: React.FC<SolarMapProps> = ({
               yearlyEnergyDcKwh: panel.yearlyEnergyDcKwh,
               corners: [
                 {
-                  lat: panel.center.latitude + offsetLat,
-                  lng: panel.center.longitude + offsetLng,
+                  lat: +w,
+                  lng: +h,
                 },
                 {
-                  lat: panel.center.latitude + offsetLat,
-                  lng: panel.center.longitude - offsetLng,
+                  lat: +w,
+                  lng: -h,
                 },
                 {
-                  lat: panel.center.latitude - offsetLat,
-                  lng: panel.center.longitude - offsetLng,
+                  lat: -w,
+                  lng: -h,
                 },
                 {
-                  lat: panel.center.latitude - offsetLat,
-                  lng: panel.center.longitude + offsetLng,
+                  lat: -w,
+                  lng: +h,
+                },
+                {
+                  lat: +w,
+                  lng: +h,
                 },
               ],
+              azimuth: data.building_insights.solarPotential.roofSegmentStats[panel.segmentIndex].azimuthDegrees,
+              minEnergy: solarPotential.solarPanels.slice(-1)[0].yearlyEnergyDcKwh,
+              maxEnergy: solarPotential.solarPanels[0].yearlyEnergyDcKwh,
             };
           });
 
         const newSegments: RoofSegment[] = solarPotential.roofSegmentStats.map(
           (segment: any, index: number) => {
-            const offsetLat = 0.00001; // height
-            const offsetLng = 0.00001; // width
             return {
               id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
               center: {
@@ -129,10 +137,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
                 {
                   lat: segment.boundingBox.sw.latitude,
                   lng: segment.boundingBox.sw.longitude,
-                },
-                {
-                  lat: segment.boundingBox.sw.latitude,
-                  lng: segment.boundingBox.ne.longitude,
                 },
               ],
               stats: segment.stats,
@@ -157,13 +161,28 @@ const SolarMap: React.FC<SolarMapProps> = ({
       // Add new panels if heatmap is not shown
       if (!showHeatmap) {
         solarPanels.forEach((panel) => {
+          const orientation = panel.orientation == 'PORTRAIT' ? 90 : 0;
+          const azimuth = panel.azimuth;
+          const panelsPalette = ['E8EAF6', '1A237E'];
+          const palette = createPalette(panelsPalette).map(rgbToColor);
+          const minEnergy = panel.minEnergy;
+          const maxEnergy = panel.maxEnergy;
+          const colorIndex = Math.round(normalize(panel.yearlyEnergyDcKwh, maxEnergy, minEnergy) * 255);
           const polygon = new google.maps.Polygon({
-            paths: panel.corners,
-            fillColor: "#1E90FF",
-            fillOpacity: 0.5,
-            strokeColor: "#D3D3D3",
-            strokeOpacity: 0.7,
-            strokeWeight: 2,
+            paths: panel.corners.map(({ lat, lng }) => 
+              google.maps.geometry.spherical.computeOffset(
+                //THIS CHANGES THE PLACEMENT ON THE ROOF
+                //{ lat: (panel.center.lat + 0.000006), lng: panel.center.lng - 0.000003 },
+                { lat: (panel.center.lat), lng: panel.center.lng },
+                Math.sqrt(lat * lat + lng * lng),
+                Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth,
+              ),
+            ),
+            fillColor: palette[colorIndex],
+            fillOpacity: 0.9,
+            strokeColor: "#B0BEC5",
+            strokeOpacity: 0.9,
+            strokeWeight: 1,
             zIndex: 1, // Ensure the panels appear above other map elements
           });
           polygon.setMap(map);

@@ -1,6 +1,14 @@
 export interface DataLayersResponse {
-  imageryDate: Date;
-  imageryProcessedDate: Date;
+  imageryDate: {
+    year: number;
+    month: number;
+    day: number;
+  }
+  imageryProcessedDate: {
+    year: number;
+    month: number;
+    day: number;
+  }
   dsmUrl: string;
   rgbUrl: string;
   maskUrl: string;
@@ -16,6 +24,11 @@ export interface SolarData {
       solarPanelConfigs: SolarPanelConfig[];
       maxSunshineHoursPerYear: number;
       panelCapacityWatts: number;
+      wholeRoofStats: {
+        areaMeters2: number;
+        sunshineQuantiles: number[];
+        groundAreaMeters2: number;
+      }
       solarPanels: {
         center: { latitude: number; longitude: number };
         orientation: string;
@@ -31,6 +44,7 @@ export interface SolarData {
       }[];
     };
   };
+  data_layers: DataLayersResponse;
   roofSqft?: number;
 }
 
