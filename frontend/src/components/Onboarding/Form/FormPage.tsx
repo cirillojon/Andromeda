@@ -50,7 +50,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
-  const maxPanels = 110;
+  const [maxPanels, setMaxPanels] = useState<number>(100);
   const [inputValues, setInputValues] = useState<InputValues>({
     solar: {
       panelCount: 10,
@@ -98,28 +98,28 @@ const FormPage: React.FC<FormPageProps> = ({
     return areaMeters2 * SQ_METERS_TO_SQ_FEET;
   }
 
-  function getHouseSquareFootage(data: SolarData): number {
-    let totalAreaMeters2 = 0;
-
-    if (data.building_insights && data.building_insights.solarPotential) {
-      const wholeRoofStats =
-        data.building_insights.solarPotential.roofSegmentStats;
-      if (wholeRoofStats) {
-        totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
-          return acc + segment.stats.areaMeters2;
-        }, 0);
-      }
-    }
-
-    const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
-    return totalAreaSqFeet;
-  }
-
   useEffect(() => {
+    function getHouseSquareFootage(data: SolarData): number {
+      let totalAreaMeters2 = 0;
+  
+      if (data.building_insights && data.building_insights.solarPotential) {
+        const wholeRoofStats =
+          data.building_insights.solarPotential.roofSegmentStats;
+        if (wholeRoofStats) {
+          totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
+            return acc + segment.stats.areaMeters2;
+          }, 0);
+        }
+      }
+  
+      const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
+      return totalAreaSqFeet;
+    }
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
       setSolarData(data);
+      setMaxPanels(data.building_insights.solarPotential.maxArrayPanelsCount);
 
       // Calculate house square footage
       const roofSqft = getHouseSquareFootage(data);
@@ -344,7 +344,7 @@ const FormPage: React.FC<FormPageProps> = ({
       );
       setCalculationResults(results);
     }
-  }, [solarData, panelCount, monthlyBill]);
+  }, [solarData, panelCount, monthlyBill, maxPanels]);
 
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
