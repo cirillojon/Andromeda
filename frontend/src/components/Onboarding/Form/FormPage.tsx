@@ -169,7 +169,6 @@ const FormPage: React.FC<FormPageProps> = ({
         let resultD = evaluate(d);
 
         while (low < high) {
-          console.log(`Evaluating: c=${c}, d=${d}`);
           if (resultC && resultD) {
             if (resultC.savings > resultD.savings) {
               high = d - 1; // Ensure convergence
@@ -206,7 +205,6 @@ const FormPage: React.FC<FormPageProps> = ({
         }
 
         if (maxConfiguration) {
-          console.log("Max configuration found:", maxConfiguration);
           setCalculationResults(maxConfiguration);
           setPanelCount(newPanelCount);
         }
@@ -354,6 +352,16 @@ const FormPage: React.FC<FormPageProps> = ({
     return <div className="w-screen h-screen">Loading...</div>;
   }
 
+  function add(a:number, b:number){
+    return a+b;
+  }
+
+  const addArrow = (a:number, b:number) => a+b;
+
+  console.log(add(5,3))
+  console.log(addArrow(5,3))
+
+  console.log("activeTab", activeTab);
   return (
     <div className="flex flex-col min-h-screen">
       <FormTabs
@@ -361,74 +369,118 @@ const FormPage: React.FC<FormPageProps> = ({
         setActiveTab={setActiveTab}
         isLoggedIn={isLoggedIn}
       />
-      <div className="flex-grow flex mt-4">
-        <div className="mainContent flex-grow flex">
-          <div className="sidebar left-sidebar">
-            {activeTab === "Solar" && solarData && (
-              <SolarStatsCard
-                solarData={solarData}
+      <div
+        className={`grid flex-1 gap-4 overflow-auto p-4 grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] ${
+          activeTab == "Roofing" ? "lg:grid-cols-[1fr_3fr]" : ""
+        }`}
+      >
+        <div className="relative flex flex-col items-start gap-8">
+          <form className="grid w-full items-start gap-6">
+            <fieldset className="grid gap-6 rounded-lg border p-4">
+              <legend className="-ml-1 px-1 text-sm font-medium">
+                Personalization
+              </legend>
+              <FormInputs
+                activeTab={activeTab}
+                inputValues={inputValues}
+                handlePanelCountChange={handlePanelCountChange}
+                handleInputChange={handleInputChange}
+                handleSelectChange={handleSelectChange}
                 panelCount={panelCount}
                 maxPanels={maxPanels}
-                handleSegmentClick={handleSegmentClick}
-                handleToggleHeatmap={handleToggleHeatmap}
-                showHeatmap={showHeatmap}
-                calculationResults={calculationResults}
-                handleToggleShowAllSegments={handleToggleShowAllSegments}
-                showAllSegments={showAllSegments}
-                maxSavings={maxSavings}
-                setMaxSavings={setMaxSavings}
               />
-            )}
-          </div>
-          <div className="viewbox flex-grow">
-            <SolarMap
-              panelCount={panelCount}
-              selectedSegment={selectedSegment}
-              showHeatmap={showHeatmap}
-              showAllSegments={showAllSegments}
-            />
-          </div>
-          <div className="sidebar">
-            <FormInputs
-              activeTab={activeTab}
-              inputValues={inputValues}
-              handlePanelCountChange={handlePanelCountChange}
-              handleInputChange={handleInputChange}
-              handleSelectChange={handleSelectChange}
-              panelCount={panelCount}
-              maxPanels={maxPanels}
-            />
-            <div className="mb-10">
-              {isLoggedIn ? (
-                <div>
-                  {validationPassed ? (
-                    <Link href={"/dashboard"} className="w-full">
-                      <Button ref={authButtonRef}>
-                        Proceeding to Dashboard...
-                      </Button>
-                    </Link>
+              <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4">
+                <div className="space-y-4">
+                  {isLoggedIn ? (
+                    <div>
+                      {validationPassed ? (
+                        <Link href="/dashboard" className="w-full bg-gray-900">
+                          <Button
+                            ref={authButtonRef}
+                            className="w-full bg-gray-900"
+                          >
+                            Proceeding to Dashboard...
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button
+                          className="w-full bg-gray-900"
+                          onClick={handleSubmit}
+                        >
+                          Create New Project
+                        </Button>
+                      )}
+                    </div>
                   ) : (
-                    <Button onClick={handleSubmit}>Create New Project</Button>
+                    <div>
+                      {validationPassed ? (
+                        <RegisterLink className="w-full bg-gray-900">
+                          <Button
+                            ref={authButtonRef}
+                            className="w-full bg-gray-900"
+                          >
+                            Proceeding to Authentication...
+                          </Button>
+                        </RegisterLink>
+                      ) : (
+                        <Button
+                          className="w-full bg-gray-900"
+                          onClick={handleSubmit}
+                        >
+                          Save this Configuration
+                        </Button>
+                      )}
+                    </div>
                   )}
                 </div>
-              ) : (
-                <div>
-                  {validationPassed ? (
-                    <RegisterLink className="w-full">
-                      <Button ref={authButtonRef}>
-                        Proceeding to Authentication...
-                      </Button>
-                    </RegisterLink>
-                  ) : (
-                    <Button onClick={handleSubmit}>
-                      Save this Configuration
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+                <Button className="w-full bg-gray-900">
+                  Next Project Type
+                </Button>
+              </div>
+            </fieldset>
+          </form>
         </div>
+        <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+          <SolarMap
+            panelCount={panelCount}
+            selectedSegment={selectedSegment}
+            showHeatmap={showHeatmap}
+            showAllSegments={showAllSegments}
+          />
+        </div>
+        {(activeTab === "Solar" || activeTab == "Battery") && solarData && (
+          <div className="relative flex flex-col items-start">
+            <form className="grid w-full items-start">
+              <fieldset className="grid rounded-lg border p-4">
+                {activeTab == "Battery" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Battery Options
+                  </legend>
+                )}
+                {activeTab == "Solar" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Configuration Breakdown
+                  </legend>
+                )}
+                {activeTab === "Solar" && (
+                  <SolarStatsCard
+                    solarData={solarData}
+                    panelCount={panelCount}
+                    maxPanels={maxPanels}
+                    handleSegmentClick={handleSegmentClick}
+                    handleToggleHeatmap={handleToggleHeatmap}
+                    showHeatmap={showHeatmap}
+                    calculationResults={calculationResults}
+                    handleToggleShowAllSegments={handleToggleShowAllSegments}
+                    showAllSegments={showAllSegments}
+                    maxSavings={maxSavings}
+                    setMaxSavings={setMaxSavings}
+                  />
+                )}
+              </fieldset>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );

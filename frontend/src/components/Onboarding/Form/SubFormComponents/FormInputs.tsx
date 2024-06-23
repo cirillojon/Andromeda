@@ -73,57 +73,50 @@ const FormInputs: React.FC<FormInputsProps> = ({
   switch (activeTab) {
     case "Solar":
       return (
-        <Card className="content">
-          <CardHeader>
-            <CardTitle>Solar Data Input</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Label htmlFor="panelCount">Solar Project Name</Label>
-            <Input
-              id="solarInput0"
-              type="text"
-              placeholder="John's Eco Home"
-              value={inputValues.solar.project_name}
-              onChange={(e) => handleInputChange(e, "solar", "project_name")}
-            />
-            <Label htmlFor="panelCount">Number of Panels</Label>
-            <Input
-              id="solarInput1"
-              type="number"
-              placeholder="Number of Panels"
-              value={panelCount}
-              onChange={(e) => handlePanelCountChange(e)}
-              min="1"
-              step="1"
-            />
-            <input
-              type="range"
-              min="1"
-              max={maxPanels}
-              value={panelCount}
-              onInput={(e) => handlePanelCountChange(e)}
-              className="slider"
-            />
-            <Label htmlFor="solarInput2">Annual Income</Label>
-            <Input
-              id="solarInput2"
-              type="number"
-              placeholder="60000"
-              value={inputValues.annualIncome}
-              onChange={(e) => handleInputChange(e, "solar", "annualIncome")}
-            />
-            <Label htmlFor="solarInput3">Energy Utilization - kW/month</Label>
-            <Input
-              id="solarInput3"
-              type="number"
-              placeholder="1000"
-              value={inputValues.solar.energyUtilization}
-              onChange={(e) =>
-                handleInputChange(e, "solar", "energyUtilization")
-              }
-            />
-          </CardContent>
-        </Card>
+        <div>
+          <Label htmlFor="panelCount">Solar Project Name</Label>
+          <Input
+            id="solarInput0"
+            type="text"
+            placeholder="John's Eco Home"
+            value={inputValues.solar.project_name}
+            onChange={(e) => handleInputChange(e, "solar", "project_name")}
+          />
+          <Label htmlFor="panelCount">Number of Panels</Label>
+          <Input
+            id="solarInput1"
+            type="number"
+            placeholder="Number of Panels"
+            value={panelCount}
+            onChange={(e) => handlePanelCountChange(e)}
+            min="1"
+            step="1"
+          />
+          <input
+            type="range"
+            min="1"
+            max={maxPanels}
+            value={panelCount}
+            onInput={(e) => handlePanelCountChange(e)}
+            className="slider"
+          />
+          <Label htmlFor="solarInput2">Annual Income</Label>
+          <Input
+            id="solarInput2"
+            type="number"
+            placeholder="60000"
+            value={inputValues.annualIncome}
+            onChange={(e) => handleInputChange(e, "solar", "annualIncome")}
+          />
+          <Label htmlFor="solarInput3">Energy Utilization - kW/month</Label>
+          <Input
+            id="solarInput3"
+            type="number"
+            placeholder="1000"
+            value={inputValues.solar.energyUtilization}
+            onChange={(e) => handleInputChange(e, "solar", "energyUtilization")}
+          />
+        </div>
       );
     case "Roofing":
       return (

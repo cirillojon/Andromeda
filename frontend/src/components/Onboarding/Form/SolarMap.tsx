@@ -329,9 +329,9 @@ const SolarMap: React.FC<SolarMapProps> = ({
     <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>
       <div className="map-container">
         <GoogleMap
-          mapContainerStyle={{ height: "100%", width: "100%" }}
+          mapContainerStyle={{ height: "100%", width: "100%", borderRadius: "16px"}}
           center={location}
-          zoom={25}
+          zoom={24}
           options={mapOptions}
           onLoad={handleLoad}
         >
