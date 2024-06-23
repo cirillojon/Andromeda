@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import "@/components/Onboarding/Form/FormPage.css";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar } from "react-chartjs-2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SolarData } from "@/components/Onboarding/Form/SolarTypes";
 
 interface SolarStatsCardProps {
@@ -17,8 +17,8 @@ interface SolarStatsCardProps {
   calculationResults: any;
   handleToggleShowAllSegments: () => void;
   showAllSegments: boolean;
-  maximizeSavings: boolean;
-  setMaximizeSavings: (value: boolean) => void;
+  maxSavings: boolean;
+  setmaxSavings: (value: boolean) => void;
 }
 
 const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
@@ -31,8 +31,8 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   calculationResults,
   handleToggleShowAllSegments,
   showAllSegments,
-  maximizeSavings,
-  setMaximizeSavings,
+  maxSavings,
+  setmaxSavings,
 }) => {
   const [showFinance, setShowFinance] = useState(false);
   const panelsPercentage = (panelCount / maxPanels) * 100;
@@ -57,11 +57,15 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
     ],
   };
 
-  const handleMaximizeSavingsClick = () => {
+  useEffect(() => {
+    handlemaxSavingsClick();
+  }, [])
+
+  const handlemaxSavingsClick = () => {
     console.log("Maximize Savings clicked");
-    setMaximizeSavings(!maximizeSavings);
+    setmaxSavings(!maxSavings);
     setShowFinance(true);
-    console.log("maximizeSavings state:", !maximizeSavings);
+    console.log("maxSavings state:", !maxSavings);
     console.log("showFinance state:", true);
   };
 
@@ -170,7 +174,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
           <Button onClick={() => setShowFinance(!showFinance)}>
             {showFinance ? "Hide Financial Details" : "Show Financial Details"}
           </Button>
-          <Button onClick={handleMaximizeSavingsClick}>Maximize Savings</Button>
+          <Button onClick={handlemaxSavingsClick}>Maximize Savings</Button>
         </div>
         {showFinance && (
           <div className="solar-potential-details">

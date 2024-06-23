@@ -45,7 +45,7 @@ const FormPage: React.FC<FormPageProps> = ({
   address,
 }) => {
   const [activeTab, setActiveTab] = useState("Solar");
-  const [panelCount, setPanelCount] = useState<number>(10);
+  const [panelCount, setPanelCount] = useState<number>(4);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
@@ -87,7 +87,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [calculationResults, setCalculationResults] = useState<any>(null);
   const [showAllSegments, setShowAllSegments] = useState(false);
-  const [maximizeSavings, setMaximizeSavings] = useState(false);
+  const [maxSavings, setmaxSavings] = useState(false);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -101,7 +101,7 @@ const FormPage: React.FC<FormPageProps> = ({
   useEffect(() => {
     function getHouseSquareFootage(data: SolarData): number {
       let totalAreaMeters2 = 0;
-  
+
       if (data.building_insights && data.building_insights.solarPotential) {
         const wholeRoofStats =
           data.building_insights.solarPotential.roofSegmentStats;
@@ -111,7 +111,7 @@ const FormPage: React.FC<FormPageProps> = ({
           }, 0);
         }
       }
-  
+
       const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
       return totalAreaSqFeet;
     }
@@ -137,81 +137,84 @@ const FormPage: React.FC<FormPageProps> = ({
   }, []);
 
   useEffect(() => {
-    if (maximizeSavings && solarData) {
-      console.log("Maximize savings triggered");
-      const config: SolarPanelConfig =
-        solarData.building_insights.solarPotential.solarPanelConfigs[0];
-      let maxConfiguration;
-      let maxSavings = 0;
-      let newPanelCount = 0;
+    const maximizeSavings = () => {
+      if (maxSavings && solarData) {
+        const config: SolarPanelConfig =
+          solarData.building_insights.solarPotential.solarPanelConfigs[0];
+        let maxConfiguration;
+        let maxSavings = 0;
+        let newPanelCount = 0;
 
-      const phi = (1 + Math.sqrt(5)) / 2;
-      let low = 1;
-      let high = maxPanels;
-      let c = high - Math.floor((high - low) / phi);
-      let d = low + Math.floor((high - low) / phi);
+        const phi = (1 + Math.sqrt(5)) / 2;
+        let low = 1;
+        let high = maxPanels;
+        let c = high - Math.floor((high - low) / phi);
+        let d = low + Math.floor((high - low) / phi);
 
-      const evaluate = (panels: number) =>
-        calculateSolarPotential(
-          config,
-          panels,
-          maxPanels,
-          Number(monthlyBill),
-          0.31,
-          0.85,
-          7000,
-          4.0,
-          20,
-          solarData.building_insights.solarPotential.panelCapacityWatts
-        );
+        const evaluate = (panels: number) =>
+          calculateSolarPotential(
+            config,
+            panels,
+            maxPanels,
+            Number(monthlyBill),
+            0.31,
+            0.85,
+            7000,
+            4.0,
+            20,
+            solarData.building_insights.solarPotential.panelCapacityWatts
+          );
 
-      let resultC = evaluate(c);
-      let resultD = evaluate(d);
+        let resultC = evaluate(c);
+        let resultD = evaluate(d);
 
-      while (low < high) {
-        console.log(`Evaluating: c=${c}, d=${d}`);
-        if (resultC && resultD) {
-          if (resultC.savings > resultD.savings) {
-            high = d - 1; // Ensure convergence
-            d = c;
-            c = high - Math.floor((high - low) / phi);
-            resultD = resultC;
-            resultC = evaluate(c);
+        while (low < high) {
+          console.log(`Evaluating: c=${c}, d=${d}`);
+          if (resultC && resultD) {
+            if (resultC.savings > resultD.savings) {
+              high = d - 1; // Ensure convergence
+              d = c;
+              c = high - Math.floor((high - low) / phi);
+              resultD = resultC;
+              resultC = evaluate(c);
+            } else {
+              low = c + 1; // Ensure convergence
+              c = d;
+              d = low + Math.floor((high - low) / phi);
+              resultC = resultD;
+              resultD = evaluate(d);
+            }
           } else {
-            low = c + 1; // Ensure convergence
-            c = d;
-            d = low + Math.floor((high - low) / phi);
-            resultC = resultD;
-            resultD = evaluate(d);
+            break;
           }
-        } else {
-          break;
+
+          // Exit condition to avoid infinite loop
+          if (high <= low) {
+            break;
+          }
         }
 
-        // Exit condition to avoid infinite loop
-        if (high <= low) {
-          break;
+        if (resultC && resultC.savings > maxSavings) {
+          maxSavings = resultC.savings;
+          maxConfiguration = resultC;
+          newPanelCount = c;
+        }
+        if (resultD && resultD.savings > maxSavings) {
+          maxSavings = resultD.savings;
+          maxConfiguration = resultD;
+          newPanelCount = d;
+        }
+
+        if (maxConfiguration) {
+          console.log("Max configuration found:", maxConfiguration);
+          setCalculationResults(maxConfiguration);
+          setPanelCount(newPanelCount);
         }
       }
+    };
 
-      if (resultC && resultC.savings > maxSavings) {
-        maxSavings = resultC.savings;
-        maxConfiguration = resultC;
-        newPanelCount = c;
-      }
-      if (resultD && resultD.savings > maxSavings) {
-        maxSavings = resultD.savings;
-        maxConfiguration = resultD;
-        newPanelCount = d;
-      }
-
-      if (maxConfiguration) {
-        console.log("Max configuration found:", maxConfiguration);
-        setCalculationResults(maxConfiguration);
-        setPanelCount(newPanelCount);
-      }
-    }
-  }, [maximizeSavings, solarData, monthlyBill, maxPanels]);
+    maximizeSavings();
+  }, [maxSavings, solarData, monthlyBill, maxPanels]);
 
   const handlePanelCountChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
@@ -371,8 +374,8 @@ const FormPage: React.FC<FormPageProps> = ({
                 calculationResults={calculationResults}
                 handleToggleShowAllSegments={handleToggleShowAllSegments}
                 showAllSegments={showAllSegments}
-                maximizeSavings={maximizeSavings}
-                setMaximizeSavings={setMaximizeSavings}
+                maxSavings={maxSavings}
+                setmaxSavings={setmaxSavings}
               />
             )}
           </div>
