@@ -18,7 +18,7 @@ interface SolarStatsCardProps {
   handleToggleShowAllSegments: () => void;
   showAllSegments: boolean;
   maxSavings: boolean;
-  setmaxSavings: (value: boolean) => void;
+  setMaxSavings: (value: boolean) => void;
 }
 
 const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
@@ -32,7 +32,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   handleToggleShowAllSegments,
   showAllSegments,
   maxSavings,
-  setmaxSavings,
+  setMaxSavings,
 }) => {
   const [showFinance, setShowFinance] = useState(false);
   const panelsPercentage = (panelCount / maxPanels) * 100;
@@ -63,7 +63,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
 
   const handlemaxSavingsClick = () => {
     console.log("Maximize Savings clicked");
-    setmaxSavings(!maxSavings);
+    setMaxSavings(!maxSavings);
     setShowFinance(true);
     console.log("maxSavings state:", !maxSavings);
     console.log("showFinance state:", true);

@@ -87,7 +87,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [calculationResults, setCalculationResults] = useState<any>(null);
   const [showAllSegments, setShowAllSegments] = useState(false);
-  const [maxSavings, setmaxSavings] = useState(false);
+  const [maxSavings, setMaxSavings] = useState(false);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -221,7 +221,7 @@ const FormPage: React.FC<FormPageProps> = ({
   ) => {
     const newValue = Number((e.target as HTMLInputElement).value);
     setPanelCount(newValue);
-    setmaxSavings(false);
+    setMaxSavings(false);
     setInputValues((prevValues) => ({
       ...prevValues,
       solar: { ...prevValues.solar, panelCount: newValue },
@@ -376,7 +376,7 @@ const FormPage: React.FC<FormPageProps> = ({
                 handleToggleShowAllSegments={handleToggleShowAllSegments}
                 showAllSegments={showAllSegments}
                 maxSavings={maxSavings}
-                setmaxSavings={setmaxSavings}
+                setMaxSavings={setMaxSavings}
               />
             )}
           </div>
