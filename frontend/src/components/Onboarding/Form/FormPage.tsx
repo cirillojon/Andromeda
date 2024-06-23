@@ -221,6 +221,7 @@ const FormPage: React.FC<FormPageProps> = ({
   ) => {
     const newValue = Number((e.target as HTMLInputElement).value);
     setPanelCount(newValue);
+    setmaxSavings(false);
     setInputValues((prevValues) => ({
       ...prevValues,
       solar: { ...prevValues.solar, panelCount: newValue },
