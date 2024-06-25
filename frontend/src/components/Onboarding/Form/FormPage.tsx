@@ -355,20 +355,13 @@ const FormPage: React.FC<FormPageProps> = ({
     }
   }, [solarData, panelCount, monthlyBill, maxPanels]);
 
+  const handlemaxSavingsClick = () => {
+    setMaxSavings(!maxSavings);
+  };
+
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
   }
-
-  function add(a: number, b: number) {
-    return a + b;
-  }
-
-  const addArrow = (a: number, b: number) => a + b;
-
-  console.log(add(5, 3));
-  console.log(addArrow(5, 3));
-
-  console.log("activeTab", activeTab);
   return (
     <div className="flex flex-col min-h-screen">
       <FormTabs
@@ -477,13 +470,23 @@ const FormPage: React.FC<FormPageProps> = ({
           </ResizablePanel>
           <ResizableHandle withHandle className="-m-1" />
           <ResizablePanel defaultSize={50}>
-            <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
-              <SolarMap
-                panelCount={panelCount}
-                selectedSegment={selectedSegment}
-                showHeatmap={showHeatmap}
-                showAllSegments={showAllSegments}
-              />
+            <div className="grid grid-rows-[5fr_1fr] flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+              <div>
+                <SolarMap
+                  panelCount={panelCount}
+                  selectedSegment={selectedSegment}
+                  showHeatmap={showHeatmap}
+                  showAllSegments={showAllSegments}
+                />
+              </div>
+              <div className="button-container mt-6">
+                <Button onClick={handleToggleHeatmap} className="bg-gray-900">
+                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                </Button>
+                <Button className="bg-gray-900" onClick={handlemaxSavingsClick}>
+                  Maximize Savings
+                </Button>
+              </div>
             </div>
           </ResizablePanel>
           {activeTab !== "Roofing" && (

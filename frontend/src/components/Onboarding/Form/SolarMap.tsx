@@ -11,6 +11,8 @@ import {
   normalize,
   rgbToColor,
 } from "./SubFormComponents/Visualize";
+import { DataLayersResponse, SolarData } from "./SolarTypes";
+import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
 
 interface LatLng {
   lat: number;
@@ -66,6 +68,11 @@ const SolarMap: React.FC<SolarMapProps> = ({
   const heatmapRef = useRef<google.maps.visualization.HeatmapLayer | null>(
     null
   );
+  const [dataLayers, setDataLayers] = useState<
+    DataLayersResponse | undefined
+  >();
+  const [heatmap, setHeatmap] = useState<Layer>();
+  const [overlays, setOverlays] = useState<google.maps.GroundOverlay[]>([]);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -79,6 +86,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
       const data = JSON.parse(storageItem);
       if (data) {
         setLocation({ lat: data.latitude, lng: data.longitude });
+        setDataLayers(data.data_layers);
         const solarPotential = data.building_insights.solarPotential;
         const newPanels: SolarPanel[] = solarPotential.solarPanels
           .slice(0, panelCount)
@@ -231,46 +239,37 @@ const SolarMap: React.FC<SolarMapProps> = ({
           polygonsRef.current.push(polygon);
         });
       }
-
+      
       // Add or remove heatmap layer
       if (showHeatmap) {
-        if (heatmapRef.current) {
-          heatmapRef.current.setMap(null);
-        }
+        console.log("Show heatmap");
+        const downloadHeatmap = async () => {
+          console.log("Download heatmap");
+          if (dataLayers?.maskUrl && dataLayers?.annualFluxUrl) {
+            console.log("dataLayers: ", dataLayers);
+            const heatmap = await getHeatmap(dataLayers);
+            console.log("heatmap: ", heatmap);
+            if (heatmap) {
+              setHeatmap(heatmap);
 
-        const generateHeatmapPoints = (
-          corners: LatLng[],
-          quantiles: number[]
-        ) => {
-          const heatmapPoints = [];
-          const [topLeft, topRight, bottomRight, bottomLeft] = corners;
-          const latStep = (bottomLeft.lat - topLeft.lat) / 20;
-          const lngStep = (topRight.lng - topLeft.lng) / 20;
+              const bounds = heatmap.bounds;
+              overlays.forEach((overlay) => overlay.setMap(null));
+              const newOverlays = heatmap
+                .render(showHeatmap)
+                .map(
+                  (canvas) =>
+                    new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
+                );
 
-          for (let i = 0; i <= 20; i++) {
-            for (let j = 0; j <= 20; j++) {
-              const lat = topLeft.lat + i * latStep;
-              const lng = topLeft.lng + j * lngStep;
-              const weightIndex = Math.floor(
-                ((i * 20 + j) / (20 * 20)) * quantiles.length
-              );
-              heatmapPoints.push({
-                location: new google.maps.LatLng(lat, lng),
-                weight: quantiles[weightIndex] || 0, // Ensure it does not go out of bounds
-              });
+              setOverlays(newOverlays);
+
+              newOverlays[0].setMap(map);
+              console.log("overlays: ", overlays[0]);
             }
           }
-
-          return heatmapPoints;
         };
-
-        const heatmapData = roofSegments.flatMap((segment) =>
-          generateHeatmapPoints(
-            segment.corners,
-            segment.stats.sunshineQuantiles
-          )
-        );
-
+        downloadHeatmap();
+        /*
         heatmapRef.current = new google.maps.visualization.HeatmapLayer({
           data: heatmapData,
           dissipating: true,
@@ -294,7 +293,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
           ],
         });
 
-        heatmapRef.current.setMap(map);
+        heatmapRef.current.setMap(map);*/
       } else if (heatmapRef.current) {
         heatmapRef.current.setMap(null);
       }
@@ -306,6 +305,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
     selectedSegment,
     showAllSegments,
     showHeatmap,
+    dataLayers,
+    overlays
   ]);
 
   const handlePanelClick = (panel: SolarPanel) => {
@@ -329,7 +330,11 @@ const SolarMap: React.FC<SolarMapProps> = ({
     <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>
       <div className="map-container">
         <GoogleMap
-          mapContainerStyle={{ height: "100%", width: "100%", borderRadius: "16px"}}
+          mapContainerStyle={{
+            height: "100%",
+            width: "100%",
+            borderRadius: "16px",
+          }}
           center={location}
           zoom={24}
           options={mapOptions}

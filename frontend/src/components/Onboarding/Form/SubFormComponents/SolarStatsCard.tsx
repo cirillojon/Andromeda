@@ -61,10 +61,10 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
       },
     ],
   };
-
+/*
   useEffect(() => {
     handlemaxSavingsClick();
-  }, []);
+  }, []);*/
 
   const handlemaxSavingsClick = () => {
     setMaxSavings(!maxSavings);
@@ -220,15 +220,6 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
           </AccordionContent>
         </AccordionItem>
       </Accordion>
-
-      <div className="button-container pb-4">
-        <Button onClick={handleToggleHeatmap} className="bg-gray-900">
-          {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-        </Button>
-        <Button className="bg-gray-900" onClick={handlemaxSavingsClick}>
-          Maximize Savings
-        </Button>
-      </div>
     </div>
   );
 };
