@@ -29,6 +29,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
 
 ChartJS.register(
   BarElement,
@@ -375,137 +376,176 @@ const FormPage: React.FC<FormPageProps> = ({
         setActiveTab={setActiveTab}
         isLoggedIn={isLoggedIn}
       />
-      <ResizablePanelGroup
-        direction="horizontal"
-        className={`grid flex-1 gap-4 overflow-auto p-4 grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] ${
-          activeTab == "Roofing" ? "lg:grid-cols-[1fr_3fr]" : ""
-        }`}
-      >
-        <ResizablePanel
-          defaultSize={25}
-          className="relative flex flex-col items-start"
-        >
-          <ResizablePanelGroup direction="vertical">
-            <ResizablePanel className="">
+      <div className="grid lg:hidden grid-cols-1">
+        <fieldset className="grid rounded-lg border p-4 mb-4 mt-2">
+          <legend className="-ml-1 px-1 text-sm font-medium">
+            Personalization
+          </legend>
+          <FormInputs
+            activeTab={activeTab}
+            inputValues={inputValues}
+            handlePanelCountChange={handlePanelCountChange}
+            handleInputChange={handleInputChange}
+            handleSelectChange={handleSelectChange}
+            panelCount={panelCount}
+            maxPanels={maxPanels}
+          />
+        </fieldset>
+        <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+          <SolarMap
+            panelCount={panelCount}
+            selectedSegment={selectedSegment}
+            showHeatmap={showHeatmap}
+            showAllSegments={showAllSegments}
+          />
+        </div>
+
+        {(activeTab === "Solar" || activeTab == "Battery") && solarData && (
+          <div className="relative flex flex-col items-start mb-4 mt-4">
+            <form className="grid w-full items-start">
               <fieldset className="grid rounded-lg border p-4">
-                <legend className="-ml-1 px-1 text-sm font-medium">
-                  Personalization
-                </legend>
-                <FormInputs
-                  activeTab={activeTab}
-                  inputValues={inputValues}
-                  handlePanelCountChange={handlePanelCountChange}
-                  handleInputChange={handleInputChange}
-                  handleSelectChange={handleSelectChange}
-                  panelCount={panelCount}
-                  maxPanels={maxPanels}
-                />
+                {activeTab == "Battery" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Battery Options
+                  </legend>
+                )}
+                {activeTab == "Solar" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Configuration Breakdown
+                  </legend>
+                )}
+                {activeTab === "Solar" && (
+                  <SolarStatsCard
+                    solarData={solarData}
+                    panelCount={panelCount}
+                    maxPanels={maxPanels}
+                    handleSegmentClick={handleSegmentClick}
+                    handleToggleHeatmap={handleToggleHeatmap}
+                    showHeatmap={showHeatmap}
+                    calculationResults={calculationResults}
+                    handleToggleShowAllSegments={handleToggleShowAllSegments}
+                    showAllSegments={showAllSegments}
+                    maxSavings={maxSavings}
+                    setMaxSavings={setMaxSavings}
+                  />
+                )}
               </fieldset>
-            </ResizablePanel>
-            <ResizableHandle withHandle/>
-            <ResizablePanel className="pb-1 pr-[2px]">
-              <DialogflowNameFlow />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </ResizablePanel>
-        <ResizableHandle withHandle className="-m-1"/>
-        <ResizablePanel defaultSize={50}>
-          <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
-            <SolarMap
-              panelCount={panelCount}
-              selectedSegment={selectedSegment}
-              showHeatmap={showHeatmap}
-              showAllSegments={showAllSegments}
-            />
+            </form>
           </div>
-        </ResizablePanel>
-        <ResizableHandle withHandle className="-m-1"/>
-        <ResizablePanel defaultSize={25} className="flex flex-col w-full">
-          {(activeTab === "Solar" || activeTab == "Battery") && solarData && (
-            <div className="relative flex flex-col items-start">
-              <form className="grid w-full items-start">
+        )}
+        <div className="mt-4">
+          <FinishConfigurationButton
+            isLoggedIn={isLoggedIn}
+            authButtonRef={authButtonRef}
+            handleSubmit={handleSubmit}
+            validationPassed={validationPassed}
+          />
+        </div>
+      </div>
+      <div className="hidden lg:flex" style={{ height: "calc(100vh - 64px)" }}>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className={"flex gap-4 overflow-auto p-4"}
+          //The grid cols aren't doing anything with the resizeable panels
+        >
+          <ResizablePanel
+            defaultSize={activeTab === "Roofing" ? 50 : 25}
+            className="relative flex flex-col items-start"
+          >
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel className="-mb-6">
                 <fieldset className="grid rounded-lg border p-4">
-                  {activeTab == "Battery" && (
-                    <legend className="-ml-1 px-1 text-sm font-medium">
-                      Battery Options
-                    </legend>
-                  )}
-                  {activeTab == "Solar" && (
-                    <legend className="-ml-1 px-1 text-sm font-medium">
-                      Configuration Breakdown
-                    </legend>
-                  )}
-                  {activeTab === "Solar" && (
-                    <SolarStatsCard
-                      solarData={solarData}
-                      panelCount={panelCount}
-                      maxPanels={maxPanels}
-                      handleSegmentClick={handleSegmentClick}
-                      handleToggleHeatmap={handleToggleHeatmap}
-                      showHeatmap={showHeatmap}
-                      calculationResults={calculationResults}
-                      handleToggleShowAllSegments={handleToggleShowAllSegments}
-                      showAllSegments={showAllSegments}
-                      maxSavings={maxSavings}
-                      setMaxSavings={setMaxSavings}
-                    />
-                  )}
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Personalization
+                  </legend>
+                  <FormInputs
+                    activeTab={activeTab}
+                    inputValues={inputValues}
+                    handlePanelCountChange={handlePanelCountChange}
+                    handleInputChange={handleInputChange}
+                    handleSelectChange={handleSelectChange}
+                    panelCount={panelCount}
+                    maxPanels={maxPanels}
+                  />
                 </fieldset>
-              </form>
+              </ResizablePanel>
+              <ResizableHandle withHandle className="mb-2" />
+              <ResizablePanel className="pb-1 pr-[2px]" defaultSize={50}>
+                <DialogflowNameFlow />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle className="-m-1" />
+          <ResizablePanel defaultSize={50}>
+            <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+              <SolarMap
+                panelCount={panelCount}
+                selectedSegment={selectedSegment}
+                showHeatmap={showHeatmap}
+                showAllSegments={showAllSegments}
+              />
             </div>
+          </ResizablePanel>
+          {activeTab !== "Roofing" && (
+            <ResizableHandle withHandle className="-m-1" />
           )}
-          <div className="flex w-full justify-end mt-auto">
-            <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
-              <div className="space-y-4">
-                {/*<Button className="w-full bg-gray-900">
-                  Next Project Type
-                  </Button>*/}
-                {isLoggedIn ? (
-                  <div>
-                    {validationPassed ? (
-                      <Link href="/dashboard" className="w-full bg-gray-900">
-                        <Button
-                          ref={authButtonRef}
-                          className="w-full bg-gray-900"
-                        >
-                          Proceeding to Dashboard...
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button
-                        className="w-full bg-gray-900"
-                        onClick={handleSubmit}
-                      >
-                        Create New Project
-                      </Button>
-                    )}
-                  </div>
-                ) : (
-                  <div>
-                    {validationPassed ? (
-                      <RegisterLink className="w-full bg-gray-900">
-                        <Button
-                          ref={authButtonRef}
-                          className="w-full bg-gray-900"
-                        >
-                          Proceeding to Authentication...
-                        </Button>
-                      </RegisterLink>
-                    ) : (
-                      <Button
-                        className="w-full bg-gray-900"
-                        onClick={handleSubmit}
-                      >
-                        Save this Configuration
-                      </Button>
-                    )}
+          {activeTab !== "Roofing" && (
+            <ResizablePanel defaultSize={25} className="flex flex-col w-full">
+              {(activeTab === "Solar" || activeTab == "Battery") &&
+                solarData && (
+                  <div className="relative flex flex-col items-start">
+                    <form className="grid w-full items-start">
+                      <fieldset className="grid rounded-lg border p-4">
+                        {activeTab == "Battery" && (
+                          <legend className="-ml-1 px-1 text-sm font-medium">
+                            Battery Options
+                          </legend>
+                        )}
+                        {activeTab == "Solar" && (
+                          <legend className="-ml-1 px-1 text-sm font-medium">
+                            Configuration Breakdown
+                          </legend>
+                        )}
+                        {activeTab === "Solar" && (
+                          <SolarStatsCard
+                            solarData={solarData}
+                            panelCount={panelCount}
+                            maxPanels={maxPanels}
+                            handleSegmentClick={handleSegmentClick}
+                            handleToggleHeatmap={handleToggleHeatmap}
+                            showHeatmap={showHeatmap}
+                            calculationResults={calculationResults}
+                            handleToggleShowAllSegments={
+                              handleToggleShowAllSegments
+                            }
+                            showAllSegments={showAllSegments}
+                            maxSavings={maxSavings}
+                            setMaxSavings={setMaxSavings}
+                          />
+                        )}
+                      </fieldset>
+                    </form>
                   </div>
                 )}
+              <div className="flex w-full justify-end mt-auto">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
+                  <div className="space-y-4">
+                    {/*<Button className="w-full bg-gray-900">
+                  Next Project Type
+                  </Button>*/}
+                    <FinishConfigurationButton
+                      isLoggedIn={isLoggedIn}
+                      validationPassed={validationPassed}
+                      authButtonRef={authButtonRef}
+                      handleSubmit={handleSubmit}
+                    />
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+            </ResizablePanel>
+          )}
+        </ResizablePanelGroup>
+      </div>
     </div>
   );
 };
