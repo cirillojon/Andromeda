@@ -32,8 +32,7 @@ export interface Layer {
   palette?: Palette;
 }
 
-export async function downloadGeoTIFF(url: string): Promise<GeoTiff> {
-  const apiKey = 'AIzaSyDJN64pFF7zu8SLCI3MRajkuuMrWvfs0MU';
+export async function downloadGeoTIFF(url: string, apiKey: string): Promise<GeoTiff> {
   console.log(`Downloading data layer: ${url}`);
 
   // Include your Google Cloud API key in the Data Layers URL.
@@ -90,10 +89,10 @@ export async function downloadGeoTIFF(url: string): Promise<GeoTiff> {
   };
 }
 
-export async function getHeatmap(urls: DataLayersResponse): Promise<Layer | null> {
+export async function getHeatmap(urls: DataLayersResponse, apiKey: string): Promise<Layer | null> {
   const [mask, data] = await Promise.all([
-    downloadGeoTIFF(urls.maskUrl),
-    downloadGeoTIFF(urls.annualFluxUrl),
+    downloadGeoTIFF(urls.maskUrl, apiKey),
+    downloadGeoTIFF(urls.annualFluxUrl, apiKey),
   ]);
   const colors = ['00000A', '91009C', 'E64616', 'FEB400', 'FFFFF6'];;
   return {

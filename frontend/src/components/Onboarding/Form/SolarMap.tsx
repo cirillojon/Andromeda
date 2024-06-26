@@ -245,9 +245,9 @@ const SolarMap: React.FC<SolarMapProps> = ({
         console.log("Show heatmap");
         const downloadHeatmap = async () => {
           console.log("Download heatmap");
-          if (dataLayers?.maskUrl && dataLayers?.annualFluxUrl) {
+          if (dataLayers?.maskUrl && dataLayers?.annualFluxUrl && apiKey) {
             console.log("dataLayers: ", dataLayers);
-            const heatmap = await getHeatmap(dataLayers);
+            const heatmap = await getHeatmap(dataLayers, apiKey);
             console.log("heatmap: ", heatmap);
             if (heatmap) {
               setHeatmap(heatmap);
@@ -306,7 +306,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
     showAllSegments,
     showHeatmap,
     dataLayers,
-    overlays
+    overlays,
+    apiKey
   ]);
 
   const handlePanelClick = (panel: SolarPanel) => {
