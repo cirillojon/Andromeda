@@ -64,6 +64,8 @@ export interface SolarData {
   };
   data_layers: DataLayersResponse;
   roofSqft?: number;
+  latitude: number;
+  longitude: number;
 }
 
 export interface Bounds {

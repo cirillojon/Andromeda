@@ -13,6 +13,8 @@ import {
 } from "./SubFormComponents/Visualize";
 import { DataLayersResponse, SolarData } from "./SolarTypes";
 import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
+import { toast } from "sonner";
+import getDataLayers from "@/utils/actions/getDataLayers";
 
 interface LatLng {
   lat: number;
@@ -68,11 +70,10 @@ const SolarMap: React.FC<SolarMapProps> = ({
   const heatmapRef = useRef<google.maps.visualization.HeatmapLayer | null>(
     null
   );
-  const [dataLayers, setDataLayers] = useState<
-    DataLayersResponse | undefined
-  >();
-  const [heatmap, setHeatmap] = useState<Layer>();
-  const [overlays, setOverlays] = useState<google.maps.GroundOverlay[]>([]);
+  const dataLayersRef = useRef<DataLayersResponse | undefined>();
+  const overlaysRef = useRef<google.maps.GroundOverlay[]>([]);
+  const [solarData, setSolarData] = useState<SolarData | null>(null);
+  const [triggeredDataLayers, setTriggeredDataLayers] = useState(true);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -81,13 +82,115 @@ const SolarMap: React.FC<SolarMapProps> = ({
   };
 
   useEffect(() => {
-    const getSolarDataFromLocalStorage = () => {
+    const getSolarDataFromLocalStorage = async () => {
       const storageItem = secureLocalStorage.getItem("solarData") as string;
-      const data = JSON.parse(storageItem);
+      const data = JSON.parse(storageItem) as SolarData;
       if (data) {
         setLocation({ lat: data.latitude, lng: data.longitude });
-        setDataLayers(data.data_layers);
-        const solarPotential = data.building_insights.solarPotential;
+        setSolarData(data);
+        const newSegments: RoofSegment[] =
+          data.building_insights.solarPotential.roofSegmentStats.map(
+            (segment: any, index: number) => {
+              return {
+                id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
+                center: {
+                  lat: segment.center.latitude,
+                  lng: segment.center.longitude,
+                },
+                areaMeters2: segment.stats.areaMeters2,
+                pitchDegrees: segment.pitchDegrees,
+                azimuthDegrees: segment.azimuthDegrees,
+                corners: [
+                  {
+                    lat: segment.boundingBox.sw.latitude,
+                    lng: segment.boundingBox.ne.longitude,
+                  },
+                  {
+                    lat: segment.boundingBox.ne.latitude,
+                    lng: segment.boundingBox.ne.longitude,
+                  },
+                  {
+                    lat: segment.boundingBox.ne.latitude,
+                    lng: segment.boundingBox.sw.longitude,
+                  },
+                  {
+                    lat: segment.boundingBox.sw.latitude,
+                    lng: segment.boundingBox.sw.longitude,
+                  },
+                ],
+                stats: segment.stats,
+              };
+            }
+          );
+        setRoofSegments(newSegments);
+      }
+    };
+    getSolarDataFromLocalStorage();
+  }, []);
+
+  useEffect(() => {
+    const callGetDataLayers = async () => {
+      if (solarData && triggeredDataLayers && !dataLayersRef.current) {
+        const newDataLayers = await getDataLayers(
+          solarData.latitude,
+          solarData.longitude
+        );
+        if (newDataLayers) {
+          dataLayersRef.current = JSON.parse(newDataLayers);
+          setTriggeredDataLayers(false); // Reset the trigger
+        }
+      }
+    };
+    callGetDataLayers();
+  }, [solarData, triggeredDataLayers, setTriggeredDataLayers]);
+
+  useEffect(() => {
+    const downloadHeatmap = async () => {
+      console.log("Download heatmap");
+      if (
+        dataLayersRef.current?.maskUrl &&
+        dataLayersRef.current?.annualFluxUrl &&
+        apiKey &&
+        map
+      ) {
+        console.log("dataLayers: ", dataLayersRef.current);
+        const heatmap = await getHeatmap(dataLayersRef.current, apiKey);
+        console.log("heatmap: ", heatmap);
+        if (heatmap) {
+          const bounds = heatmap.bounds;
+          overlaysRef.current.forEach((overlay) => overlay.setMap(null));
+          const newOverlays = heatmap
+            .render(showHeatmap)
+            .map(
+              (canvas) =>
+                new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
+            );
+
+          overlaysRef.current = newOverlays;
+
+          newOverlays[0].setMap(map);
+          console.log("overlays: ", overlaysRef.current[0]);
+        }
+      }
+    };
+    if (dataLayersRef.current && !overlaysRef.current.length) {
+      downloadHeatmap();
+    }
+  }, [map, apiKey, showHeatmap]);
+
+  //not showing immediately, showing after hiding heatmap, and then working properly
+  useEffect(() => {
+    if (showHeatmap && overlaysRef.current[0]) {
+      overlaysRef.current[0].setMap(map);
+    } else if (!showHeatmap && overlaysRef.current[0]) {
+      overlaysRef.current[0].setMap(null);
+    }
+  }, [showHeatmap, map]);
+
+  useEffect(() => {
+    const getNewPanels = () => {
+      if (solarData) {
+        const solarPotential = solarData.building_insights.solarPotential;
         const newPanels: SolarPanel[] = solarPotential.solarPanels
           .slice(0, panelCount)
           .map((panel: any, index: number) => {
@@ -126,7 +229,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
                 },
               ],
               azimuth:
-                data.building_insights.solarPotential.roofSegmentStats[
+                solarData.building_insights.solarPotential.roofSegmentStats[
                   panel.segmentIndex
                 ].azimuthDegrees,
               minEnergy:
@@ -136,48 +239,11 @@ const SolarMap: React.FC<SolarMapProps> = ({
               height: h,
             };
           });
-
-        const newSegments: RoofSegment[] = solarPotential.roofSegmentStats.map(
-          (segment: any, index: number) => {
-            return {
-              id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
-              center: {
-                lat: segment.center.latitude,
-                lng: segment.center.longitude,
-              },
-              areaMeters2: segment.stats.areaMeters2,
-              pitchDegrees: segment.pitchDegrees,
-              azimuthDegrees: segment.azimuthDegrees,
-              corners: [
-                {
-                  lat: segment.boundingBox.sw.latitude,
-                  lng: segment.boundingBox.ne.longitude,
-                },
-                {
-                  lat: segment.boundingBox.ne.latitude,
-                  lng: segment.boundingBox.ne.longitude,
-                },
-                {
-                  lat: segment.boundingBox.ne.latitude,
-                  lng: segment.boundingBox.sw.longitude,
-                },
-                {
-                  lat: segment.boundingBox.sw.latitude,
-                  lng: segment.boundingBox.sw.longitude,
-                },
-              ],
-              stats: segment.stats,
-            };
-          }
-        );
-
         setSolarPanels(newPanels);
-        setRoofSegments(newSegments);
       }
     };
-
-    getSolarDataFromLocalStorage();
-  }, [panelCount]);
+    getNewPanels();
+  }, [panelCount, solarData]);
 
   useEffect(() => {
     if (map) {
@@ -186,128 +252,63 @@ const SolarMap: React.FC<SolarMapProps> = ({
       polygonsRef.current = [];
 
       // Add new panels if heatmap is not shown
-      if (!showHeatmap) {
-        solarPanels.forEach((panel) => {
-          const orientation = panel.orientation == "PORTRAIT" ? 90 : 0;
-          const azimuth = panel.azimuth;
-          const panelsPalette = ["E8EAF6", "1A237E"];
-          const palette = createPalette(panelsPalette).map(rgbToColor);
-          const minEnergy = panel.minEnergy;
-          const maxEnergy = panel.maxEnergy;
-          const colorIndex = Math.round(
-            normalize(panel.yearlyEnergyDcKwh, maxEnergy, minEnergy) * 255
-          );
-          const polygon = new google.maps.Polygon({
-            paths: panel.corners.map(({ lat, lng }) =>
-              google.maps.geometry.spherical.computeOffset(
-                //THIS CHANGES THE PLACEMENT ON THE ROOF
-                //{ lat: (panel.center.lat + 0.000006), lng: panel.center.lng - 0.000003 },
-                { lat: panel.center.lat, lng: panel.center.lng },
-                Math.sqrt(lat * lat + lng * lng),
-                Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth
-              )
-            ),
-            fillColor: palette[colorIndex],
-            fillOpacity: 0.9,
-            strokeColor: "#B0BEC5",
-            strokeOpacity: 0.9,
-            strokeWeight: 1,
-            zIndex: 1, // Ensure the panels appear above other map elements
-          });
-          polygon.setMap(map);
-          polygon.addListener("click", () => handlePanelClick(panel));
-          polygonsRef.current.push(polygon);
+      solarPanels.forEach((panel) => {
+        const orientation = panel.orientation == "PORTRAIT" ? 90 : 0;
+        const azimuth = panel.azimuth;
+        const panelsPalette = ["E8EAF6", "1A237E"];
+        const palette = createPalette(panelsPalette).map(rgbToColor);
+        const minEnergy = panel.minEnergy;
+        const maxEnergy = panel.maxEnergy;
+        const colorIndex = Math.round(
+          normalize(panel.yearlyEnergyDcKwh, maxEnergy, minEnergy) * 255
+        );
+        const polygon = new google.maps.Polygon({
+          paths: panel.corners.map(({ lat, lng }) =>
+            google.maps.geometry.spherical.computeOffset(
+              // Adjust the placement on the roof
+              { lat: panel.center.lat, lng: panel.center.lng },
+              Math.sqrt(lat * lat + lng * lng),
+              Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth
+            )
+          ),
+          fillColor: palette[colorIndex],
+          fillOpacity: 0.9,
+          strokeColor: "#B0BEC5",
+          strokeOpacity: 0.9,
+          strokeWeight: 1,
+          zIndex: 1, // Ensure the panels appear above other map elements
         });
+        polygon.setMap(map);
+        polygon.addListener("click", () => handlePanelClick(panel));
+        polygonsRef.current.push(polygon);
+      });
 
-        // Add the selected roof segment or all segments if showAllSegments is true
-        const segmentsToShow = showAllSegments
-          ? roofSegments
-          : selectedSegment
-          ? [selectedSegment]
-          : [];
-        segmentsToShow.forEach((segment) => {
-          const polygon = new google.maps.Polygon({
-            paths: segment.corners,
-            fillColor: "#FFC107",
-            fillOpacity: 0.3,
-            strokeColor: "#D3D3D3",
-            strokeOpacity: 0.4,
-            strokeWeight: 3,
-            zIndex: 1, // Ensure the panels appear above other map elements
-          });
-          polygon.setMap(map);
-          polygonsRef.current.push(polygon);
+      // Add the selected roof segment or all segments if showAllSegments is true
+      const segmentsToShow = showAllSegments
+        ? roofSegments
+        : selectedSegment
+        ? [selectedSegment]
+        : [];
+      segmentsToShow.forEach((segment) => {
+        const polygon = new google.maps.Polygon({
+          paths: segment.corners,
+          fillColor: "#FFC107",
+          fillOpacity: 0.3,
+          strokeColor: "#D3D3D3",
+          strokeOpacity: 0.4,
+          strokeWeight: 3,
+          zIndex: 1, // Ensure the panels appear above other map elements
         });
-      }
-      
-      // Add or remove heatmap layer
-      if (showHeatmap) {
-        console.log("Show heatmap");
-        const downloadHeatmap = async () => {
-          console.log("Download heatmap");
-          if (dataLayers?.maskUrl && dataLayers?.annualFluxUrl && apiKey) {
-            console.log("dataLayers: ", dataLayers);
-            const heatmap = await getHeatmap(dataLayers, apiKey);
-            console.log("heatmap: ", heatmap);
-            if (heatmap) {
-              setHeatmap(heatmap);
-
-              const bounds = heatmap.bounds;
-              overlays.forEach((overlay) => overlay.setMap(null));
-              const newOverlays = heatmap
-                .render(showHeatmap)
-                .map(
-                  (canvas) =>
-                    new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
-                );
-
-              setOverlays(newOverlays);
-
-              newOverlays[0].setMap(map);
-              console.log("overlays: ", overlays[0]);
-            }
-          }
-        };
-        downloadHeatmap();
-        /*
-        heatmapRef.current = new google.maps.visualization.HeatmapLayer({
-          data: heatmapData,
-          dissipating: true,
-          radius: 8,
-          opacity: 0.8,
-          gradient: [
-            "rgba(0, 255, 255, 0)",
-            "rgba(0, 255, 255, 1)",
-            "rgba(0, 191, 255, 1)",
-            "rgba(0, 127, 255, 1)",
-            "rgba(0, 63, 255, 1)",
-            "rgba(0, 0, 255, 1)",
-            "rgba(0, 0, 223, 1)",
-            "rgba(0, 0, 191, 1)",
-            "rgba(0, 0,159, 1)",
-            "rgba(0, 0, 127, 1)",
-            "rgba(63, 0, 91, 1)",
-            "rgba(127, 0, 63, 1)",
-            "rgba(191, 0, 31, 1)",
-            "rgba(255, 0, 0, 1)",
-          ],
-        });
-
-        heatmapRef.current.setMap(map);*/
-      } else if (heatmapRef.current) {
-        heatmapRef.current.setMap(null);
-      }
+        polygon.setMap(map);
+        polygonsRef.current.push(polygon);
+      });
     }
   }, [
     map,
     solarPanels,
     roofSegments,
     selectedSegment,
-    showAllSegments,
-    showHeatmap,
-    dataLayers,
-    overlays,
-    apiKey
+    showAllSegments,    
   ]);
 
   const handlePanelClick = (panel: SolarPanel) => {

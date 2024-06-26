@@ -103,7 +103,6 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
     setBillError("");
     const response = await postSolarData(address, longitude, latitude);
     if (response.data) {
-      debugger;
       secureLocalStorage.setItem("solarData", JSON.stringify(response.data));
     }
 
