@@ -153,6 +153,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
           dataLayersRef.current = JSON.parse(newDataLayers);
           setTriggeredDataLayers(false); // Reset the trigger
           secureLocalStorage.setItem("currentDataLayerAddress", address);
+          secureLocalStorage.removeItem("heatmap");
         }
       }
     };
