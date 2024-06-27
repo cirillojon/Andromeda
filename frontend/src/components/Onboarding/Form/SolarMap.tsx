@@ -53,6 +53,7 @@ interface SolarMapProps {
   selectedSegment: RoofSegment | null;
   showHeatmap: boolean;
   showAllSegments: boolean;
+  address: string;
 }
 
 const SolarMap: React.FC<SolarMapProps> = ({
@@ -60,6 +61,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
   selectedSegment,
   showHeatmap,
   showAllSegments,
+  address,
 }) => {
   const [solarPanels, setSolarPanels] = useState<SolarPanel[]>([]);
   const [roofSegments, setRoofSegments] = useState<RoofSegment[]>([]);
@@ -74,6 +76,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
   const overlaysRef = useRef<google.maps.GroundOverlay[]>([]);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [triggeredDataLayers, setTriggeredDataLayers] = useState(true);
+  const [getNewHeatmap, setGetNewHeatmap] = useState(true);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -131,6 +134,17 @@ const SolarMap: React.FC<SolarMapProps> = ({
   useEffect(() => {
     const callGetDataLayers = async () => {
       if (solarData && triggeredDataLayers && !dataLayersRef.current) {
+        const currentDataLayerAddress = secureLocalStorage.getItem(
+          "currentDataLayerAddress"
+        );
+        //check if currentDataLayerAddress exists and is the same as address
+        //this means we already got the data layers for this address and stored
+        //the overlay in local storage
+        //we can block the download of a new heatmap
+        if (currentDataLayerAddress && currentDataLayerAddress === address) {
+          setGetNewHeatmap(false);
+          return;
+        }
         const newDataLayers = await getDataLayers(
           solarData.latitude,
           solarData.longitude
@@ -138,24 +152,22 @@ const SolarMap: React.FC<SolarMapProps> = ({
         if (newDataLayers) {
           dataLayersRef.current = JSON.parse(newDataLayers);
           setTriggeredDataLayers(false); // Reset the trigger
+          secureLocalStorage.setItem("currentDataLayerAddress", address);
         }
       }
     };
     callGetDataLayers();
-  }, [solarData, triggeredDataLayers, setTriggeredDataLayers]);
+  }, [solarData, triggeredDataLayers, setTriggeredDataLayers, address]);
 
   useEffect(() => {
     const downloadHeatmap = async () => {
-      console.log("Download heatmap");
       if (
         dataLayersRef.current?.maskUrl &&
         dataLayersRef.current?.annualFluxUrl &&
         apiKey &&
         map
       ) {
-        console.log("dataLayers: ", dataLayersRef.current);
         const heatmap = await getHeatmap(dataLayersRef.current, apiKey);
-        console.log("heatmap: ", heatmap);
         if (heatmap) {
           const bounds = heatmap.bounds;
           overlaysRef.current.forEach((overlay) => overlay.setMap(null));
@@ -169,16 +181,52 @@ const SolarMap: React.FC<SolarMapProps> = ({
           overlaysRef.current = newOverlays;
 
           newOverlays[0].setMap(map);
-          console.log("overlays: ", overlaysRef.current[0]);
+          const heatmapData = {
+            url: newOverlays[0].getUrl(),
+            bounds: {
+              north: newOverlays[0].getBounds()?.getNorthEast().lat(),
+              south: newOverlays[0].getBounds()?.getSouthWest().lat(),
+              east: newOverlays[0].getBounds()?.getNorthEast().lng(),
+              west: newOverlays[0].getBounds()?.getSouthWest().lng(),
+            },
+          };
+          secureLocalStorage.setItem("heatmap", JSON.stringify(heatmapData));
         }
       }
     };
-    if (dataLayersRef.current && !overlaysRef.current.length) {
+
+    if (!showHeatmap) {
+      overlaysRef.current.forEach((overlay) => overlay.setMap(null));
+      return;
+    }
+    const heatmapStorageItem = secureLocalStorage.getItem("heatmap") as string;
+    if (heatmapStorageItem && window.google) {
+      const heatmapData = JSON.parse(heatmapStorageItem);
+      const bounds = new google.maps.LatLngBounds(
+        new google.maps.LatLng(
+          heatmapData.bounds.south,
+          heatmapData.bounds.west
+        ),
+        new google.maps.LatLng(
+          heatmapData.bounds.north,
+          heatmapData.bounds.east
+        )
+      );
+
+      const heatmapOverlay = new google.maps.GroundOverlay(
+        heatmapData.url,
+        bounds
+      );
+      overlaysRef.current[0] = heatmapOverlay;
+      if (!getNewHeatmap) {
+        overlaysRef.current[0].setMap(map);
+        return;
+      }
+    } else if (dataLayersRef.current && !overlaysRef.current.length) {
       downloadHeatmap();
     }
-  }, [map, apiKey, showHeatmap]);
+  }, [map, apiKey, showHeatmap, getNewHeatmap]);
 
-  //not showing immediately, showing after hiding heatmap, and then working properly
   useEffect(() => {
     if (showHeatmap && overlaysRef.current[0]) {
       overlaysRef.current[0].setMap(map);
@@ -303,13 +351,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
         polygonsRef.current.push(polygon);
       });
     }
-  }, [
-    map,
-    solarPanels,
-    roofSegments,
-    selectedSegment,
-    showAllSegments,    
-  ]);
+  }, [map, solarPanels, roofSegments, selectedSegment, showAllSegments]);
 
   const handlePanelClick = (panel: SolarPanel) => {
     setSelectedPanel((prevSelectedPanel) =>

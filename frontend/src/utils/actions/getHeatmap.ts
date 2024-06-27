@@ -42,10 +42,9 @@ export async function downloadGeoTIFF(url: string, apiKey: string): Promise<GeoT
   const response = await fetch(solarUrl);
   if (response.status != 200) {
     const error = await response.json();
-    console.error(`downloadGeoTIFF failed: ${solarUrl}\n`, error);
+    console.error(`downloadGeoTIFF failed: ${url}\n`, error);
     throw error;
   }
-  console.log("response:", response);
 
   // Get the GeoTIFF rasters, which are the pixel values for each band.
   const arrayBuffer = await response.arrayBuffer();

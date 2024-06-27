@@ -390,6 +390,7 @@ const FormPage: React.FC<FormPageProps> = ({
             selectedSegment={selectedSegment}
             showHeatmap={showHeatmap}
             showAllSegments={showAllSegments}
+            address={address}
           />
         </div>
 
@@ -477,6 +478,7 @@ const FormPage: React.FC<FormPageProps> = ({
                   selectedSegment={selectedSegment}
                   showHeatmap={showHeatmap}
                   showAllSegments={showAllSegments}
+                  address={address}
                 />
               </div>
               <div className="button-container mt-6">
