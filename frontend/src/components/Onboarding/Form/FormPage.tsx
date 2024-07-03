@@ -384,7 +384,7 @@ const FormPage: React.FC<FormPageProps> = ({
             maxPanels={maxPanels}
           />
         </fieldset>
-        <div className="relative flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+        <div className="relative flex h-full mx-8 min-h-[70vh] flex-col rounded-lg bg-muted/50">
           <SolarMap
             panelCount={panelCount}
             selectedSegment={selectedSegment}
@@ -392,6 +392,20 @@ const FormPage: React.FC<FormPageProps> = ({
             showAllSegments={showAllSegments}
             address={address}
           />
+        </div>
+        <div className="mt-6 flex justify-center space-x-8 mx-8">
+          <Button
+            onClick={handleToggleHeatmap}
+            className="bg-gray-900 py-3 w-full"
+          >
+            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+          </Button>
+          <Button
+            className="bg-gray-900 py-3 w-full mr-32"
+            onClick={handlemaxSavingsClick}
+          >
+            Maximize Savings
+          </Button>
         </div>
 
         {(activeTab === "Solar" || activeTab == "Battery") && solarData && (

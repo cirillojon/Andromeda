@@ -16,6 +16,8 @@ import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
 import { toast } from "sonner";
 import getDataLayers from "@/utils/actions/getDataLayers";
 
+const libraries: Libraries = ["places", "geometry", "visualization"];
+
 interface LatLng {
   lat: number;
   lng: number;
@@ -141,7 +143,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
         //this means we already got the data layers for this address and stored
         //the overlay in local storage
         //we can block the download of a new heatmap
-        if (currentDataLayerAddress && currentDataLayerAddress === address) {
+        const currentHeatmapLocalStorage = secureLocalStorage.getItem("heatmap") as string;
+        if (currentDataLayerAddress && currentDataLayerAddress === address && currentHeatmapLocalStorage) {
           setGetNewHeatmap(false);
           return;
         }
@@ -368,8 +371,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
     clickableIcons: true,
     scrollwheel: false,
   };
-
-  const libraries: Libraries = ["places", "geometry", "visualization"];
 
   return (
     <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>

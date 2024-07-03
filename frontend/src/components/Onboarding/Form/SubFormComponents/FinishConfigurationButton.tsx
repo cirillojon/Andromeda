@@ -20,13 +20,13 @@ const FinishConfigurationButton: React.FC<FinishConfigurationButtonProps> = ({
       {isLoggedIn ? (
         <div>
           {validationPassed ? (
-            <Link href="/dashboard" className="w-full bg-gray-900">
-              <Button ref={authButtonRef} className="w-full bg-gray-900">
+            <Link href="/dashboard" className="w-full bg-gray-900 mb-4">
+              <Button ref={authButtonRef} className="w-full bg-gray-900 mb-4">
                 Proceeding to Dashboard...
               </Button>
             </Link>
           ) : (
-            <Button className="w-full bg-gray-900" onClick={handleSubmit}>
+            <Button className="w-full bg-gray-900 mb-4" onClick={handleSubmit}>
               Create New Project
             </Button>
           )}
@@ -34,13 +34,13 @@ const FinishConfigurationButton: React.FC<FinishConfigurationButtonProps> = ({
       ) : (
         <div>
           {validationPassed ? (
-            <RegisterLink className="w-full bg-gray-900">
-              <Button ref={authButtonRef} className="w-full bg-gray-900">
+            <RegisterLink className="w-full bg-gray-900 mb-4">
+              <Button ref={authButtonRef} className="w-full bg-gray-900 mb-4">
                 Proceeding to Authentication...
               </Button>
             </RegisterLink>
           ) : (
-            <Button className="w-full bg-gray-900" onClick={handleSubmit}>
+            <Button className="w-full bg-gray-900 mb-4" onClick={handleSubmit}>
               Save this Configuration
             </Button>
           )}
