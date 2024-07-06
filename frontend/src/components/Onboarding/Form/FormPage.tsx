@@ -23,6 +23,13 @@ import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
 import FormInputs from "./SubFormComponents/FormInputs";
 import { InputValues } from "./SubFormComponents/FormInputs";
 import Link from "next/link";
+import DialogflowNameFlow from "./SubFormComponents/DialogflowNameFlow";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
 
 ChartJS.register(
   BarElement,
@@ -45,12 +52,12 @@ const FormPage: React.FC<FormPageProps> = ({
   address,
 }) => {
   const [activeTab, setActiveTab] = useState("Solar");
-  const [panelCount, setPanelCount] = useState<number>(10);
+  const [panelCount, setPanelCount] = useState<number>(4);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
-  const maxPanels = 110;
+  const [maxPanels, setMaxPanels] = useState<number>(100);
   const [inputValues, setInputValues] = useState<InputValues>({
     solar: {
       panelCount: 10,
@@ -87,7 +94,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [showHeatmap, setShowHeatmap] = useState(false);
   const [calculationResults, setCalculationResults] = useState<any>(null);
   const [showAllSegments, setShowAllSegments] = useState(false);
-  const [maximizeSavings, setMaximizeSavings] = useState(false);
+  const [maxSavings, setMaxSavings] = useState(false);
 
   const handleToggleHeatmap = () => {
     setShowHeatmap(!showHeatmap);
@@ -98,28 +105,28 @@ const FormPage: React.FC<FormPageProps> = ({
     return areaMeters2 * SQ_METERS_TO_SQ_FEET;
   }
 
-  function getHouseSquareFootage(data: SolarData): number {
-    let totalAreaMeters2 = 0;
-
-    if (data.building_insights && data.building_insights.solarPotential) {
-      const wholeRoofStats =
-        data.building_insights.solarPotential.roofSegmentStats;
-      if (wholeRoofStats) {
-        totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
-          return acc + segment.stats.areaMeters2;
-        }, 0);
-      }
-    }
-
-    const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
-    return totalAreaSqFeet;
-  }
-
   useEffect(() => {
+    function getHouseSquareFootage(data: SolarData): number {
+      let totalAreaMeters2 = 0;
+
+      if (data.building_insights && data.building_insights.solarPotential) {
+        const wholeRoofStats =
+          data.building_insights.solarPotential.roofSegmentStats;
+        if (wholeRoofStats) {
+          totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
+            return acc + segment.stats.areaMeters2;
+          }, 0);
+        }
+      }
+
+      const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
+      return totalAreaSqFeet;
+    }
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
       setSolarData(data);
+      setMaxPanels(data.building_insights.solarPotential.maxArrayPanelsCount);
 
       // Calculate house square footage
       const roofSqft = getHouseSquareFootage(data);
@@ -137,87 +144,89 @@ const FormPage: React.FC<FormPageProps> = ({
   }, []);
 
   useEffect(() => {
-    if (maximizeSavings && solarData) {
-      console.log("Maximize savings triggered");
-      const config: SolarPanelConfig =
-        solarData.building_insights.solarPotential.solarPanelConfigs[0];
-      let maxConfiguration;
-      let maxSavings = 0;
-      let newPanelCount = 0;
+    const maximizeSavings = () => {
+      if (maxSavings && solarData) {
+        const config: SolarPanelConfig =
+          solarData.building_insights.solarPotential.solarPanelConfigs[0];
+        let maxConfiguration;
+        let maxSavings = 0;
+        let newPanelCount = 0;
 
-      const phi = (1 + Math.sqrt(5)) / 2;
-      let low = 1;
-      let high = maxPanels;
-      let c = high - Math.floor((high - low) / phi);
-      let d = low + Math.floor((high - low) / phi);
+        const phi = (1 + Math.sqrt(5)) / 2;
+        let low = 1;
+        let high = maxPanels;
+        let c = high - Math.floor((high - low) / phi);
+        let d = low + Math.floor((high - low) / phi);
 
-      const evaluate = (panels: number) =>
-        calculateSolarPotential(
-          config,
-          panels,
-          maxPanels,
-          Number(monthlyBill),
-          0.31,
-          0.85,
-          7000,
-          4.0,
-          20,
-          solarData.building_insights.solarPotential.panelCapacityWatts
-        );
+        const evaluate = (panels: number) =>
+          calculateSolarPotential(
+            config,
+            panels,
+            maxPanels,
+            Number(monthlyBill),
+            0.31,
+            0.85,
+            7000,
+            4.0,
+            20,
+            solarData.building_insights.solarPotential.panelCapacityWatts
+          );
 
-      let resultC = evaluate(c);
-      let resultD = evaluate(d);
+        let resultC = evaluate(c);
+        let resultD = evaluate(d);
 
-      while (low < high) {
-        console.log(`Evaluating: c=${c}, d=${d}`);
-        if (resultC && resultD) {
-          if (resultC.savings > resultD.savings) {
-            high = d - 1; // Ensure convergence
-            d = c;
-            c = high - Math.floor((high - low) / phi);
-            resultD = resultC;
-            resultC = evaluate(c);
+        while (low < high) {
+          if (resultC && resultD) {
+            if (resultC.savings > resultD.savings) {
+              high = d - 1; // Ensure convergence
+              d = c;
+              c = high - Math.floor((high - low) / phi);
+              resultD = resultC;
+              resultC = evaluate(c);
+            } else {
+              low = c + 1; // Ensure convergence
+              c = d;
+              d = low + Math.floor((high - low) / phi);
+              resultC = resultD;
+              resultD = evaluate(d);
+            }
           } else {
-            low = c + 1; // Ensure convergence
-            c = d;
-            d = low + Math.floor((high - low) / phi);
-            resultC = resultD;
-            resultD = evaluate(d);
+            break;
           }
-        } else {
-          break;
+
+          // Exit condition to avoid infinite loop
+          if (high <= low) {
+            break;
+          }
         }
 
-        // Exit condition to avoid infinite loop
-        if (high <= low) {
-          break;
+        if (resultC && resultC.savings > maxSavings) {
+          maxSavings = resultC.savings;
+          maxConfiguration = resultC;
+          newPanelCount = c;
+        }
+        if (resultD && resultD.savings > maxSavings) {
+          maxSavings = resultD.savings;
+          maxConfiguration = resultD;
+          newPanelCount = d;
+        }
+
+        if (maxConfiguration) {
+          setCalculationResults(maxConfiguration);
+          setPanelCount(newPanelCount);
         }
       }
+    };
 
-      if (resultC && resultC.savings > maxSavings) {
-        maxSavings = resultC.savings;
-        maxConfiguration = resultC;
-        newPanelCount = c;
-      }
-      if (resultD && resultD.savings > maxSavings) {
-        maxSavings = resultD.savings;
-        maxConfiguration = resultD;
-        newPanelCount = d;
-      }
-
-      if (maxConfiguration) {
-        console.log("Max configuration found:", maxConfiguration);
-        setCalculationResults(maxConfiguration);
-        setPanelCount(newPanelCount);
-      }
-    }
-  }, [maximizeSavings, solarData, monthlyBill, maxPanels]);
+    maximizeSavings();
+  }, [maxSavings, solarData, monthlyBill, maxPanels]);
 
   const handlePanelCountChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
   ) => {
     const newValue = Number((e.target as HTMLInputElement).value);
     setPanelCount(newValue);
+    setMaxSavings(false);
     setInputValues((prevValues) => ({
       ...prevValues,
       solar: { ...prevValues.solar, panelCount: newValue },
@@ -344,12 +353,15 @@ const FormPage: React.FC<FormPageProps> = ({
       );
       setCalculationResults(results);
     }
-  }, [solarData, panelCount, monthlyBill]);
+  }, [solarData, panelCount, monthlyBill, maxPanels]);
+
+  const handlemaxSavingsClick = () => {
+    setMaxSavings(!maxSavings);
+  };
 
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
   }
-
   return (
     <div className="flex flex-col min-h-screen">
       <FormTabs
@@ -357,74 +369,201 @@ const FormPage: React.FC<FormPageProps> = ({
         setActiveTab={setActiveTab}
         isLoggedIn={isLoggedIn}
       />
-      <div className="flex-grow flex mt-4">
-        <div className="mainContent flex-grow flex">
-          <div className="sidebar left-sidebar">
-            {activeTab === "Solar" && solarData && (
-              <SolarStatsCard
-                solarData={solarData}
-                panelCount={panelCount}
-                maxPanels={maxPanels}
-                handleSegmentClick={handleSegmentClick}
-                handleToggleHeatmap={handleToggleHeatmap}
-                showHeatmap={showHeatmap}
-                calculationResults={calculationResults}
-                handleToggleShowAllSegments={handleToggleShowAllSegments}
-                showAllSegments={showAllSegments}
-                maximizeSavings={maximizeSavings}
-                setMaximizeSavings={setMaximizeSavings}
-              />
-            )}
-          </div>
-          <div className="viewbox flex-grow">
-            <SolarMap
-              panelCount={panelCount}
-              selectedSegment={selectedSegment}
-              showHeatmap={showHeatmap}
-              showAllSegments={showAllSegments}
-            />
-          </div>
-          <div className="sidebar">
-            <FormInputs
-              activeTab={activeTab}
-              inputValues={inputValues}
-              handlePanelCountChange={handlePanelCountChange}
-              handleInputChange={handleInputChange}
-              handleSelectChange={handleSelectChange}
-              panelCount={panelCount}
-              maxPanels={maxPanels}
-            />
-            <div className="mb-10">
-              {isLoggedIn ? (
-                <div>
-                  {validationPassed ? (
-                    <Link href={"/dashboard"} className="w-full">
-                      <Button ref={authButtonRef}>
-                        Proceeding to Dashboard...
-                      </Button>
-                    </Link>
-                  ) : (
-                    <Button onClick={handleSubmit}>Create New Project</Button>
-                  )}
-                </div>
-              ) : (
-                <div>
-                  {validationPassed ? (
-                    <RegisterLink className="w-full">
-                      <Button ref={authButtonRef}>
-                        Proceeding to Authentication...
-                      </Button>
-                    </RegisterLink>
-                  ) : (
-                    <Button onClick={handleSubmit}>
-                      Save this Configuration
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
+      <div className="grid lg:hidden grid-cols-1">
+        <fieldset className="grid rounded-lg border p-4 mb-4 mt-2">
+          <legend className="-ml-1 px-1 text-sm font-medium">
+            Personalization
+          </legend>
+          <FormInputs
+            activeTab={activeTab}
+            inputValues={inputValues}
+            handlePanelCountChange={handlePanelCountChange}
+            handleInputChange={handleInputChange}
+            handleSelectChange={handleSelectChange}
+            panelCount={panelCount}
+            maxPanels={maxPanels}
+          />
+        </fieldset>
+        <div className="relative flex h-full mx-8 min-h-[70vh] flex-col rounded-lg bg-muted/50">
+          <SolarMap
+            panelCount={panelCount}
+            selectedSegment={selectedSegment}
+            showHeatmap={showHeatmap}
+            showAllSegments={showAllSegments}
+            address={address}
+          />
         </div>
+        <div className="mt-6 flex justify-center space-x-8 mx-8">
+          <Button
+            onClick={handleToggleHeatmap}
+            className="bg-gray-900 py-3 w-full"
+          >
+            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+          </Button>
+          <Button
+            className="bg-gray-900 py-3 w-full mr-32"
+            onClick={handlemaxSavingsClick}
+          >
+            Maximize Savings
+          </Button>
+        </div>
+
+        {(activeTab === "Solar" || activeTab == "Battery") && solarData && (
+          <div className="relative flex flex-col items-start mb-4 mt-4">
+            <form className="grid w-full items-start">
+              <fieldset className="grid rounded-lg border p-4">
+                {activeTab == "Battery" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Battery Options
+                  </legend>
+                )}
+                {activeTab == "Solar" && (
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Configuration Breakdown
+                  </legend>
+                )}
+                {activeTab === "Solar" && (
+                  <SolarStatsCard
+                    solarData={solarData}
+                    panelCount={panelCount}
+                    maxPanels={maxPanels}
+                    handleSegmentClick={handleSegmentClick}
+                    handleToggleHeatmap={handleToggleHeatmap}
+                    showHeatmap={showHeatmap}
+                    calculationResults={calculationResults}
+                    handleToggleShowAllSegments={handleToggleShowAllSegments}
+                    showAllSegments={showAllSegments}
+                    maxSavings={maxSavings}
+                    setMaxSavings={setMaxSavings}
+                  />
+                )}
+              </fieldset>
+            </form>
+          </div>
+        )}
+        <div className="mt-4">
+          <FinishConfigurationButton
+            isLoggedIn={isLoggedIn}
+            authButtonRef={authButtonRef}
+            handleSubmit={handleSubmit}
+            validationPassed={validationPassed}
+          />
+        </div>
+      </div>
+      <div className="hidden lg:flex" style={{ height: "calc(100vh - 64px)" }}>
+        <ResizablePanelGroup
+          direction="horizontal"
+          className={"flex gap-4 overflow-auto p-4"}
+          //The grid cols aren't doing anything with the resizeable panels
+        >
+          <ResizablePanel
+            defaultSize={activeTab === "Roofing" ? 50 : 25}
+            className="relative flex flex-col items-start"
+          >
+            <ResizablePanelGroup direction="vertical">
+              <ResizablePanel className="-mb-6">
+                <fieldset className="grid rounded-lg border p-4">
+                  <legend className="-ml-1 px-1 text-sm font-medium">
+                    Personalization
+                  </legend>
+                  <FormInputs
+                    activeTab={activeTab}
+                    inputValues={inputValues}
+                    handlePanelCountChange={handlePanelCountChange}
+                    handleInputChange={handleInputChange}
+                    handleSelectChange={handleSelectChange}
+                    panelCount={panelCount}
+                    maxPanels={maxPanels}
+                  />
+                </fieldset>
+              </ResizablePanel>
+              <ResizableHandle withHandle className="mb-2" />
+              <ResizablePanel className="pb-1 pr-[2px]" defaultSize={50}>
+                <DialogflowNameFlow />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </ResizablePanel>
+          <ResizableHandle withHandle className="-m-1" />
+          <ResizablePanel defaultSize={50}>
+            <div className="grid grid-rows-[5fr_1fr] flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+              <div>
+                <SolarMap
+                  panelCount={panelCount}
+                  selectedSegment={selectedSegment}
+                  showHeatmap={showHeatmap}
+                  showAllSegments={showAllSegments}
+                  address={address}
+                />
+              </div>
+              <div className="button-container mt-6">
+                <Button onClick={handleToggleHeatmap} className="bg-gray-900">
+                  {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                </Button>
+                <Button className="bg-gray-900" onClick={handlemaxSavingsClick}>
+                  Maximize Savings
+                </Button>
+              </div>
+            </div>
+          </ResizablePanel>
+          {activeTab !== "Roofing" && (
+            <ResizableHandle withHandle className="-m-1" />
+          )}
+          {activeTab !== "Roofing" && (
+            <ResizablePanel defaultSize={25} className="flex flex-col w-full">
+              {(activeTab === "Solar" || activeTab == "Battery") &&
+                solarData && (
+                  <div className="relative flex flex-col items-start">
+                    <form className="grid w-full items-start">
+                      <fieldset className="grid rounded-lg border p-4">
+                        {activeTab == "Battery" && (
+                          <legend className="-ml-1 px-1 text-sm font-medium">
+                            Battery Options
+                          </legend>
+                        )}
+                        {activeTab == "Solar" && (
+                          <legend className="-ml-1 px-1 text-sm font-medium">
+                            Configuration Breakdown
+                          </legend>
+                        )}
+                        {activeTab === "Solar" && (
+                          <SolarStatsCard
+                            solarData={solarData}
+                            panelCount={panelCount}
+                            maxPanels={maxPanels}
+                            handleSegmentClick={handleSegmentClick}
+                            handleToggleHeatmap={handleToggleHeatmap}
+                            showHeatmap={showHeatmap}
+                            calculationResults={calculationResults}
+                            handleToggleShowAllSegments={
+                              handleToggleShowAllSegments
+                            }
+                            showAllSegments={showAllSegments}
+                            maxSavings={maxSavings}
+                            setMaxSavings={setMaxSavings}
+                          />
+                        )}
+                      </fieldset>
+                    </form>
+                  </div>
+                )}
+              <div className="flex w-full justify-end mt-auto">
+                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
+                  <div className="space-y-4">
+                    {/*<Button className="w-full bg-gray-900">
+                  Next Project Type
+                  </Button>*/}
+                    <FinishConfigurationButton
+                      isLoggedIn={isLoggedIn}
+                      validationPassed={validationPassed}
+                      authButtonRef={authButtonRef}
+                      handleSubmit={handleSubmit}
+                    />
+                  </div>
+                </div>
+              </div>
+            </ResizablePanel>
+          )}
+        </ResizablePanelGroup>
       </div>
     </div>
   );

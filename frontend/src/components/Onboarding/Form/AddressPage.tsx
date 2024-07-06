@@ -140,10 +140,10 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
         </div>
       </nav>
       <div
-        className="gap-[16px] flex justify-between p-[16px]"
+        className="gap-[16px] flex flex-col md:flex-row justify-between p-[16px]"
         style={{ height: "calc(100vh - 64px)" }}
       >
-        <div className="flex flex-1 rounded-lg overflow-hidden border-r-10 drop-shadow-lg">
+        <div className="flex flex-1 rounded-lg overflow-hidden border-r-10 drop-shadow-lg mb-4 md:mb-0">
           <GoogleMap
             options={mapOptions}
             zoom={zoom}
@@ -163,13 +163,13 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
             />
           </GoogleMap>
         </div>
-        <div className="flex-initial w-1/3 justify-between p-[16px] bg-white rounded-xl">
+        <div className="flex-initial w-full md:w-1/3 justify-between p-[16px] bg-white rounded-xl">
           <div className="text-4xl text-slate-700 font-bold mb-10">
             Start Your Journey
           </div>
           <PlacesAutocomplete
             onAddressSelect={(address) => {
-              getGeocode({ address: address }).then((results) => {
+              getGeocode({ address }).then((results) => {
                 const { lat, lng } = getLatLng(results[0]);
                 setLatitude(lat);
                 setLongitude(lng);
@@ -179,12 +179,16 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
               setTimeout(() => setMarkerVisible(true), 1600);
             }}
           />
-          {emptyAddress && <div className="text-red-500 mt-2 ml-2">{emptyAddress}</div>}
+          {emptyAddress && (
+            <div className="text-red-500 mt-2 ml-2">{emptyAddress}</div>
+          )}
           <h1 className="text-slate-700 mt-6">Average Electricity Bill:</h1>
           <div className="flex">
             <Input
               value={monthlyBill}
-              onChange={(e) => setMonthlyBill(e.target.value.replaceAll(',',''))}
+              onChange={(e) =>
+                setMonthlyBill(e.target.value.replaceAll(",", ""))
+              }
               className="w-full"
               placeholder="450"
             />
@@ -192,10 +196,14 @@ const AddressPage: React.FC<AddressPageProps> = ({ isLoggedIn }) => {
               /mo
             </div>
           </div>
-          {billError && <div className="text-red-500 mt-2 ml-2">{billError}</div>}
-          {emptyBill && <div className="text-red-500 mt-2 ml-2">{emptyBill}</div>}
+          {billError && (
+            <div className="text-red-500 mt-2 ml-2">{billError}</div>
+          )}
+          {emptyBill && (
+            <div className="text-red-500 mt-2 ml-2">{emptyBill}</div>
+          )}
           <button onClick={handleSubmit} className="mt-6 justify-start w-40">
-            <ButtonGooey input="Get Started"/>
+            <ButtonGooey input="Get Started" />
           </button>
         </div>
       </div>

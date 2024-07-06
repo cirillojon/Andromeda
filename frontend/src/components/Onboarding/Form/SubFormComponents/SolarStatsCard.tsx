@@ -2,10 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import "@/components/Onboarding/Form/FormPage.css";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bar } from "react-chartjs-2";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { SolarData } from "@/components/Onboarding/Form/SolarTypes";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface SolarStatsCardProps {
   solarData: SolarData;
@@ -17,8 +22,8 @@ interface SolarStatsCardProps {
   calculationResults: any;
   handleToggleShowAllSegments: () => void;
   showAllSegments: boolean;
-  maximizeSavings: boolean;
-  setMaximizeSavings: (value: boolean) => void;
+  maxSavings: boolean;
+  setMaxSavings: (value: boolean) => void;
 }
 
 const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
@@ -31,8 +36,8 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   calculationResults,
   handleToggleShowAllSegments,
   showAllSegments,
-  maximizeSavings,
-  setMaximizeSavings,
+  maxSavings,
+  setMaxSavings,
 }) => {
   const [showFinance, setShowFinance] = useState(false);
   const panelsPercentage = (panelCount / maxPanels) * 100;
@@ -56,194 +61,166 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
       },
     ],
   };
+/*
+  useEffect(() => {
+    handlemaxSavingsClick();
+  }, []);*/
 
-  const handleMaximizeSavingsClick = () => {
-    console.log("Maximize Savings clicked");
-    setMaximizeSavings(!maximizeSavings);
+  const handlemaxSavingsClick = () => {
+    setMaxSavings(!maxSavings);
     setShowFinance(true);
-    console.log("maximizeSavings state:", !maximizeSavings);
-    console.log("showFinance state:", true);
   };
 
+  const formatAmount = (input: string) => {
+    const number = parseFloat(input);
+    
+    // Check if input is a valid number
+    if (isNaN(number)) {
+        throw new Error('Invalid input. Please provide a valid number.');
+    }
+    
+    // Format number as dollar amount
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD'
+    });
+    
+    return formatter.format(number);
+  }
+
   return (
-    <Card className="solar-stats">
-      <CardHeader>
-        <CardTitle>Solar Stats</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <p>
-          <strong>Max Sunshine Hours/Year:</strong>{" "}
-          {solarData.building_insights.solarPotential.maxSunshineHoursPerYear}
-        </p>
-        <p>
-          <strong>Panel Capacity (Watts):</strong>{" "}
-          {solarData.building_insights.solarPotential.panelCapacityWatts}
-        </p>
-        <div className="progress-bar">
-          <p>
-            <strong>Yearly Energy Produced (kWh):</strong>{" "}
-            {calculationResults.yearlyEnergyDcKwh.toFixed(2)}/
-            {calculationResults.maxYearlyEnergyDcKwh}
-          </p>
-          <div className="progress">
-            <div
-              className="progress-filled"
-              style={{ width: `${energyProducedPercentage}%` }}
-            ></div>
-          </div>
-        </div>
-        <div className="progress-bar">
-          <p>
-            <strong>Panels Count:</strong> {panelCount}/{maxPanels}
-          </p>
-          <div className="progress">
-            <div
-              className="progress-filled"
-              style={{ width: `${panelsPercentage}%` }}
-            ></div>
-          </div>
-          <div className="progress-bar">
-            <p>
-              <strong>Energy Covered (%):</strong>{" "}
-              {Math.round(calculationResults.energyCovered * 100)}
-            </p>
-            <div className="progress">
-              <div
-                className="progress-filled"
-                style={{ width: `${calculationResults.energyCovered * 100}%` }}
-              ></div>
-            </div>
-          </div>
-        </div>
-        <div className="chart-container">
-          <Bar
-            data={barChartData}
-            options={{
-              responsive: true,
-              plugins: {
-                legend: { display: false },
-                title: {
-                  display: true,
-                  text: "Yearly Energy Production by Panel",
-                },
-              },
-            }}
-          />
-        </div>
-        {solarData.building_insights.solarPotential.roofSegmentStats.length >
-          0 && (
-          <div className="roof-segments-container">
-            {solarData.building_insights.solarPotential.roofSegmentStats.map(
-              (segment, index) => (
-                <div
-                  key={index}
-                  className="roof-segment"
-                  onClick={() => handleSegmentClick(segment)}
-                >
-                  <h3>Roof Segment {index + 1}</h3>
-                  <p>
-                    <strong>Area (m²):</strong>{" "}
-                    {segment.stats.areaMeters2.toFixed(2)}
-                  </p>
-                  <p>
-                    <strong>Pitch (degrees):</strong>{" "}
-                    {segment.pitchDegrees.toFixed(2)}
-                  </p>
-                  <p>
-                    <strong>Azimuth (degrees):</strong>{" "}
-                    {segment.azimuthDegrees.toFixed(2)}
-                  </p>
+    <div>
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="Financials" defaultChecked>
+          <AccordionTrigger className="font-bold">Financials</AccordionTrigger>
+          <AccordionContent>
+            <div className="solar-potential-details">
+              <p>
+                <em>
+                  All financial calculations are based on a 20-year lifespan.
+                </em>
+              </p>
+              <div className="progress-bar">
+                <p>
+                  <strong>Cost Without Solar:</strong>{" "}
+                  {formatAmount(calculationResults.totalCostWithoutSolar)}
+                </p>
+                <div className="progress">
+                  <div
+                    className="progress-filled bad"
+                    style={{
+                      width: `${
+                        (calculationResults.totalCostWithoutSolar / 100000) *
+                        100
+                      }%`,
+                    }}
+                  ></div>
                 </div>
-              )
-            )}
-          </div>
-        )}
-        <div className="button-container">
-          <Button onClick={handleToggleHeatmap}>
-            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-          </Button>
-          <Button onClick={handleToggleShowAllSegments}>
-            {showAllSegments
-              ? "Hide All Roof Segments"
-              : "Show All Roof Segments"}
-          </Button>
-          <Button onClick={() => setShowFinance(!showFinance)}>
-            {showFinance ? "Hide Financial Details" : "Show Financial Details"}
-          </Button>
-          <Button onClick={handleMaximizeSavingsClick}>Maximize Savings</Button>
-        </div>
-        {showFinance && (
-          <div className="solar-potential-details">
+              </div>
+              <div className="progress-bar">
+                <p>
+                  <strong>Cost With Solar:</strong>{" "}
+                  {formatAmount(calculationResults.totalCostWithSolar)}
+                </p>
+                <div className="progress">
+                  <div
+                    className="progress-filled good"
+                    style={{
+                      width: `${
+                        (calculationResults.totalCostWithSolar / 100000) * 100
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
+              <p>
+                <strong>Savings:</strong>{" "}
+                <span className="savings">{formatAmount(calculationResults.savings)}</span>
+              </p>
+              <p>
+                <strong>Break Even Year:</strong>{" "}
+                {calculationResults.breakEvenYear >= 0
+                  ? `Year ${calculationResults.breakEvenYear}`
+                  : "Not achievable within the lifespan"}
+              </p>
+              <div className="progress-bar">
+                <p>
+                  <strong>Installation Size (kW):</strong>{" "}
+                  {calculationResults.installationSizeKw}
+                </p>
+                <div
+                  style={{
+                    width: `${
+                      (calculationResults.installationSizeKw / 10) * 100
+                    }%`,
+                  }}
+                ></div>
+              </div>
+              <div>
+                <p>
+                  <strong>Installation Cost:</strong>{" "}
+                  <span>${calculationResults.installationCostTotal}</span>
+                </p>
+              </div>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="Capacity">
+          <AccordionTrigger className="font-bold">Capacity</AccordionTrigger>
+          <AccordionContent>
             <p>
-              <em>
-                All financial calculations are based on a 20-year lifespan.
-              </em>
+              <strong>Max Sunshine Hours/Year:</strong>{" "}
+              {
+                solarData.building_insights.solarPotential
+                  .maxSunshineHoursPerYear
+              }
+            </p>
+            <p>
+              <strong>Panel Capacity (Watts):</strong>{" "}
+              {solarData.building_insights.solarPotential.panelCapacityWatts}
             </p>
             <div className="progress-bar">
               <p>
-                <strong>Cost Without Solar ($):</strong>{" "}
-                {calculationResults.totalCostWithoutSolar}
+                <strong>Yearly Energy Produced (kWh):</strong>{" "}
+                {calculationResults.yearlyEnergyDcKwh.toFixed(2)}/
+                {calculationResults.maxYearlyEnergyDcKwh}
               </p>
               <div className="progress">
                 <div
-                  className="progress-filled bad"
-                  style={{
-                    width: `${
-                      (calculationResults.totalCostWithoutSolar / 100000) * 100
-                    }%`,
-                  }}
+                  className="progress-filled"
+                  style={{ width: `${energyProducedPercentage}%` }}
                 ></div>
               </div>
             </div>
             <div className="progress-bar">
               <p>
-                <strong>Cost With Solar ($):</strong>{" "}
-                {calculationResults.totalCostWithSolar}
+                <strong>Panels Count:</strong> {panelCount}/{maxPanels}
               </p>
               <div className="progress">
                 <div
-                  className="progress-filled good"
-                  style={{
-                    width: `${
-                      (calculationResults.totalCostWithSolar / 100000) * 100
-                    }%`,
-                  }}
+                  className="progress-filled"
+                  style={{ width: `${panelsPercentage}%` }}
                 ></div>
               </div>
+              <div className="progress-bar">
+                <p>
+                  <strong>Energy Covered (%):</strong>{" "}
+                  {Math.round(calculationResults.energyCovered * 100)}
+                </p>
+                <div className="progress">
+                  <div
+                    className="progress-filled"
+                    style={{
+                      width: `${calculationResults.energyCovered * 100}%`,
+                    }}
+                  ></div>
+                </div>
+              </div>
             </div>
-            <p>
-              <strong>Savings ($):</strong>{" "}
-              <span className="savings">{calculationResults.savings}</span>
-            </p>
-            <p>
-              <strong>Break Even Year:</strong>{" "}
-              {calculationResults.breakEvenYear >= 0
-                ? `Year ${calculationResults.breakEvenYear}`
-                : "Not achievable within the lifespan"}
-            </p>
-            <div className="progress-bar">
-              <p>
-                <strong>Installation Size (kW):</strong>{" "}
-                {calculationResults.installationSizeKw}
-              </p>
-              <div
-                style={{
-                  width: `${
-                    (calculationResults.installationSizeKw / 10) * 100
-                  }%`,
-                }}
-              ></div>
-            </div>
-            <div>
-              <p>
-                <strong>Installation Cost ($):</strong>{" "}
-                <span>{calculationResults.installationCostTotal}</span>
-              </p>
-            </div>
-          </div>
-        )}
-      </CardContent>
-    </Card>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
   );
 };
 
