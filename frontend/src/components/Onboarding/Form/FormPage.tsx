@@ -55,6 +55,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [panelCount, setPanelCount] = useState<number>(4);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
+  const [needsReload, setNeedsReload] = useState(false);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
@@ -337,6 +338,23 @@ const FormPage: React.FC<FormPageProps> = ({
   };
 
   useEffect(() => {
+    if (needsReload && currentStep === 1) {
+      if (!sessionStorage.getItem("reloaded")) {
+        sessionStorage.setItem("reloaded", "true");
+        window.location.reload();
+      } else {
+        setNeedsReload(false);
+      }
+    }
+  }, [needsReload, currentStep]);
+
+  const handleBackToStep1 = () => {
+    sessionStorage.removeItem("reloaded");
+    setNeedsReload(true);
+    setCurrentStep(1);
+  };
+
+  useEffect(() => {
     if (solarData) {
       const config: SolarPanelConfig =
         solarData.building_insights.solarPotential.solarPanelConfigs[0];
@@ -363,6 +381,7 @@ const FormPage: React.FC<FormPageProps> = ({
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
   }
+
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
@@ -586,7 +605,7 @@ const FormPage: React.FC<FormPageProps> = ({
             <h2>Pricing Information</h2>
             {/* Placeholder for pricing step content */}
             <div className="flex justify-between mt-4">
-              <Button onClick={() => setCurrentStep(1)}>Back</Button>
+              <Button onClick={handleBackToStep1}>Back</Button>
               <Button onClick={() => setCurrentStep(3)}>Next</Button>
             </div>
           </div>
@@ -620,6 +639,7 @@ const FormPage: React.FC<FormPageProps> = ({
         isLoggedIn={isLoggedIn}
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}
+        setNeedsReload={setNeedsReload}
       />
       <div className="flex-grow">{renderStepContent()}</div>
     </div>
