@@ -26,6 +26,8 @@ const FormTabs: React.FC<TabsProps> = ({
   currentStep,
   setCurrentStep,
 }) => {
+  const totalSteps = 3;
+
   return (
     <div className="w-full flex flex-col">
       <nav className="flex bg-gray-900 justify-between shadow-md sm:space-x-4 md:space-x-0 lg:space-x-4 p-4">
@@ -175,6 +177,16 @@ const FormTabs: React.FC<TabsProps> = ({
           </Button>
         </div>
       </nav>
+      <div className="progress-bar">
+        <div className="progress">
+          <div
+            className="progress-filled"
+            style={{ width: `${(currentStep / totalSteps) * 100}%` }}
+          >
+            Step {currentStep} of {totalSteps}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
