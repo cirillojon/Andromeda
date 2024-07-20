@@ -54,6 +54,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [activeTab, setActiveTab] = useState("Solar");
   const [panelCount, setPanelCount] = useState<number>(4);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
@@ -362,131 +363,27 @@ const FormPage: React.FC<FormPageProps> = ({
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
   }
-  return (
-    <div className="flex flex-col min-h-screen">
-      <FormTabs
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        isLoggedIn={isLoggedIn}
-      />
-      <div className="grid lg:hidden grid-cols-1">
-        <fieldset className="grid rounded-lg border p-4 mb-4 mt-2">
-          <legend className="-ml-1 px-1 text-sm font-medium">
-            Personalization
-          </legend>
-          <FormInputs
-            activeTab={activeTab}
-            inputValues={inputValues}
-            handlePanelCountChange={handlePanelCountChange}
-            handleInputChange={handleInputChange}
-            handleSelectChange={handleSelectChange}
-            panelCount={panelCount}
-            maxPanels={maxPanels}
-          />
-        </fieldset>
-        <div className="relative flex h-full mx-8 min-h-[70vh] flex-col rounded-lg bg-muted/50">
-          <SolarMap
-            panelCount={panelCount}
-            selectedSegment={selectedSegment}
-            showHeatmap={showHeatmap}
-            showAllSegments={showAllSegments}
-            address={address}
-          />
-        </div>
-        <div className="mt-6 flex justify-center space-x-8 mx-8">
-          <Button
-            onClick={handleToggleHeatmap}
-            className="bg-gray-900 py-3 w-full"
-          >
-            {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
-          </Button>
-          <Button
-            className="bg-gray-900 py-3 w-full mr-32"
-            onClick={handlemaxSavingsClick}
-          >
-            Maximize Savings
-          </Button>
-        </div>
-
-        {(activeTab === "Solar" || activeTab == "Battery") && solarData && (
-          <div className="relative flex flex-col items-start mb-4 mt-4">
-            <form className="grid w-full items-start">
-              <fieldset className="grid rounded-lg border p-4">
-                {activeTab == "Battery" && (
-                  <legend className="-ml-1 px-1 text-sm font-medium">
-                    Battery Options
-                  </legend>
-                )}
-                {activeTab == "Solar" && (
-                  <legend className="-ml-1 px-1 text-sm font-medium">
-                    Configuration Breakdown
-                  </legend>
-                )}
-                {activeTab === "Solar" && (
-                  <SolarStatsCard
-                    solarData={solarData}
-                    panelCount={panelCount}
-                    maxPanels={maxPanels}
-                    handleSegmentClick={handleSegmentClick}
-                    handleToggleHeatmap={handleToggleHeatmap}
-                    showHeatmap={showHeatmap}
-                    calculationResults={calculationResults}
-                    handleToggleShowAllSegments={handleToggleShowAllSegments}
-                    showAllSegments={showAllSegments}
-                    maxSavings={maxSavings}
-                    setMaxSavings={setMaxSavings}
-                  />
-                )}
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="flex flex-col min-h-screen">
+            <div className="grid lg:hidden grid-cols-1">
+              <fieldset className="grid rounded-lg border p-4 mb-4 mt-2">
+                <legend className="-ml-1 px-1 text-sm font-medium">
+                  Personalization
+                </legend>
+                <FormInputs
+                  activeTab={activeTab}
+                  inputValues={inputValues}
+                  handlePanelCountChange={handlePanelCountChange}
+                  handleInputChange={handleInputChange}
+                  handleSelectChange={handleSelectChange}
+                  panelCount={panelCount}
+                  maxPanels={maxPanels}
+                />
               </fieldset>
-            </form>
-          </div>
-        )}
-        <div className="mt-4">
-          <FinishConfigurationButton
-            isLoggedIn={isLoggedIn}
-            authButtonRef={authButtonRef}
-            handleSubmit={handleSubmit}
-            validationPassed={validationPassed}
-          />
-        </div>
-      </div>
-      <div className="hidden lg:flex" style={{ height: "calc(100vh - 64px)" }}>
-        <ResizablePanelGroup
-          direction="horizontal"
-          className={"flex gap-4 overflow-auto p-4"}
-          //The grid cols aren't doing anything with the resizeable panels
-        >
-          <ResizablePanel
-            defaultSize={activeTab === "Roofing" ? 50 : 25}
-            className="relative flex flex-col items-start"
-          >
-            <ResizablePanelGroup direction="vertical">
-              <ResizablePanel className="-mb-6">
-                <fieldset className="grid rounded-lg border p-4">
-                  <legend className="-ml-1 px-1 text-sm font-medium">
-                    Personalization
-                  </legend>
-                  <FormInputs
-                    activeTab={activeTab}
-                    inputValues={inputValues}
-                    handlePanelCountChange={handlePanelCountChange}
-                    handleInputChange={handleInputChange}
-                    handleSelectChange={handleSelectChange}
-                    panelCount={panelCount}
-                    maxPanels={maxPanels}
-                  />
-                </fieldset>
-              </ResizablePanel>
-              <ResizableHandle withHandle className="mb-2" />
-              <ResizablePanel className="pb-1 pr-[2px]" defaultSize={50}>
-                <DialogflowNameFlow />
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-          <ResizableHandle withHandle className="-m-1" />
-          <ResizablePanel defaultSize={50}>
-            <div className="grid grid-rows-[5fr_1fr] flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
-              <div>
+              <div className="relative flex h-full mx-8 min-h-[70vh] flex-col rounded-lg bg-muted/50">
                 <SolarMap
                   panelCount={panelCount}
                   selectedSegment={selectedSegment}
@@ -495,24 +392,24 @@ const FormPage: React.FC<FormPageProps> = ({
                   address={address}
                 />
               </div>
-              <div className="button-container mt-6">
-                <Button onClick={handleToggleHeatmap} className="bg-gray-900">
+              <div className="mt-6 flex justify-center space-x-8 mx-8">
+                <Button
+                  onClick={handleToggleHeatmap}
+                  className="bg-gray-900 py-3 w-full"
+                >
                   {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
                 </Button>
-                <Button className="bg-gray-900" onClick={handlemaxSavingsClick}>
+                <Button
+                  className="bg-gray-900 py-3 w-full mr-32"
+                  onClick={handlemaxSavingsClick}
+                >
                   Maximize Savings
                 </Button>
               </div>
-            </div>
-          </ResizablePanel>
-          {activeTab !== "Roofing" && (
-            <ResizableHandle withHandle className="-m-1" />
-          )}
-          {activeTab !== "Roofing" && (
-            <ResizablePanel defaultSize={25} className="flex flex-col w-full">
+
               {(activeTab === "Solar" || activeTab == "Battery") &&
                 solarData && (
-                  <div className="relative flex flex-col items-start">
+                  <div className="relative flex flex-col items-start mb-4 mt-4">
                     <form className="grid w-full items-start">
                       <fieldset className="grid rounded-lg border p-4">
                         {activeTab == "Battery" && (
@@ -546,25 +443,181 @@ const FormPage: React.FC<FormPageProps> = ({
                     </form>
                   </div>
                 )}
-              <div className="flex w-full justify-end mt-auto">
-                <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
-                  <div className="space-y-4">
-                    {/*<Button className="w-full bg-gray-900">
+              <div className="mt-4">
+                <FinishConfigurationButton
+                  isLoggedIn={isLoggedIn}
+                  authButtonRef={authButtonRef}
+                  handleSubmit={handleSubmit}
+                  validationPassed={validationPassed}
+                />
+              </div>
+            </div>
+            <div
+              className="hidden lg:flex"
+              style={{ height: "calc(100vh - 64px)" }}
+            >
+              <ResizablePanelGroup
+                direction="horizontal"
+                className={"flex gap-4 overflow-auto p-4"}
+                //The grid cols aren't doing anything with the resizeable panels
+              >
+                <ResizablePanel
+                  defaultSize={activeTab === "Roofing" ? 50 : 25}
+                  className="relative flex flex-col items-start"
+                >
+                  <ResizablePanelGroup direction="vertical">
+                    <ResizablePanel className="-mb-6">
+                      <fieldset className="grid rounded-lg border p-4">
+                        <legend className="-ml-1 px-1 text-sm font-medium">
+                          Personalization
+                        </legend>
+                        <FormInputs
+                          activeTab={activeTab}
+                          inputValues={inputValues}
+                          handlePanelCountChange={handlePanelCountChange}
+                          handleInputChange={handleInputChange}
+                          handleSelectChange={handleSelectChange}
+                          panelCount={panelCount}
+                          maxPanels={maxPanels}
+                        />
+                      </fieldset>
+                    </ResizablePanel>
+                    <ResizableHandle withHandle className="mb-2" />
+                    <ResizablePanel className="pb-1 pr-[2px]" defaultSize={50}>
+                      <DialogflowNameFlow />
+                    </ResizablePanel>
+                  </ResizablePanelGroup>
+                </ResizablePanel>
+                <ResizableHandle withHandle className="-m-1" />
+                <ResizablePanel defaultSize={50}>
+                  <div className="grid grid-rows-[5fr_1fr] flex-grow h-full min-h-[70vh] flex-col rounded-lg bg-muted/50">
+                    <div>
+                      <SolarMap
+                        panelCount={panelCount}
+                        selectedSegment={selectedSegment}
+                        showHeatmap={showHeatmap}
+                        showAllSegments={showAllSegments}
+                        address={address}
+                      />
+                    </div>
+                    <div className="button-container mt-6">
+                      <Button
+                        onClick={handleToggleHeatmap}
+                        className="bg-gray-900"
+                      >
+                        {showHeatmap ? "Hide Heatmap" : "Show Heatmap"}
+                      </Button>
+                      <Button
+                        className="bg-gray-900"
+                        onClick={handlemaxSavingsClick}
+                      >
+                        Maximize Savings
+                      </Button>
+                    </div>
+                  </div>
+                </ResizablePanel>
+                {activeTab !== "Roofing" && (
+                  <ResizableHandle withHandle className="-m-1" />
+                )}
+                {activeTab !== "Roofing" && (
+                  <ResizablePanel
+                    defaultSize={25}
+                    className="flex flex-col w-full"
+                  >
+                    {(activeTab === "Solar" || activeTab == "Battery") &&
+                      solarData && (
+                        <div className="relative flex flex-col items-start">
+                          <form className="grid w-full items-start">
+                            <fieldset className="grid rounded-lg border p-4">
+                              {activeTab == "Battery" && (
+                                <legend className="-ml-1 px-1 text-sm font-medium">
+                                  Battery Options
+                                </legend>
+                              )}
+                              {activeTab == "Solar" && (
+                                <legend className="-ml-1 px-1 text-sm font-medium">
+                                  Configuration Breakdown
+                                </legend>
+                              )}
+                              {activeTab === "Solar" && (
+                                <SolarStatsCard
+                                  solarData={solarData}
+                                  panelCount={panelCount}
+                                  maxPanels={maxPanels}
+                                  handleSegmentClick={handleSegmentClick}
+                                  handleToggleHeatmap={handleToggleHeatmap}
+                                  showHeatmap={showHeatmap}
+                                  calculationResults={calculationResults}
+                                  handleToggleShowAllSegments={
+                                    handleToggleShowAllSegments
+                                  }
+                                  showAllSegments={showAllSegments}
+                                  maxSavings={maxSavings}
+                                  setMaxSavings={setMaxSavings}
+                                />
+                              )}
+                            </fieldset>
+                          </form>
+                        </div>
+                      )}
+                    <div className="flex w-full justify-end mt-auto">
+                      <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
+                        <div className="space-y-4">
+                          {/*<Button className="w-full bg-gray-900">
                   Next Project Type
                   </Button>*/}
-                    <FinishConfigurationButton
-                      isLoggedIn={isLoggedIn}
-                      validationPassed={validationPassed}
-                      authButtonRef={authButtonRef}
-                      handleSubmit={handleSubmit}
-                    />
-                  </div>
-                </div>
-              </div>
-            </ResizablePanel>
-          )}
-        </ResizablePanelGroup>
-      </div>
+                          <FinishConfigurationButton
+                            isLoggedIn={isLoggedIn}
+                            validationPassed={validationPassed}
+                            authButtonRef={authButtonRef}
+                            handleSubmit={handleSubmit}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </ResizablePanel>
+                )}
+              </ResizablePanelGroup>
+            </div>
+          </div>
+        );
+      case 2:
+        return (
+          <div className="pricing-page">
+            <h2>Pricing Information</h2>
+            {/* Add your pricing content here */}
+            <div className="flex justify-between mt-4">
+              <Button onClick={() => setCurrentStep(1)}>Back</Button>
+              <Button onClick={() => setCurrentStep(3)}>Next</Button>
+            </div>
+          </div>
+        );
+      case 3:
+        return (
+          <div className="final-page">
+            <h2>Final Step</h2>
+            {/* Add your final step content here */}
+            <div className="flex justify-between mt-4">
+              <Button onClick={() => setCurrentStep(2)}>Back</Button>
+              <Button onClick={handleSubmit}>Finish</Button>
+            </div>
+          </div>
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <FormTabs
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isLoggedIn={isLoggedIn}
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+      />
+      <div className="flex-grow">{renderStepContent()}</div>
     </div>
   );
 };

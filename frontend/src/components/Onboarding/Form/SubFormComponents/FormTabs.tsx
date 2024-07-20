@@ -15,12 +15,16 @@ interface TabsProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
   isLoggedIn: boolean;
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
 }
 
 const FormTabs: React.FC<TabsProps> = ({
   activeTab,
   setActiveTab,
   isLoggedIn,
+  currentStep,
+  setCurrentStep,
 }) => {
   return (
     <div className="w-full flex flex-col">
@@ -149,6 +153,26 @@ const FormTabs: React.FC<TabsProps> = ({
               </div>
             </SheetContent>
           </Sheet>
+        </div>
+        <div className="flex space-x-2">
+          <Button
+            onClick={() => setCurrentStep(1)}
+            className={currentStep === 1 ? "bg-gray-600" : "bg-gray-900"}
+          >
+            Step 1
+          </Button>
+          <Button
+            onClick={() => setCurrentStep(2)}
+            className={currentStep === 2 ? "bg-gray-600" : "bg-gray-900"}
+          >
+            Step 2
+          </Button>
+          <Button
+            onClick={() => setCurrentStep(3)}
+            className={currentStep === 3 ? "bg-gray-600" : "bg-gray-900"}
+          >
+            Step 3
+          </Button>
         </div>
       </nav>
     </div>
