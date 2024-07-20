@@ -333,6 +333,14 @@ const FormPage: React.FC<FormPageProps> = ({
   }, [validationPassed]);
 
   const handleSubmit = async () => {
+    /*
+    if (!validateFields()) {
+      alert(
+        "Please fill in all required fields in the Project Details section."
+      );
+      setValidationPassed(false);
+      return;
+    }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
     setValidationPassed(true); // Set the flag to true on successful validation
