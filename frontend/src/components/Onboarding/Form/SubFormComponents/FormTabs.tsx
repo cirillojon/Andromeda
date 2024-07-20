@@ -17,6 +17,7 @@ interface TabsProps {
   isLoggedIn: boolean;
   currentStep: number;
   setCurrentStep: (step: number) => void;
+  setNeedsReload: (needsReload: boolean) => void;
 }
 
 const FormTabs: React.FC<TabsProps> = ({
@@ -25,6 +26,7 @@ const FormTabs: React.FC<TabsProps> = ({
   isLoggedIn,
   currentStep,
   setCurrentStep,
+  setNeedsReload, // Add this line
 }) => {
   const totalSteps = 3;
 
@@ -92,7 +94,11 @@ const FormTabs: React.FC<TabsProps> = ({
         <div className="hidden md:flex items-center space-x-4">
           <div className="flex space-x-2">
             <Button
-              onClick={() => setCurrentStep(1)}
+              onClick={() => {
+                sessionStorage.removeItem("reloaded");
+                setCurrentStep(1);
+                setNeedsReload(true);
+              }}
               className={currentStep === 1 ? "bg-gray-600" : "bg-gray-900"}
             >
               Step 1
