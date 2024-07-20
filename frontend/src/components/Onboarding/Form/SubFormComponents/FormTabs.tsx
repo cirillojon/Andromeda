@@ -41,49 +41,53 @@ const FormTabs: React.FC<TabsProps> = ({
           </Link>
         </div>
         <div className="flex-1 justify-center space-x-2 lg:space-x-4 hidden md:flex">
-          <h1 className="flex items-center font-bold text-white mr-2 lg:mr-4">
-            Project Types:
-          </h1>
-          <Button
-            onClick={() => setActiveTab("Solar")}
-            className={
-              activeTab === "Solar"
-                ? "bg-gray-600 text-white hover:bg-gray-800"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }
-          >
-            Solar
-          </Button>
-          <Button
-            className={
-              activeTab === "Roofing"
-                ? "bg-gray-600 text-white hover:bg-gray-800"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }
-            onClick={() => setActiveTab("Roofing")}
-          >
-            Roofing
-          </Button>
-          <Button
-            className={
-              activeTab === "Battery"
-                ? "bg-gray-600 text-white hover:bg-gray-800"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }
-            onClick={() => setActiveTab("Battery")}
-          >
-            Battery
-          </Button>
-          <Button
-            className={
-              activeTab === "HVAC"
-                ? "bg-gray-600 text-white hover:bg-gray-800"
-                : "bg-gray-900 text-white hover:bg-gray-800"
-            }
-            onClick={() => setActiveTab("HVAC")}
-          >
-            HVAC
-          </Button>
+          {currentStep === 1 && (
+            <>
+              <h1 className="flex items-center font-bold text-white mr-2 lg:mr-4">
+                Project Types:
+              </h1>
+              <Button
+                onClick={() => setActiveTab("Solar")}
+                className={
+                  activeTab === "Solar"
+                    ? "bg-gray-600 text-white hover:bg-gray-800"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
+                }
+              >
+                Solar
+              </Button>
+              <Button
+                className={
+                  activeTab === "Roofing"
+                    ? "bg-gray-600 text-white hover:bg-gray-800"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
+                }
+                onClick={() => setActiveTab("Roofing")}
+              >
+                Roofing
+              </Button>
+              <Button
+                className={
+                  activeTab === "Battery"
+                    ? "bg-gray-600 text-white hover:bg-gray-800"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
+                }
+                onClick={() => setActiveTab("Battery")}
+              >
+                Battery
+              </Button>
+              <Button
+                className={
+                  activeTab === "HVAC"
+                    ? "bg-gray-600 text-white hover:bg-gray-800"
+                    : "bg-gray-900 text-white hover:bg-gray-800"
+                }
+                onClick={() => setActiveTab("HVAC")}
+              >
+                HVAC
+              </Button>
+            </>
+          )}
         </div>
         <div className="hidden md:flex">
           {isLoggedIn ? (
@@ -114,31 +118,43 @@ const FormTabs: React.FC<TabsProps> = ({
             </SheetTrigger>
             <SheetContent side="right">
               <div className="mt-8">
-                <SheetClose asChild>
-                  <button
-                    onClick={() => setActiveTab("Solar")}
-                    className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
-                  >
-                    Solar
-                  </button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <button
-                    onClick={() => setActiveTab("Roofing")}
-                    className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
-                  >
-                    Roofing
-                  </button>
-                </SheetClose>
-                <SheetClose asChild>
-                  <button
-                    onClick={() => setActiveTab("Battery")}
-                    className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
-                  >
-                    Battery
-                  </button>
-                </SheetClose>
-                <div className="py-2 border-t-2 border-gray-300 h-0" />
+                {currentStep === 1 && (
+                  <>
+                    <SheetClose asChild>
+                      <button
+                        onClick={() => setActiveTab("Solar")}
+                        className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
+                      >
+                        Solar
+                      </button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <button
+                        onClick={() => setActiveTab("Roofing")}
+                        className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
+                      >
+                        Roofing
+                      </button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <button
+                        onClick={() => setActiveTab("Battery")}
+                        className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
+                      >
+                        Battery
+                      </button>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <button
+                        onClick={() => setActiveTab("HVAC")}
+                        className="flex h-8 rounded-md items-center px-4 py-4 text-xl text-gray-700 hover:bg-gray-100"
+                      >
+                        HVAC
+                      </button>
+                    </SheetClose>
+                    <div className="py-2 border-t-2 border-gray-300 h-0" />
+                  </>
+                )}
                 <SheetClose asChild>
                   {isLoggedIn ? (
                     <Link href="/dashboard" className="w-full">
