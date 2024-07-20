@@ -22,7 +22,6 @@ import FormTabs from "./SubFormComponents/FormTabs";
 import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
 import FormInputs from "./SubFormComponents/FormInputs";
 import { InputValues } from "./SubFormComponents/FormInputs";
-import Link from "next/link";
 import DialogflowNameFlow from "./SubFormComponents/DialogflowNameFlow";
 import {
   ResizableHandle,
@@ -105,24 +104,23 @@ const FormPage: React.FC<FormPageProps> = ({
     const SQ_METERS_TO_SQ_FEET = 10.7639;
     return areaMeters2 * SQ_METERS_TO_SQ_FEET;
   }
+  function getHouseSquareFootage(data: SolarData): number {
+    let totalAreaMeters2 = 0;
 
-  useEffect(() => {
-    function getHouseSquareFootage(data: SolarData): number {
-      let totalAreaMeters2 = 0;
-
-      if (data.building_insights && data.building_insights.solarPotential) {
-        const wholeRoofStats =
-          data.building_insights.solarPotential.roofSegmentStats;
-        if (wholeRoofStats) {
-          totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
-            return acc + segment.stats.areaMeters2;
-          }, 0);
-        }
+    if (data.building_insights && data.building_insights.solarPotential) {
+      const wholeRoofStats =
+        data.building_insights.solarPotential.roofSegmentStats;
+      if (wholeRoofStats) {
+        totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
+          return acc + segment.stats.areaMeters2;
+        }, 0);
       }
-
-      const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
-      return totalAreaSqFeet;
     }
+
+    const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
+    return totalAreaSqFeet;
+  }
+  useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
@@ -136,13 +134,25 @@ const FormPage: React.FC<FormPageProps> = ({
         general: { ...prevValues.general, roofSqft: roofSqft },
       }));
     }
+  }, [address]);
 
-    // Simulate manual page reload
-    if (!sessionStorage.getItem("reloaded")) {
-      sessionStorage.setItem("reloaded", "true");
-      window.location.reload();
+  useEffect(() => {
+    if (currentStep === 1) {
+      const storageItem = secureLocalStorage.getItem("solarData") as string;
+      if (storageItem) {
+        const data = JSON.parse(storageItem);
+        setSolarData(data);
+        setMaxPanels(data.building_insights.solarPotential.maxArrayPanelsCount);
+
+        // Calculate house square footage
+        const roofSqft = getHouseSquareFootage(data);
+        setInputValues((prevValues) => ({
+          ...prevValues,
+          general: { ...prevValues.general, roofSqft: roofSqft },
+        }));
+      }
     }
-  }, []);
+  }, [currentStep]);
 
   useEffect(() => {
     const maximizeSavings = () => {
@@ -323,14 +333,6 @@ const FormPage: React.FC<FormPageProps> = ({
   }, [validationPassed]);
 
   const handleSubmit = async () => {
-    /*
-    if (!validateFields()) {
-      alert(
-        "Please fill in all required fields in the Project Details section."
-      );
-      setValidationPassed(false);
-      return;
-    }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
     setValidationPassed(true); // Set the flag to true on successful validation
@@ -390,6 +392,7 @@ const FormPage: React.FC<FormPageProps> = ({
                   showHeatmap={showHeatmap}
                   showAllSegments={showAllSegments}
                   address={address}
+                  key={address} // Add key to force re-render
                 />
               </div>
               <div className="mt-6 flex justify-center space-x-8 mx-8">
@@ -498,6 +501,7 @@ const FormPage: React.FC<FormPageProps> = ({
                         showHeatmap={showHeatmap}
                         showAllSegments={showAllSegments}
                         address={address}
+                        key={address} // Add key to force re-render
                       />
                     </div>
                     <div className="button-container mt-6">

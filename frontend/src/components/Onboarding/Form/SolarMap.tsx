@@ -13,7 +13,6 @@ import {
 } from "./SubFormComponents/Visualize";
 import { DataLayersResponse, SolarData } from "./SolarTypes";
 import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
-import { toast } from "sonner";
 import getDataLayers from "@/utils/actions/getDataLayers";
 
 const libraries: Libraries = ["places", "geometry", "visualization"];
@@ -79,6 +78,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [triggeredDataLayers, setTriggeredDataLayers] = useState(true);
   const [getNewHeatmap, setGetNewHeatmap] = useState(true);
+  const mapRef = useRef<HTMLDivElement | null>(null);
 
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -131,7 +131,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
       }
     };
     getSolarDataFromLocalStorage();
-  }, []);
+  }, [address]);
 
   useEffect(() => {
     const callGetDataLayers = async () => {
@@ -143,8 +143,14 @@ const SolarMap: React.FC<SolarMapProps> = ({
         //this means we already got the data layers for this address and stored
         //the overlay in local storage
         //we can block the download of a new heatmap
-        const currentHeatmapLocalStorage = secureLocalStorage.getItem("heatmap") as string;
-        if (currentDataLayerAddress && currentDataLayerAddress === address && currentHeatmapLocalStorage) {
+        const currentHeatmapLocalStorage = secureLocalStorage.getItem(
+          "heatmap"
+        ) as string;
+        if (
+          currentDataLayerAddress &&
+          currentDataLayerAddress === address &&
+          currentHeatmapLocalStorage
+        ) {
           setGetNewHeatmap(false);
           return;
         }
@@ -298,6 +304,33 @@ const SolarMap: React.FC<SolarMapProps> = ({
   }, [panelCount, solarData]);
 
   useEffect(() => {
+    if (!window.google) {
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=${libraries.join(
+        ","
+      )}`;
+      script.async = true;
+      script.defer = true;
+      script.onload = initializeMap;
+      document.head.appendChild(script);
+    } else {
+      initializeMap();
+    }
+  }, []);
+
+  const initializeMap = () => {
+    const mapInstance = new google.maps.Map(mapRef.current!, {
+      center: location,
+      zoom: 24,
+      mapTypeId: "satellite",
+      disableDefaultUI: true,
+      clickableIcons: true,
+      scrollwheel: false,
+    });
+    setMap(mapInstance);
+  };
+
+  useEffect(() => {
     if (map) {
       // Clear existing polygons
       polygonsRef.current.forEach((polygon) => polygon.setMap(null));
@@ -373,8 +406,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
   };
 
   return (
-    <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>
-      <div className="map-container">
+    <div className="map-container" ref={mapRef}>
+      {map && (
         <GoogleMap
           mapContainerStyle={{
             height: "100%",
@@ -399,8 +432,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
             />
           )}
         </GoogleMap>
-      </div>
-    </LoadScript>
+      )}
+    </div>
   );
 };
 
