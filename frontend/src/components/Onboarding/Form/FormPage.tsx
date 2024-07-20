@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -133,6 +134,11 @@ const FormPage: React.FC<FormPageProps> = ({
         ...prevValues,
         general: { ...prevValues.general, roofSqft: roofSqft },
       }));
+    }
+    // Simulate manual page reload
+    if (!sessionStorage.getItem("reloaded")) {
+      sessionStorage.setItem("reloaded", "true");
+      window.location.reload();
     }
   }, [address]);
 
