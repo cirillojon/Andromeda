@@ -89,7 +89,27 @@ const FormTabs: React.FC<TabsProps> = ({
             </>
           )}
         </div>
-        <div className="hidden md:flex">
+        <div className="hidden md:flex items-center space-x-4">
+          <div className="flex space-x-2">
+            <Button
+              onClick={() => setCurrentStep(1)}
+              className={currentStep === 1 ? "bg-gray-600" : "bg-gray-900"}
+            >
+              Step 1
+            </Button>
+            <Button
+              onClick={() => setCurrentStep(2)}
+              className={currentStep === 2 ? "bg-gray-600" : "bg-gray-900"}
+            >
+              Step 2
+            </Button>
+            <Button
+              onClick={() => setCurrentStep(3)}
+              className={currentStep === 3 ? "bg-gray-600" : "bg-gray-900"}
+            >
+              Step 3
+            </Button>
+          </div>
           {isLoggedIn ? (
             <Link href="/dashboard">
               <Button className="text-gray-900 bg-gray-100 hover:bg-gray-500">
@@ -106,12 +126,12 @@ const FormTabs: React.FC<TabsProps> = ({
             </nav>
           )}
         </div>
-        <div className="flex items-center">
+        <div className="flex items-center md:hidden">
           <Sheet>
             <SheetTrigger asChild>
               <Button
                 size="icon"
-                className="text-gray-700 flex bg-gray-100 rounded-md md:hidden hover:bg-gray-300"
+                className="text-gray-700 flex bg-gray-100 rounded-md hover:bg-gray-300"
               >
                 <Menu className="w-6 h-6" />
               </Button>
@@ -171,26 +191,6 @@ const FormTabs: React.FC<TabsProps> = ({
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-        <div className="flex space-x-2">
-          <Button
-            onClick={() => setCurrentStep(1)}
-            className={currentStep === 1 ? "bg-gray-600" : "bg-gray-900"}
-          >
-            Step 1
-          </Button>
-          <Button
-            onClick={() => setCurrentStep(2)}
-            className={currentStep === 2 ? "bg-gray-600" : "bg-gray-900"}
-          >
-            Step 2
-          </Button>
-          <Button
-            onClick={() => setCurrentStep(3)}
-            className={currentStep === 3 ? "bg-gray-600" : "bg-gray-900"}
-          >
-            Step 3
-          </Button>
         </div>
       </nav>
       <div className="progress-bar">
