@@ -347,25 +347,29 @@ const SolarMap: React.FC<SolarMapProps> = ({
         const colorIndex = Math.round(
           normalize(panel.yearlyEnergyDcKwh, maxEnergy, minEnergy) * 255
         );
-        const polygon = new google.maps.Polygon({
-          paths: panel.corners.map(({ lat, lng }) =>
-            google.maps.geometry.spherical.computeOffset(
-              // Adjust the placement on the roof
-              { lat: panel.center.lat, lng: panel.center.lng },
-              Math.sqrt(lat * lat + lng * lng),
-              Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth
-            )
-          ),
-          fillColor: palette[colorIndex],
-          fillOpacity: 0.9,
-          strokeColor: "#B0BEC5",
-          strokeOpacity: 0.9,
-          strokeWeight: 1,
-          zIndex: 1, // Ensure the panels appear above other map elements
-        });
-        polygon.setMap(map);
-        polygon.addListener("click", () => handlePanelClick(panel));
-        polygonsRef.current.push(polygon);
+
+        // Check if geometry library is available
+        if (google.maps.geometry) {
+          const polygon = new google.maps.Polygon({
+            paths: panel.corners.map(({ lat, lng }) =>
+              google.maps.geometry.spherical.computeOffset(
+                // Adjust the placement on the roof
+                { lat: panel.center.lat, lng: panel.center.lng },
+                Math.sqrt(lat * lat + lng * lng),
+                Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth
+              )
+            ),
+            fillColor: palette[colorIndex],
+            fillOpacity: 0.9,
+            strokeColor: "#B0BEC5",
+            strokeOpacity: 0.9,
+            strokeWeight: 1,
+            zIndex: 1, // Ensure the panels appear above other map elements
+          });
+          polygon.setMap(map);
+          polygon.addListener("click", () => handlePanelClick(panel));
+          polygonsRef.current.push(polygon);
+        }
       });
 
       // Add the selected roof segment or all segments if showAllSegments is true
