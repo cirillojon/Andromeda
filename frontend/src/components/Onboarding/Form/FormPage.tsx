@@ -444,12 +444,12 @@ const FormPage: React.FC<FormPageProps> = ({
                   </div>
                 )}
               <div className="mt-4">
-                <FinishConfigurationButton
-                  isLoggedIn={isLoggedIn}
-                  authButtonRef={authButtonRef}
-                  handleSubmit={handleSubmit}
-                  validationPassed={validationPassed}
-                />
+                <Button
+                  className="w-full bg-gray-900 mb-4"
+                  onClick={() => setCurrentStep(2)}
+                >
+                  Go to Pricing Page
+                </Button>
               </div>
             </div>
             <div
@@ -563,15 +563,14 @@ const FormPage: React.FC<FormPageProps> = ({
                     <div className="flex w-full justify-end mt-auto">
                       <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 pb-4 bottom-2">
                         <div className="space-y-4">
-                          {/*<Button className="w-full bg-gray-900">
-                  Next Project Type
-                  </Button>*/}
-                          <FinishConfigurationButton
-                            isLoggedIn={isLoggedIn}
-                            validationPassed={validationPassed}
-                            authButtonRef={authButtonRef}
-                            handleSubmit={handleSubmit}
-                          />
+                          <Button
+                            className="w-full bg-gray-900 mb-4"
+                            onClick={() => {
+                              setCurrentStep(2);
+                            }}
+                          >
+                            Go to Pricing Page
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -585,7 +584,7 @@ const FormPage: React.FC<FormPageProps> = ({
         return (
           <div className="pricing-page">
             <h2>Pricing Information</h2>
-            {/* Add your pricing content here */}
+            {/* Placeholder for pricing step content */}
             <div className="flex justify-between mt-4">
               <Button onClick={() => setCurrentStep(1)}>Back</Button>
               <Button onClick={() => setCurrentStep(3)}>Next</Button>
@@ -595,11 +594,16 @@ const FormPage: React.FC<FormPageProps> = ({
       case 3:
         return (
           <div className="final-page">
-            <h2>Final Step</h2>
-            {/* Add your final step content here */}
+            <h2>Create an Account</h2>
+            {/* Placeholder for step 3 content */}
             <div className="flex justify-between mt-4">
               <Button onClick={() => setCurrentStep(2)}>Back</Button>
-              <Button onClick={handleSubmit}>Finish</Button>
+              <FinishConfigurationButton
+                isLoggedIn={isLoggedIn}
+                authButtonRef={authButtonRef}
+                handleSubmit={handleSubmit}
+                validationPassed={validationPassed}
+              />
             </div>
           </div>
         );
