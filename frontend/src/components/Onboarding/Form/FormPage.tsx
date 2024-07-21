@@ -30,6 +30,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
+import PricingPage from "./FormStepComponents/Pricing";
 
 ChartJS.register(
   BarElement,
@@ -637,14 +638,11 @@ const FormPage: React.FC<FormPageProps> = ({
         );
       case 2:
         return (
-          <div className="pricing-page">
-            <h2>Pricing Information</h2>
-            {/* Placeholder for pricing step content */}
-            <div className="flex justify-between mt-4">
-              <Button onClick={handleBackToStep1}>Back</Button>
-              <Button onClick={() => setCurrentStep(3)}>Next</Button>
-            </div>
-          </div>
+          <PricingPage
+            calculationResults={calculationResults}
+            handleBackToStep1={handleBackToStep1}
+            setCurrentStep={setCurrentStep}
+          />
         );
       case 3:
         return (
