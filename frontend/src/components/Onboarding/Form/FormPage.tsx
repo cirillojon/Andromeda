@@ -650,7 +650,9 @@ const FormPage: React.FC<FormPageProps> = ({
             <h2>Create an Account</h2>
             {/* Placeholder for step 3 content */}
             <div className="flex justify-between mt-4">
-              <Button onClick={() => setCurrentStep(2)}>Back</Button>
+              <Button onClick={() => setCurrentStep(2)} variant="outline">
+                Back
+              </Button>
               <FinishConfigurationButton
                 isLoggedIn={isLoggedIn}
                 authButtonRef={authButtonRef}
