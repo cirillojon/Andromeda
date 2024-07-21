@@ -1,4 +1,3 @@
-// TabContent.tsx
 import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -105,7 +104,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
             id="solarInput2"
             type="number"
             placeholder="60000"
-            value={inputValues.annualIncome}
+            value={inputValues.solar.annualIncome}
             onChange={(e) => handleInputChange(e, "solar", "annualIncome")}
           />
           <Label htmlFor="solarInput3">Energy Utilization - kW/month</Label>
