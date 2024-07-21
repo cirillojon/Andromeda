@@ -344,7 +344,13 @@ const FormPage: React.FC<FormPageProps> = ({
         panelCount,
         inputValues,
         activeTab,
-        // Add other relevant state variables here
+        selectedSegment,
+        showHeatmap,
+        showAllSegments,
+        maxSavings,
+        calculationResults,
+        maxPanels,
+        validationPassed,
       };
       localStorage.setItem("currentConfig", JSON.stringify(currentConfig));
 
@@ -358,14 +364,20 @@ const FormPage: React.FC<FormPageProps> = ({
   }, [needsReload, currentStep]);
 
   useEffect(() => {
-    // Check if there's a saved configuration after reload
     const storedConfig = localStorage.getItem("currentConfig");
     if (storedConfig) {
       const config = JSON.parse(storedConfig);
+      console.log("Restored config:", config);
       setPanelCount(config.panelCount);
       setInputValues(config.inputValues);
       setActiveTab(config.activeTab);
-      // Restore other relevant state variables
+      setSelectedSegment(config.selectedSegment);
+      setShowHeatmap(config.showHeatmap);
+      setShowAllSegments(config.showAllSegments);
+      setMaxSavings(config.maxSavings);
+      setCalculationResults(config.calculationResults);
+      setMaxPanels(config.maxPanels);
+      setValidationPassed(config.validationPassed);
 
       // Clear the stored config after restoring
       localStorage.removeItem("currentConfig");
