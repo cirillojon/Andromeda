@@ -39,23 +39,53 @@ interface CalculationResults {
   paybackPeriod?: number;
 }
 
+export interface FinancialData {
+  totalCostWithoutSolar: number;
+  totalCostWithSolar: number;
+  savings: number;
+  breakEvenYear: number;
+  installationSizeKw: number;
+  installationCostTotal: number;
+  energyCovered: number;
+  yearlyEnergyDcKwh: number;
+  maxYearlyEnergyDcKwh: number;
+}
+
 interface PricingPageProps {
   calculationResults: CalculationResults | null;
   handleBackToStep1: () => void;
   setCurrentStep: (step: number) => void;
+  financialData: FinancialData | null;
 }
 
 const PricingPage: React.FC<PricingPageProps> = ({
   calculationResults,
   handleBackToStep1,
   setCurrentStep,
+  financialData,
 }) => {
-  const totalCost = 25000;
-  const federalTaxCredit = 6500;
-  const stateTaxCredit = 2000;
-  const netCost = totalCost - federalTaxCredit - stateTaxCredit;
-  const monthlyPayment = 180;
-  const loanTerm = 20;
+  if (!financialData) {
+    return <div>Loading...</div>;
+  }
+
+  const {
+    totalCostWithoutSolar,
+    totalCostWithSolar,
+    savings,
+    breakEvenYear,
+    installationSizeKw,
+    installationCostTotal,
+    energyCovered,
+    yearlyEnergyDcKwh,
+    maxYearlyEnergyDcKwh,
+  } = financialData;
+
+  const federalTaxCredit = 6500; // Example value
+  const stateTaxCredit = 2000; // Example value
+  const totalCost = totalCostWithSolar + federalTaxCredit + stateTaxCredit; // Example calculation
+  const netCost = totalCost - federalTaxCredit - stateTaxCredit; // Example calculation
+  const monthlyPayment = 180; // Example value
+  const loanTerm = 20; // Example value
 
   const barChartData = {
     labels: [
@@ -133,30 +163,22 @@ const PricingPage: React.FC<PricingPageProps> = ({
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-6">
-                <li>Total System Cost: ${totalCost.toLocaleString()}</li>
+                <li>Total Cost Without Solar: ${totalCostWithoutSolar}</li>
+                <li>Total Cost With Solar: ${totalCostWithSolar}</li>
+                <li>Savings: ${savings}</li>
                 <li>
-                  Federal Tax Credit: ${federalTaxCredit.toLocaleString()}
+                  Break Even Year:{" "}
+                  {breakEvenYear >= 0
+                    ? `Year ${breakEvenYear}`
+                    : "Not achievable within the lifespan"}
                 </li>
-                <li>State Tax Credit: ${stateTaxCredit.toLocaleString()}</li>
-                <li>Net Cost After Incentives: ${netCost.toLocaleString()}</li>
-                {calculationResults && (
-                  <>
-                    <li>
-                      System Size:{" "}
-                      {calculationResults.systemSizeKW !== undefined
-                        ? calculationResults.systemSizeKW.toFixed(2)
-                        : "N/A"}{" "}
-                      kW
-                    </li>
-                    <li>
-                      Estimated Annual Production:{" "}
-                      {calculationResults.annualProduction !== undefined
-                        ? calculationResults.annualProduction.toFixed(2)
-                        : "N/A"}{" "}
-                      kWh
-                    </li>
-                  </>
-                )}
+                <li>Installation Size: {installationSizeKw} kW</li>
+                <li>Installation Cost: ${installationCostTotal}</li>
+                <li>Energy Covered: {Math.round(energyCovered * 100)}%</li>
+                <li>
+                  Yearly Energy Produced: {yearlyEnergyDcKwh.toFixed(2)}/
+                  {maxYearlyEnergyDcKwh}
+                </li>
               </ul>
             </CardContent>
           </Card>
@@ -194,29 +216,18 @@ const PricingPage: React.FC<PricingPageProps> = ({
             </CardHeader>
             <CardContent>
               <ul className="list-disc pl-6">
-                {calculationResults && (
-                  <>
-                    <li>
-                      Estimated First Year Savings: $
-                      {calculationResults.firstYearSavings !== undefined
-                        ? calculationResults.firstYearSavings.toFixed(2)
-                        : "N/A"}
-                    </li>
-                    <li>
-                      20-Year Savings: $
-                      {calculationResults.lifetimeSavings !== undefined
-                        ? calculationResults.lifetimeSavings.toFixed(2)
-                        : "N/A"}
-                    </li>
-                    <li>
-                      Payback Period:{" "}
-                      {calculationResults.paybackPeriod !== undefined
-                        ? calculationResults.paybackPeriod.toFixed(1)
-                        : "N/A"}{" "}
-                      years
-                    </li>
-                  </>
-                )}
+                <li>
+                  Estimated First Year Savings: $
+                  {calculationResults?.firstYearSavings?.toFixed(2) ?? "N/A"}
+                </li>
+                <li>
+                  20-Year Savings: $
+                  {calculationResults?.lifetimeSavings?.toFixed(2) ?? "N/A"}
+                </li>
+                <li>
+                  Payback Period:{" "}
+                  {calculationResults?.paybackPeriod?.toFixed(1) ?? "N/A"} years
+                </li>
               </ul>
             </CardContent>
           </Card>

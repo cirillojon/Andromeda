@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/resizable";
 import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
 import PricingPage from "./FormStepComponents/Pricing";
+import { FinancialData } from "./SubFormComponents/SolarStatsCard";
 
 ChartJS.register(
   BarElement,
@@ -57,6 +58,9 @@ const FormPage: React.FC<FormPageProps> = ({
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [needsReload, setNeedsReload] = useState(false);
+  const [financialData, setFinancialData] = useState<FinancialData | null>(
+    null
+  );
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
@@ -107,6 +111,9 @@ const FormPage: React.FC<FormPageProps> = ({
     const SQ_METERS_TO_SQ_FEET = 10.7639;
     return areaMeters2 * SQ_METERS_TO_SQ_FEET;
   }
+  const handleFinancialDataUpdate = (data: FinancialData) => {
+    setFinancialData(data);
+  };
 
   useEffect(() => {
     function getHouseSquareFootage(data: SolarData): number {
@@ -493,6 +500,7 @@ const FormPage: React.FC<FormPageProps> = ({
                             showAllSegments={showAllSegments}
                             maxSavings={maxSavings}
                             setMaxSavings={setMaxSavings}
+                            onFinancialDataUpdate={handleFinancialDataUpdate}
                           />
                         )}
                       </fieldset>
@@ -610,6 +618,9 @@ const FormPage: React.FC<FormPageProps> = ({
                                   showAllSegments={showAllSegments}
                                   maxSavings={maxSavings}
                                   setMaxSavings={setMaxSavings}
+                                  onFinancialDataUpdate={
+                                    handleFinancialDataUpdate
+                                  }
                                 />
                               )}
                             </fieldset>
@@ -642,6 +653,7 @@ const FormPage: React.FC<FormPageProps> = ({
             calculationResults={calculationResults}
             handleBackToStep1={handleBackToStep1}
             setCurrentStep={setCurrentStep}
+            financialData={financialData}
           />
         );
       case 3:
