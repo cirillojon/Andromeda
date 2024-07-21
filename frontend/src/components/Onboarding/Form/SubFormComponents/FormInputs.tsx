@@ -1,5 +1,5 @@
 import React from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -137,6 +137,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Current Roof Type
               </Label>
               <Select
+                value={inputValues.roofing.currentRoofType}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "roofing", "currentRoofType")
                 }
@@ -164,6 +165,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Desired Roof Type
               </Label>
               <Select
+                value={inputValues.roofing.desiredRoofType}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "roofing", "desiredRoofType")
                 }
@@ -193,6 +195,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Roof Health
               </Label>
               <Select
+                value={inputValues.roofing.roofHealth}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "roofing", "roofHealth")
                 }
@@ -214,6 +217,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Number of Stories
               </Label>
               <Select
+                value={inputValues.roofing.stories}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "roofing", "stories")
                 }
@@ -268,6 +272,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Expected Usage
               </Label>
               <Select
+                value={inputValues.battery.expectedUsage}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "battery", "expectedUsage")
                 }
@@ -299,6 +304,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Number of EVs
               </Label>
               <Select
+                value={inputValues.battery.numberOfEVs}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "battery", "numberOfEVs")
                 }
@@ -320,6 +326,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 House Type
               </Label>
               <Select
+                value={inputValues.battery.houseType}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "battery", "houseType")
                 }
@@ -341,6 +348,7 @@ const FormInputs: React.FC<FormInputsProps> = ({
                 Ownership
               </Label>
               <Select
+                value={inputValues.battery.ownership}
                 onValueChange={(value: string) =>
                   handleSelectChange(value, "battery", "ownership")
                 }
