@@ -339,6 +339,15 @@ const FormPage: React.FC<FormPageProps> = ({
 
   useEffect(() => {
     if (needsReload && currentStep === 1) {
+      // Save current configuration
+      const currentConfig = {
+        panelCount,
+        inputValues,
+        activeTab,
+        // Add other relevant state variables here
+      };
+      localStorage.setItem("currentConfig", JSON.stringify(currentConfig));
+
       if (!sessionStorage.getItem("reloaded")) {
         sessionStorage.setItem("reloaded", "true");
         window.location.reload();
@@ -347,6 +356,21 @@ const FormPage: React.FC<FormPageProps> = ({
       }
     }
   }, [needsReload, currentStep]);
+
+  useEffect(() => {
+    // Check if there's a saved configuration after reload
+    const storedConfig = localStorage.getItem("currentConfig");
+    if (storedConfig) {
+      const config = JSON.parse(storedConfig);
+      setPanelCount(config.panelCount);
+      setInputValues(config.inputValues);
+      setActiveTab(config.activeTab);
+      // Restore other relevant state variables
+
+      // Clear the stored config after restoring
+      localStorage.removeItem("currentConfig");
+    }
+  }, []);
 
   const handleBackToStep1 = () => {
     sessionStorage.removeItem("reloaded");

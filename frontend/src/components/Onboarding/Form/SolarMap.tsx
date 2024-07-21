@@ -143,8 +143,14 @@ const SolarMap: React.FC<SolarMapProps> = ({
         //this means we already got the data layers for this address and stored
         //the overlay in local storage
         //we can block the download of a new heatmap
-        const currentHeatmapLocalStorage = secureLocalStorage.getItem("heatmap") as string;
-        if (currentDataLayerAddress && currentDataLayerAddress === address && currentHeatmapLocalStorage) {
+        const currentHeatmapLocalStorage = secureLocalStorage.getItem(
+          "heatmap"
+        ) as string;
+        if (
+          currentDataLayerAddress &&
+          currentDataLayerAddress === address &&
+          currentHeatmapLocalStorage
+        ) {
           setGetNewHeatmap(false);
           return;
         }
