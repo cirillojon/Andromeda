@@ -61,6 +61,7 @@ const FormPage: React.FC<FormPageProps> = ({
   const [financialData, setFinancialData] = useState<FinancialData | null>(
     null
   );
+
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
@@ -655,6 +656,14 @@ const FormPage: React.FC<FormPageProps> = ({
             setCurrentStep={setCurrentStep}
             financialData={financialData}
           />
+          <div className="pricing-page">
+            <h2>Pricing Information</h2>
+            {/* Placeholder for pricing step content */}
+            <div className="flex justify-between mt-4">
+              <Button onClick={handleBackToStep1}>Back</Button>
+              <Button onClick={() => setCurrentStep(3)}>Next</Button>
+            </div>
+          </div>
         );
       case 3:
         return (
@@ -665,6 +674,7 @@ const FormPage: React.FC<FormPageProps> = ({
               <Button onClick={() => setCurrentStep(2)} variant="outline">
                 Back
               </Button>
+              <Button onClick={() => setCurrentStep(2)}>Back</Button>
               <FinishConfigurationButton
                 isLoggedIn={isLoggedIn}
                 authButtonRef={authButtonRef}
