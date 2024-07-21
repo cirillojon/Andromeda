@@ -24,6 +24,19 @@ interface SolarStatsCardProps {
   showAllSegments: boolean;
   maxSavings: boolean;
   setMaxSavings: (value: boolean) => void;
+  onFinancialDataUpdate: (data: FinancialData) => void;
+}
+
+export interface FinancialData {
+  totalCostWithoutSolar: number;
+  totalCostWithSolar: number;
+  savings: number;
+  breakEvenYear: number;
+  installationSizeKw: number;
+  installationCostTotal: number;
+  energyCovered: number;
+  yearlyEnergyDcKwh: number;
+  maxYearlyEnergyDcKwh: number;
 }
 
 const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
@@ -38,7 +51,23 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   showAllSegments,
   maxSavings,
   setMaxSavings,
+  onFinancialDataUpdate,
 }) => {
+  // Use useEffect to call onFinancialDataUpdate when calculationResults change
+  useEffect(() => {
+    onFinancialDataUpdate({
+      totalCostWithoutSolar: calculationResults.totalCostWithoutSolar,
+      totalCostWithSolar: calculationResults.totalCostWithSolar,
+      savings: calculationResults.savings,
+      breakEvenYear: calculationResults.breakEvenYear,
+      installationSizeKw: calculationResults.installationSizeKw,
+      installationCostTotal: calculationResults.installationCostTotal,
+      energyCovered: calculationResults.energyCovered,
+      yearlyEnergyDcKwh: calculationResults.yearlyEnergyDcKwh,
+      maxYearlyEnergyDcKwh: calculationResults.maxYearlyEnergyDcKwh,
+    });
+  }, [calculationResults, onFinancialDataUpdate]);
+
   const [showFinance, setShowFinance] = useState(false);
   const panelsPercentage = (panelCount / maxPanels) * 100;
   const energyProducedPercentage =
@@ -61,7 +90,7 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
       },
     ],
   };
-/*
+  /*
   useEffect(() => {
     handlemaxSavingsClick();
   }, []);*/
@@ -73,20 +102,20 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
 
   const formatAmount = (input: string) => {
     const number = parseFloat(input);
-    
+
     // Check if input is a valid number
     if (isNaN(number)) {
-        throw new Error('Invalid input. Please provide a valid number.');
+      throw new Error("Invalid input. Please provide a valid number.");
     }
-    
+
     // Format number as dollar amount
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'USD'
+    const formatter = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     });
-    
+
     return formatter.format(number);
-  }
+  };
 
   return (
     <div>
@@ -135,7 +164,9 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
               </div>
               <p>
                 <strong>Savings:</strong>{" "}
-                <span className="savings">{formatAmount(calculationResults.savings)}</span>
+                <span className="savings">
+                  {formatAmount(calculationResults.savings)}
+                </span>
               </p>
               <p>
                 <strong>Break Even Year:</strong>{" "}
