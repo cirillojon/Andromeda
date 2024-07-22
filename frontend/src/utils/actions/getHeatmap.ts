@@ -1,5 +1,5 @@
-import { DataLayersResponse } from "@/components/Onboarding/Form/SolarTypes";
-import { renderPalette } from "@/components/Onboarding/Form/SubFormComponents/Visualize";
+import { DataLayersResponse } from "@/components/Onboarding/Form/SubFormComponents/Solar/SolarTypes";
+import { renderPalette } from "@/components/Onboarding/Form/SubFormComponents/Solar/Visualize";
 import { TypedArray, fromArrayBuffer } from "geotiff";
 import * as geokeysToProj4 from "geotiff-geokeys-to-proj4";
 import proj4 from "proj4";
@@ -25,14 +25,15 @@ export interface Palette {
 
 export interface Layer {
   id: string;
-  render: (
-    showRoofOnly: boolean,
-  ) => HTMLCanvasElement[];
+  render: (showRoofOnly: boolean) => HTMLCanvasElement[];
   bounds: Bounds;
   palette?: Palette;
 }
 
-export async function downloadGeoTIFF(url: string, apiKey: string): Promise<GeoTiff> {
+export async function downloadGeoTIFF(
+  url: string,
+  apiKey: string
+): Promise<GeoTiff> {
   console.log(`Downloading data layer: ${url}`);
 
   // Include your Google Cloud API key in the Data Layers URL.
@@ -88,14 +89,17 @@ export async function downloadGeoTIFF(url: string, apiKey: string): Promise<GeoT
   };
 }
 
-export async function getHeatmap(urls: DataLayersResponse, apiKey: string): Promise<Layer | null> {
+export async function getHeatmap(
+  urls: DataLayersResponse,
+  apiKey: string
+): Promise<Layer | null> {
   const [mask, data] = await Promise.all([
     downloadGeoTIFF(urls.maskUrl, apiKey),
     downloadGeoTIFF(urls.annualFluxUrl, apiKey),
   ]);
-  const colors = ['00000A', '91009C', 'E64616', 'FEB400', 'FFFFF6'];;
+  const colors = ["00000A", "91009C", "E64616", "FEB400", "FFFFF6"];
   return {
-    id: 'annualFlux',
+    id: "annualFlux",
     bounds: mask.bounds,
     palette: {
       colors: colors,

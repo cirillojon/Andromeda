@@ -6,15 +6,11 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
-import {
-  createPalette,
-  normalize,
-  rgbToColor,
-} from "./SubFormComponents/Visualize";
-import { DataLayersResponse, SolarData } from "./SolarTypes";
-import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
-import { toast } from "sonner";
+import { createPalette, normalize, rgbToColor } from "./Visualize";
+import { DataLayersResponse } from "./SolarTypes";
+import { getHeatmap } from "@/utils/actions/getHeatmap";
 import getDataLayers from "@/utils/actions/getDataLayers";
+import useSolarData from "./useSolarData";
 
 const libraries: Libraries = ["places", "geometry", "visualization"];
 
@@ -65,8 +61,9 @@ const SolarMap: React.FC<SolarMapProps> = ({
   showAllSegments,
   address,
 }) => {
+  const { solarData, roofSegments } = useSolarData(address);
+
   const [solarPanels, setSolarPanels] = useState<SolarPanel[]>([]);
-  const [roofSegments, setRoofSegments] = useState<RoofSegment[]>([]);
   const [map, setMap] = useState<google.maps.Map | null>(null);
   const [location, setLocation] = useState<LatLng>({ lat: 0, lng: 0 });
   const [selectedPanel, setSelectedPanel] = useState<SolarPanel | null>(null);
@@ -76,7 +73,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
   );
   const dataLayersRef = useRef<DataLayersResponse | undefined>();
   const overlaysRef = useRef<google.maps.GroundOverlay[]>([]);
-  const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [triggeredDataLayers, setTriggeredDataLayers] = useState(true);
   const [getNewHeatmap, setGetNewHeatmap] = useState(true);
 
@@ -87,51 +83,10 @@ const SolarMap: React.FC<SolarMapProps> = ({
   };
 
   useEffect(() => {
-    const getSolarDataFromLocalStorage = async () => {
-      const storageItem = secureLocalStorage.getItem("solarData") as string;
-      const data = JSON.parse(storageItem) as SolarData;
-      if (data) {
-        setLocation({ lat: data.latitude, lng: data.longitude });
-        setSolarData(data);
-        const newSegments: RoofSegment[] =
-          data.building_insights.solarPotential.roofSegmentStats.map(
-            (segment: any, index: number) => {
-              return {
-                id: `${segment.center.latitude}-${segment.center.longitude}-${index}`, // Ensure unique ID for each segment
-                center: {
-                  lat: segment.center.latitude,
-                  lng: segment.center.longitude,
-                },
-                areaMeters2: segment.stats.areaMeters2,
-                pitchDegrees: segment.pitchDegrees,
-                azimuthDegrees: segment.azimuthDegrees,
-                corners: [
-                  {
-                    lat: segment.boundingBox.sw.latitude,
-                    lng: segment.boundingBox.ne.longitude,
-                  },
-                  {
-                    lat: segment.boundingBox.ne.latitude,
-                    lng: segment.boundingBox.ne.longitude,
-                  },
-                  {
-                    lat: segment.boundingBox.ne.latitude,
-                    lng: segment.boundingBox.sw.longitude,
-                  },
-                  {
-                    lat: segment.boundingBox.sw.latitude,
-                    lng: segment.boundingBox.sw.longitude,
-                  },
-                ],
-                stats: segment.stats,
-              };
-            }
-          );
-        setRoofSegments(newSegments);
-      }
-    };
-    getSolarDataFromLocalStorage();
-  }, []);
+    if (solarData) {
+      setLocation({ lat: solarData.latitude, lng: solarData.longitude });
+    }
+  }, [solarData]);
 
   useEffect(() => {
     const callGetDataLayers = async () => {
@@ -139,10 +94,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
         const currentDataLayerAddress = secureLocalStorage.getItem(
           "currentDataLayerAddress"
         );
-        //check if currentDataLayerAddress exists and is the same as address
-        //this means we already got the data layers for this address and stored
-        //the overlay in local storage
-        //we can block the download of a new heatmap
         const currentHeatmapLocalStorage = secureLocalStorage.getItem(
           "heatmap"
         ) as string;
@@ -160,7 +111,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
         );
         if (newDataLayers) {
           dataLayersRef.current = JSON.parse(newDataLayers);
-          setTriggeredDataLayers(false); // Reset the trigger
+          setTriggeredDataLayers(false);
           secureLocalStorage.setItem("currentDataLayerAddress", address);
           secureLocalStorage.removeItem("heatmap");
         }
@@ -187,9 +138,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
               (canvas) =>
                 new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
             );
-
           overlaysRef.current = newOverlays;
-
           newOverlays[0].setMap(map);
           const heatmapData = {
             url: newOverlays[0].getUrl(),
@@ -222,7 +171,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
           heatmapData.bounds.east
         )
       );
-
       const heatmapOverlay = new google.maps.GroundOverlay(
         heatmapData.url,
         bounds
@@ -257,7 +205,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
               solarPotential.panelHeightMeters / 2,
             ];
             return {
-              id: `${panel.center.latitude}-${panel.center.longitude}-${index}`, // Ensure unique ID for each panel
+              id: `${panel.center.latitude}-${panel.center.longitude}-${index}`,
               center: {
                 lat: panel.center.latitude,
                 lng: panel.center.longitude,
@@ -265,26 +213,11 @@ const SolarMap: React.FC<SolarMapProps> = ({
               orientation: panel.orientation,
               yearlyEnergyDcKwh: panel.yearlyEnergyDcKwh,
               corners: [
-                {
-                  lat: +w,
-                  lng: +h,
-                },
-                {
-                  lat: +w,
-                  lng: -h,
-                },
-                {
-                  lat: -w,
-                  lng: -h,
-                },
-                {
-                  lat: -w,
-                  lng: +h,
-                },
-                {
-                  lat: +w,
-                  lng: +h,
-                },
+                { lat: +w, lng: +h },
+                { lat: +w, lng: -h },
+                { lat: -w, lng: -h },
+                { lat: -w, lng: +h },
+                { lat: +w, lng: +h },
               ],
               azimuth:
                 solarData.building_insights.solarPotential.roofSegmentStats[
@@ -305,11 +238,8 @@ const SolarMap: React.FC<SolarMapProps> = ({
 
   useEffect(() => {
     if (map) {
-      // Clear existing polygons
       polygonsRef.current.forEach((polygon) => polygon.setMap(null));
       polygonsRef.current = [];
-
-      // Add new panels if heatmap is not shown
       solarPanels.forEach((panel) => {
         const orientation = panel.orientation == "PORTRAIT" ? 90 : 0;
         const azimuth = panel.azimuth;
@@ -323,7 +253,6 @@ const SolarMap: React.FC<SolarMapProps> = ({
         const polygon = new google.maps.Polygon({
           paths: panel.corners.map(({ lat, lng }) =>
             google.maps.geometry.spherical.computeOffset(
-              // Adjust the placement on the roof
               { lat: panel.center.lat, lng: panel.center.lng },
               Math.sqrt(lat * lat + lng * lng),
               Math.atan2(lng, lat) * (180 / Math.PI) + orientation + azimuth
@@ -334,14 +263,13 @@ const SolarMap: React.FC<SolarMapProps> = ({
           strokeColor: "#B0BEC5",
           strokeOpacity: 0.9,
           strokeWeight: 1,
-          zIndex: 1, // Ensure the panels appear above other map elements
+          zIndex: 1,
         });
         polygon.setMap(map);
         polygon.addListener("click", () => handlePanelClick(panel));
         polygonsRef.current.push(polygon);
       });
 
-      // Add the selected roof segment or all segments if showAllSegments is true
       const segmentsToShow = showAllSegments
         ? roofSegments
         : selectedSegment
@@ -355,7 +283,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
           strokeColor: "#D3D3D3",
           strokeOpacity: 0.4,
           strokeWeight: 3,
-          zIndex: 1, // Ensure the panels appear above other map elements
+          zIndex: 1,
         });
         polygon.setMap(map);
         polygonsRef.current.push(polygon);

@@ -12,12 +12,14 @@ import {
 import { Menu } from "lucide-react";
 
 interface TabsProps {
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: "Solar" | "Roofing" | "Battery" | "HVAC";
+  setActiveTab: React.Dispatch<
+    React.SetStateAction<"Solar" | "Roofing" | "Battery" | "HVAC">
+  >;
   isLoggedIn: boolean;
   currentStep: number;
-  setCurrentStep: (step: number) => void;
-  setNeedsReload: (needsReload: boolean) => void;
+  setCurrentStep: React.Dispatch<React.SetStateAction<number>>;
+  setNeedsReload: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const FormTabs: React.FC<TabsProps> = ({
@@ -26,7 +28,7 @@ const FormTabs: React.FC<TabsProps> = ({
   isLoggedIn,
   currentStep,
   setCurrentStep,
-  setNeedsReload, // Add this line
+  setNeedsReload,
 }) => {
   const totalSteps = 3;
 

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import "@/components/Onboarding/Form/FormPage.css";
 import { Bar } from "react-chartjs-2";
 import { useEffect, useMemo, useState } from "react";
-import { SolarData } from "@/components/Onboarding/Form/SolarTypes";
+import { SolarData } from "@/components/Onboarding/Form/SubFormComponents/Solar/SolarTypes";
 import {
   Accordion,
   AccordionContent,

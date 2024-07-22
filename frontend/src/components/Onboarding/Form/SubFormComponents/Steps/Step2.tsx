@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../../../ui/button";
+import { Button } from "@/components/ui/button";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Card,
@@ -51,14 +51,14 @@ export interface FinancialData {
   maxYearlyEnergyDcKwh: number;
 }
 
-interface PricingPageProps {
+interface Step2Props {
   calculationResults: CalculationResults | null;
   handleBackToStep1: () => void;
   setCurrentStep: (step: number) => void;
   financialData: FinancialData | null;
 }
 
-const PricingPage: React.FC<PricingPageProps> = ({
+const Step2: React.FC<Step2Props> = ({
   calculationResults,
   handleBackToStep1,
   setCurrentStep,
@@ -246,4 +246,4 @@ const PricingPage: React.FC<PricingPageProps> = ({
   );
 };
 
-export default PricingPage;
+export default Step2;
