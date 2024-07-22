@@ -9,7 +9,7 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { SolarData, SolarPanelConfig } from "../Solar/SolarTypes";
+import { SolarData } from "../Solar/SolarTypes";
 import { FinancialData } from "../Solar/SolarStatsCard";
 
 interface Step1Props {

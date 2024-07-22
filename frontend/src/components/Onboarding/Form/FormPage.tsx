@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import secureLocalStorage from "react-secure-storage";
 import {
   Chart as ChartJS,
   BarElement,
@@ -19,6 +18,7 @@ import {
   SolarPanelConfig,
   SolarData,
 } from "./SubFormComponents/Solar/SolarTypes";
+import useSolarData from "./SubFormComponents/Solar/useSolarData";
 import { FinancialData } from "./SubFormComponents/Solar/SolarStatsCard";
 import FormTabs from "./SubFormComponents/Common/FormTabs";
 import { InputValues } from "./SubFormComponents/Common/FormInputs";
@@ -50,11 +50,12 @@ const FormPage: React.FC<FormPageProps> = ({
   isLoggedIn,
   address,
 }) => {
+  const { solarData } = useSolarData(address);
+
   const [activeTab, setActiveTab] = useState<
     "Solar" | "Roofing" | "Battery" | "HVAC"
   >("Solar");
   const [panelCount, setPanelCount] = useState<number>(4);
-  const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [needsReload, setNeedsReload] = useState(false);
   const [financialData, setFinancialData] = useState<FinancialData | null>(
@@ -112,24 +113,22 @@ const FormPage: React.FC<FormPageProps> = ({
     setFinancialData(data);
 
   useEffect(() => {
-    const storageItem = secureLocalStorage.getItem("solarData") as string;
-    if (storageItem) {
-      const data = JSON.parse(storageItem);
-      setSolarData(data);
-      setMaxPanels(data.building_insights.solarPotential.maxArrayPanelsCount);
-
-      const roofSqft = getHouseSquareFootage(data);
+    if (solarData) {
+      const roofSqft = getHouseSquareFootage(solarData);
       setInputValues((prevValues) => ({
         ...prevValues,
         general: { ...prevValues.general, roofSqft: roofSqft },
       }));
+      setMaxPanels(
+        solarData.building_insights.solarPotential.maxArrayPanelsCount
+      );
     }
 
     if (!sessionStorage.getItem("reloaded")) {
       sessionStorage.setItem("reloaded", "true");
       window.location.reload();
     }
-  }, []);
+  }, [solarData]);
 
   useEffect(() => {
     maximizeSavings({
@@ -200,10 +199,7 @@ const FormPage: React.FC<FormPageProps> = ({
       const offsetLng = 0.00001;
       const roofSegment: RoofSegment = {
         id: `${segment.center.latitude}-${segment.center.longitude}`,
-        center: {
-          lat: segment.center.latitude,
-          lng: segment.center.longitude,
-        },
+        center: { lat: segment.center.latitude, lng: segment.center.longitude },
         areaMeters2: segment.stats.areaMeters2,
         pitchDegrees: segment.pitchDegrees,
         azimuthDegrees: segment.azimuthDegrees,
@@ -225,11 +221,7 @@ const FormPage: React.FC<FormPageProps> = ({
             lng: segment.center.longitude + offsetLng,
           },
         ],
-        stats: {
-          areaMeters2: 0,
-          groundAreaMeters2: 0,
-          sunshineQuantiles: [],
-        },
+        stats: { areaMeters2: 0, groundAreaMeters2: 0, sunshineQuantiles: [] },
       };
       setSelectedSegment(roofSegment);
     }
@@ -244,7 +236,6 @@ const FormPage: React.FC<FormPageProps> = ({
       Roofing: "roofing",
       Battery: "battery",
     };
-
     const activeTabKey =
       tabMapping[activeTab as "Solar" | "Roofing" | "Battery"];
     const activeTabValues = inputValues[activeTabKey];
@@ -252,7 +243,6 @@ const FormPage: React.FC<FormPageProps> = ({
       console.log("Validation failed: activeTabValues is undefined");
       return false;
     }
-
     if (
       "project_name" in activeTabValues &&
       "project_type" in activeTabValues
@@ -261,7 +251,6 @@ const FormPage: React.FC<FormPageProps> = ({
       console.log("Validating fields:", { project_name, project_type });
       return project_name.trim() !== "" && project_type.trim() !== "";
     }
-
     return true;
   };
 
