@@ -50,7 +50,9 @@ const FormPage: React.FC<FormPageProps> = ({
   isLoggedIn,
   address,
 }) => {
-  const [activeTab, setActiveTab] = useState("Solar");
+  const [activeTab, setActiveTab] = useState<
+    "Solar" | "Roofing" | "Battery" | "HVAC"
+  >("Solar");
   const [panelCount, setPanelCount] = useState<number>(4);
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -86,6 +88,10 @@ const FormPage: React.FC<FormPageProps> = ({
       ownership: "",
       project_name: "",
       project_type: "battery",
+    },
+    project_details: {
+      project_name: "",
+      project_type: "",
     },
     general: {
       roofSqft: 0,
@@ -233,8 +239,30 @@ const FormPage: React.FC<FormPageProps> = ({
     setShowAllSegments((prevShowAllSegments) => !prevShowAllSegments);
 
   const validateFields = () => {
-    const { project_name, project_type } = inputValues.project_details;
-    return project_name.trim() !== "" && project_type.trim() !== "";
+    const tabMapping = {
+      Solar: "solar",
+      Roofing: "roofing",
+      Battery: "battery",
+    };
+
+    const activeTabKey =
+      tabMapping[activeTab as "Solar" | "Roofing" | "Battery"];
+    const activeTabValues = inputValues[activeTabKey];
+    if (!activeTabValues) {
+      console.log("Validation failed: activeTabValues is undefined");
+      return false;
+    }
+
+    if (
+      "project_name" in activeTabValues &&
+      "project_type" in activeTabValues
+    ) {
+      const { project_name, project_type } = activeTabValues;
+      console.log("Validating fields:", { project_name, project_type });
+      return project_name.trim() !== "" && project_type.trim() !== "";
+    }
+
+    return true;
   };
 
   useEffect(() => {
@@ -244,14 +272,13 @@ const FormPage: React.FC<FormPageProps> = ({
   }, [validationPassed]);
 
   const handleSubmit = async () => {
-    /*
     if (!validateFields()) {
       alert(
         "Please fill in all required fields in the Project Details section."
       );
       setValidationPassed(false);
       return;
-    }*/
+    }
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
     setValidationPassed(true);
