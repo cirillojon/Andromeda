@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from "react";
 import {
   GoogleMap,
   Marker,
@@ -11,6 +17,7 @@ import { DataLayersResponse } from "./SolarTypes";
 import { getHeatmap } from "@/utils/actions/getHeatmap";
 import getDataLayers from "@/utils/actions/getDataLayers";
 import useSolarData from "./useSolarData";
+import { debounce } from "lodash";
 
 const libraries: Libraries = ["places", "geometry", "visualization"];
 
@@ -88,23 +95,23 @@ const SolarMap: React.FC<SolarMapProps> = ({
     }
   }, [solarData]);
 
-  useEffect(() => {
-    const callGetDataLayers = async () => {
-      if (solarData && triggeredDataLayers && !dataLayersRef.current) {
-        const currentDataLayerAddress = secureLocalStorage.getItem(
-          "currentDataLayerAddress"
-        );
-        const currentHeatmapLocalStorage = secureLocalStorage.getItem(
-          "heatmap"
-        ) as string;
-        if (
-          currentDataLayerAddress &&
-          currentDataLayerAddress === address &&
-          currentHeatmapLocalStorage
-        ) {
-          setGetNewHeatmap(false);
-          return;
-        }
+  const callGetDataLayers = useCallback(async () => {
+    const currentDataLayerAddress = secureLocalStorage.getItem(
+      "currentDataLayerAddress"
+    );
+    const currentHeatmapLocalStorage = secureLocalStorage.getItem(
+      "heatmap"
+    ) as string;
+    if (
+      currentDataLayerAddress &&
+      currentDataLayerAddress === address &&
+      currentHeatmapLocalStorage
+    ) {
+      setGetNewHeatmap(false);
+      return;
+    }
+    if (solarData && triggeredDataLayers && !dataLayersRef.current) {
+      try {
         const newDataLayers = await getDataLayers(
           solarData.latitude,
           solarData.longitude
@@ -115,45 +122,57 @@ const SolarMap: React.FC<SolarMapProps> = ({
           secureLocalStorage.setItem("currentDataLayerAddress", address);
           secureLocalStorage.removeItem("heatmap");
         }
+      } catch (error) {
+        console.error("Error fetching data layers:", error);
       }
-    };
-    callGetDataLayers();
-  }, [solarData, triggeredDataLayers, setTriggeredDataLayers, address]);
+    }
+  }, [address, solarData, triggeredDataLayers]);
 
   useEffect(() => {
-    const downloadHeatmap = async () => {
+    callGetDataLayers();
+  }, [callGetDataLayers]);
+
+  const downloadHeatmap = useCallback(
+    debounce(async () => {
       if (
         dataLayersRef.current?.maskUrl &&
         dataLayersRef.current?.annualFluxUrl &&
         apiKey &&
         map
       ) {
-        const heatmap = await getHeatmap(dataLayersRef.current, apiKey);
-        if (heatmap) {
-          const bounds = heatmap.bounds;
-          overlaysRef.current.forEach((overlay) => overlay.setMap(null));
-          const newOverlays = heatmap
-            .render(showHeatmap)
-            .map(
-              (canvas) =>
-                new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
-            );
-          overlaysRef.current = newOverlays;
-          newOverlays[0].setMap(map);
-          const heatmapData = {
-            url: newOverlays[0].getUrl(),
-            bounds: {
-              north: newOverlays[0].getBounds()?.getNorthEast().lat(),
-              south: newOverlays[0].getBounds()?.getSouthWest().lat(),
-              east: newOverlays[0].getBounds()?.getNorthEast().lng(),
-              west: newOverlays[0].getBounds()?.getSouthWest().lng(),
-            },
-          };
-          secureLocalStorage.setItem("heatmap", JSON.stringify(heatmapData));
+        try {
+          const heatmap = await getHeatmap(dataLayersRef.current, apiKey);
+          if (heatmap) {
+            const bounds = heatmap.bounds;
+            overlaysRef.current.forEach((overlay) => overlay.setMap(null));
+            const newOverlays = heatmap
+              .render(showHeatmap)
+              .map(
+                (canvas) =>
+                  new google.maps.GroundOverlay(canvas.toDataURL(), bounds)
+              );
+            overlaysRef.current = newOverlays;
+            newOverlays[0].setMap(map);
+            const heatmapData = {
+              url: newOverlays[0].getUrl(),
+              bounds: {
+                north: newOverlays[0].getBounds()?.getNorthEast().lat(),
+                south: newOverlays[0].getBounds()?.getSouthWest().lat(),
+                east: newOverlays[0].getBounds()?.getNorthEast().lng(),
+                west: newOverlays[0].getBounds()?.getSouthWest().lng(),
+              },
+            };
+            secureLocalStorage.setItem("heatmap", JSON.stringify(heatmapData));
+          }
+        } catch (error) {
+          console.error("Error fetching heatmap:", error);
         }
       }
-    };
+    }, 300), // 300ms debounce
+    [apiKey, map, showHeatmap]
+  );
 
+  useEffect(() => {
     if (!showHeatmap) {
       overlaysRef.current.forEach((overlay) => overlay.setMap(null));
       return;
@@ -183,7 +202,7 @@ const SolarMap: React.FC<SolarMapProps> = ({
     } else if (dataLayersRef.current && !overlaysRef.current.length) {
       downloadHeatmap();
     }
-  }, [map, apiKey, showHeatmap, getNewHeatmap]);
+  }, [map, apiKey, showHeatmap, getNewHeatmap, downloadHeatmap]);
 
   useEffect(() => {
     if (showHeatmap && overlaysRef.current[0]) {
@@ -297,14 +316,17 @@ const SolarMap: React.FC<SolarMapProps> = ({
     );
   };
 
-  const mapOptions = {
-    tilt: 0,
-    heading: 0,
-    mapTypeId: "satellite",
-    disableDefaultUI: true,
-    clickableIcons: true,
-    scrollwheel: false,
-  };
+  const mapOptions = useMemo(
+    () => ({
+      tilt: 0,
+      heading: 0,
+      mapTypeId: "satellite",
+      disableDefaultUI: true,
+      clickableIcons: true,
+      scrollwheel: false,
+    }),
+    []
+  );
 
   return (
     <LoadScript googleMapsApiKey={apiKey!} libraries={libraries}>
