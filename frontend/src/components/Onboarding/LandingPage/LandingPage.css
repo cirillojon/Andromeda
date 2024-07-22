@@ -1,4 +1,4 @@
-/* ScrollingContent.css */
+/* LandingPage.css */
 html {
 	overflow: hidden;
 }
@@ -39,6 +39,12 @@ html {
   
 .scrolling-content p {
 	margin-bottom: 0;
+}
+
+.text-gradient {
+    background: linear-gradient(90deg, rgba(99,102,241,1) 0%, rgba(99,179,241,1) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .full-screen-image {
