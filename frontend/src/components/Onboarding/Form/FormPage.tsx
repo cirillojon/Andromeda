@@ -58,7 +58,6 @@ const FormPage: React.FC<FormPageProps> = ({
   const [financialData, setFinancialData] = useState<FinancialData | null>(
     null
   );
-
   const [selectedSegment, setSelectedSegment] = useState<RoofSegment | null>(
     null
   );
@@ -136,7 +135,15 @@ const FormPage: React.FC<FormPageProps> = ({
       setCalculationResults,
       setPanelCount,
     });
-  }, [maxSavings, solarData, monthlyBill, maxPanels]);
+  }, [
+    maxSavings,
+    solarData,
+    panelCount,
+    maxPanels,
+    monthlyBill,
+    setCalculationResults,
+    setPanelCount,
+  ]);
 
   const handlePanelCountChange = (
     e: React.ChangeEvent<HTMLInputElement> | React.FormEvent<HTMLInputElement>
@@ -273,7 +280,20 @@ const FormPage: React.FC<FormPageProps> = ({
         setNeedsReload(false);
       }
     }
-  }, [needsReload, currentStep]);
+  }, [
+    needsReload,
+    currentStep,
+    panelCount,
+    inputValues,
+    activeTab,
+    selectedSegment,
+    showHeatmap,
+    showAllSegments,
+    maxSavings,
+    calculationResults,
+    maxPanels,
+    validationPassed,
+  ]);
 
   useEffect(() => {
     const storedConfig = localStorage.getItem("currentConfig");
@@ -319,7 +339,7 @@ const FormPage: React.FC<FormPageProps> = ({
       );
       setCalculationResults(results);
     }
-  }, [solarData, panelCount, monthlyBill, maxPanels]);
+  }, [solarData, panelCount, maxPanels, monthlyBill]);
 
   const handlemaxSavingsClick = () => setMaxSavings(!maxSavings);
 
