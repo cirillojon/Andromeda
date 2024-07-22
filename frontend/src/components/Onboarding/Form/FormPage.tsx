@@ -45,6 +45,7 @@ import {
 
 import Step1 from "./SubFormComponents/Steps/Step1";
 import Step2 from "./SubFormComponents/Steps/Step2";
+import Step3 from "./SubFormComponents/Steps/Step3";
 
 ChartJS.register(
   BarElement,
@@ -395,21 +396,13 @@ const FormPage: React.FC<FormPageProps> = ({
         );
       case 3:
         return (
-          <div className="final-page">
-            <h2>Create an Account</h2>
-            {/* Placeholder for step 3 content */}
-            <div className="flex justify-between mt-4">
-              <Button onClick={() => setCurrentStep(2)} variant="outline">
-                Back
-              </Button>
-              <FinishConfigurationButton
-                isLoggedIn={isLoggedIn}
-                authButtonRef={authButtonRef}
-                handleSubmit={handleSubmit}
-                validationPassed={validationPassed}
-              />
-            </div>
-          </div>
+          <Step3
+            setCurrentStep={setCurrentStep}
+            isLoggedIn={isLoggedIn}
+            authButtonRef={authButtonRef}
+            handleSubmit={handleSubmit}
+            validationPassed={validationPassed}
+          />
         );
       default:
         return null;
