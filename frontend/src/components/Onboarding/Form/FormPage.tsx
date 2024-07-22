@@ -32,6 +32,10 @@ import {
 import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
 import PricingPage from "./FormStepComponents/Pricing";
 import { FinancialData } from "./SubFormComponents/SolarStatsCard";
+import {
+  getHouseSquareFootage,
+  maximizeSavings,
+} from "./SubFormComponents/FormHelpers";
 
 ChartJS.register(
   BarElement,
@@ -108,31 +112,11 @@ const FormPage: React.FC<FormPageProps> = ({
     setShowHeatmap(!showHeatmap);
   };
 
-  function convertMetersToSqFeet(areaMeters2: number): number {
-    const SQ_METERS_TO_SQ_FEET = 10.7639;
-    return areaMeters2 * SQ_METERS_TO_SQ_FEET;
-  }
   const handleFinancialDataUpdate = (data: FinancialData) => {
     setFinancialData(data);
   };
 
   useEffect(() => {
-    function getHouseSquareFootage(data: SolarData): number {
-      let totalAreaMeters2 = 0;
-
-      if (data.building_insights && data.building_insights.solarPotential) {
-        const wholeRoofStats =
-          data.building_insights.solarPotential.roofSegmentStats;
-        if (wholeRoofStats) {
-          totalAreaMeters2 = wholeRoofStats.reduce((acc, segment) => {
-            return acc + segment.stats.areaMeters2;
-          }, 0);
-        }
-      }
-
-      const totalAreaSqFeet = convertMetersToSqFeet(totalAreaMeters2);
-      return totalAreaSqFeet;
-    }
     const storageItem = secureLocalStorage.getItem("solarData") as string;
     if (storageItem) {
       const data = JSON.parse(storageItem);
@@ -155,81 +139,15 @@ const FormPage: React.FC<FormPageProps> = ({
   }, []);
 
   useEffect(() => {
-    const maximizeSavings = () => {
-      if (maxSavings && solarData) {
-        const config: SolarPanelConfig =
-          solarData.building_insights.solarPotential.solarPanelConfigs[0];
-        let maxConfiguration;
-        let maxSavings = 0;
-        let newPanelCount = 0;
-
-        const phi = (1 + Math.sqrt(5)) / 2;
-        let low = 1;
-        let high = maxPanels;
-        let c = high - Math.floor((high - low) / phi);
-        let d = low + Math.floor((high - low) / phi);
-
-        const evaluate = (panels: number) =>
-          calculateSolarPotential(
-            config,
-            panels,
-            maxPanels,
-            Number(monthlyBill),
-            0.31,
-            0.85,
-            7000,
-            4.0,
-            20,
-            solarData.building_insights.solarPotential.panelCapacityWatts
-          );
-
-        let resultC = evaluate(c);
-        let resultD = evaluate(d);
-
-        while (low < high) {
-          if (resultC && resultD) {
-            if (resultC.savings > resultD.savings) {
-              high = d - 1; // Ensure convergence
-              d = c;
-              c = high - Math.floor((high - low) / phi);
-              resultD = resultC;
-              resultC = evaluate(c);
-            } else {
-              low = c + 1; // Ensure convergence
-              c = d;
-              d = low + Math.floor((high - low) / phi);
-              resultC = resultD;
-              resultD = evaluate(d);
-            }
-          } else {
-            break;
-          }
-
-          // Exit condition to avoid infinite loop
-          if (high <= low) {
-            break;
-          }
-        }
-
-        if (resultC && resultC.savings > maxSavings) {
-          maxSavings = resultC.savings;
-          maxConfiguration = resultC;
-          newPanelCount = c;
-        }
-        if (resultD && resultD.savings > maxSavings) {
-          maxSavings = resultD.savings;
-          maxConfiguration = resultD;
-          newPanelCount = d;
-        }
-
-        if (maxConfiguration) {
-          setCalculationResults(maxConfiguration);
-          setPanelCount(newPanelCount);
-        }
-      }
-    };
-
-    maximizeSavings();
+    maximizeSavings({
+      maxSavings,
+      solarData,
+      panelCount,
+      maxPanels,
+      monthlyBill,
+      setCalculationResults,
+      setPanelCount,
+    });
   }, [maxSavings, solarData, monthlyBill, maxPanels]);
 
   const handlePanelCountChange = (
