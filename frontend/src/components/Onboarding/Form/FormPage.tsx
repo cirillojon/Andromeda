@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-
 import secureLocalStorage from "react-secure-storage";
 import {
   Chart as ChartJS,
@@ -12,37 +11,21 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-
 import "./FormPage.css";
-
-import { Button } from "../../ui/button";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
-import {
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-} from "@/components/ui/resizable";
-
-import SolarMap, { RoofSegment } from "./SubFormComponents/Solar/SolarMap";
+import { RoofSegment } from "./SubFormComponents/Solar/SolarMap";
 import { calculateSolarPotential } from "./SubFormComponents/Solar/SolarCalculations";
 import {
   SolarPanelConfig,
   SolarData,
 } from "./SubFormComponents/Solar/SolarTypes";
-import SolarStatsCard from "./SubFormComponents/Solar/SolarStatsCard";
 import { FinancialData } from "./SubFormComponents/Solar/SolarStatsCard";
-
 import FormTabs from "./SubFormComponents/Common/FormTabs";
-import FormInputs, { InputValues } from "./SubFormComponents/Common/FormInputs";
-import FinishConfigurationButton from "./SubFormComponents/Common/FinishConfigurationButton";
-
-import DialogflowNameFlow from "./SubFormComponents/Diagflow/DialogflowNameFlow";
-
+import { InputValues } from "./SubFormComponents/Common/FormInputs";
 import {
   getHouseSquareFootage,
   maximizeSavings,
 } from "./SubFormComponents/Common/FormHelpers";
-
 import Step1 from "./SubFormComponents/Steps/Step1";
 import Step2 from "./SubFormComponents/Steps/Step2";
 import Step3 from "./SubFormComponents/Steps/Step3";
