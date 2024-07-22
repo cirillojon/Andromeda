@@ -101,13 +101,10 @@ const FormPage: React.FC<FormPageProps> = ({
   const [showAllSegments, setShowAllSegments] = useState(false);
   const [maxSavings, setMaxSavings] = useState(false);
 
-  const handleToggleHeatmap = () => {
-    setShowHeatmap(!showHeatmap);
-  };
+  const handleToggleHeatmap = () => setShowHeatmap(!showHeatmap);
 
-  const handleFinancialDataUpdate = (data: FinancialData) => {
+  const handleFinancialDataUpdate = (data: FinancialData) =>
     setFinancialData(data);
-  };
 
   useEffect(() => {
     const storageItem = secureLocalStorage.getItem("solarData") as string;
@@ -116,7 +113,6 @@ const FormPage: React.FC<FormPageProps> = ({
       setSolarData(data);
       setMaxPanels(data.building_insights.solarPotential.maxArrayPanelsCount);
 
-      // Calculate house square footage
       const roofSqft = getHouseSquareFootage(data);
       setInputValues((prevValues) => ({
         ...prevValues,
@@ -124,7 +120,6 @@ const FormPage: React.FC<FormPageProps> = ({
       }));
     }
 
-    // Simulate manual page reload
     if (!sessionStorage.getItem("reloaded")) {
       sessionStorage.setItem("reloaded", "true");
       window.location.reload();
@@ -227,9 +222,8 @@ const FormPage: React.FC<FormPageProps> = ({
     }
   };
 
-  const handleToggleShowAllSegments = () => {
+  const handleToggleShowAllSegments = () =>
     setShowAllSegments((prevShowAllSegments) => !prevShowAllSegments);
-  };
 
   const validateFields = () => {
     const { project_name, project_type } = inputValues.project_details;
@@ -238,7 +232,6 @@ const FormPage: React.FC<FormPageProps> = ({
 
   useEffect(() => {
     if (validationPassed) {
-      // If validation is passed, click the authentication button
       authButtonRef.current?.click();
     }
   }, [validationPassed]);
@@ -254,12 +247,11 @@ const FormPage: React.FC<FormPageProps> = ({
     }*/
     await saveFormDataToCookies(JSON.stringify(inputValues));
     console.log("Form data saved to local storage:", inputValues);
-    setValidationPassed(true); // Set the flag to true on successful validation
+    setValidationPassed(true);
   };
 
   useEffect(() => {
     if (needsReload && currentStep === 1) {
-      // Save current configuration
       const currentConfig = {
         panelCount,
         inputValues,
@@ -299,7 +291,6 @@ const FormPage: React.FC<FormPageProps> = ({
       setMaxPanels(config.maxPanels);
       setValidationPassed(config.validationPassed);
 
-      // Clear the stored config after restoring
       localStorage.removeItem("currentConfig");
     }
   }, []);
@@ -330,9 +321,7 @@ const FormPage: React.FC<FormPageProps> = ({
     }
   }, [solarData, panelCount, monthlyBill, maxPanels]);
 
-  const handlemaxSavingsClick = () => {
-    setMaxSavings(!maxSavings);
-  };
+  const handlemaxSavingsClick = () => setMaxSavings(!maxSavings);
 
   if (!calculationResults) {
     return <div className="w-screen h-screen">Loading...</div>;
@@ -368,14 +357,12 @@ const FormPage: React.FC<FormPageProps> = ({
         );
       case 2:
         return (
-          <>
-            <Step2
-              calculationResults={calculationResults}
-              handleBackToStep1={handleBackToStep1}
-              setCurrentStep={setCurrentStep}
-              financialData={financialData}
-            />
-          </>
+          <Step2
+            calculationResults={calculationResults}
+            handleBackToStep1={handleBackToStep1}
+            setCurrentStep={setCurrentStep}
+            financialData={financialData}
+          />
         );
       case 3:
         return (
