@@ -1,12 +1,6 @@
 "use client";
 
-import React, {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./FormPage.css";
 import SolarMap, { RoofSegment } from "./SolarMap";
 import secureLocalStorage from "react-secure-storage";
@@ -64,7 +58,6 @@ const FormPage: React.FC<FormPageProps> = ({
   const [solarData, setSolarData] = useState<SolarData | null>(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [needsReload, setNeedsReload] = useState(false);
-
   const [financialData, setFinancialData] = useState<FinancialData | null>(
     null
   );
@@ -119,9 +112,9 @@ const FormPage: React.FC<FormPageProps> = ({
     const SQ_METERS_TO_SQ_FEET = 10.7639;
     return areaMeters2 * SQ_METERS_TO_SQ_FEET;
   }
-  const handleFinancialDataUpdate = useCallback((data: FinancialData) => {
+  const handleFinancialDataUpdate = (data: FinancialData) => {
     setFinancialData(data);
-  }, []);
+  };
 
   useEffect(() => {
     function getHouseSquareFootage(data: SolarData): number {
@@ -160,33 +153,6 @@ const FormPage: React.FC<FormPageProps> = ({
       window.location.reload();
     }
   }, []);
-
-  const calculateResults = useCallback(() => {
-    if (solarData) {
-      const config: SolarPanelConfig =
-        solarData.building_insights.solarPotential.solarPanelConfigs[0];
-      return calculateSolarPotential(
-        config,
-        panelCount,
-        maxPanels,
-        Number(monthlyBill),
-        0.31, // Example energy cost per kWh
-        0.85, // Example DC to AC derate factor
-        7000, // Example solar incentives
-        4.0, // Example installation cost per watt
-        20, // Example installation lifespan
-        solarData.building_insights.solarPotential.panelCapacityWatts
-      );
-    }
-    return null;
-  }, [solarData, panelCount, maxPanels, monthlyBill]);
-
-  useEffect(() => {
-    const results = calculateResults();
-    if (results) {
-      setCalculationResults(results);
-    }
-  }, [calculateResults]);
 
   useEffect(() => {
     const maximizeSavings = () => {
