@@ -17,6 +17,5 @@ class SolarData(db.Model):
             "latitude": self.latitude,
             "longitude": self.longitude,
             "building_insights": self.building_insights,
-            "data_layers": self.data_layers,
             "created_at": self.created_at.isoformat(),
         }
