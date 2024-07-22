@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import "@/components/Onboarding/Form/FormPage.css";
 import { Bar } from "react-chartjs-2";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SolarData } from "@/components/Onboarding/Form/SolarTypes";
 import {
   Accordion,
@@ -11,6 +11,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import React from "react";
 
 interface SolarStatsCardProps {
   solarData: SolarData;
@@ -53,20 +54,28 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   setMaxSavings,
   onFinancialDataUpdate,
 }) => {
-  // Use useEffect to call onFinancialDataUpdate when calculationResults change
+  const financialData = useMemo(() => {
+    if (calculationResults) {
+      return {
+        totalCostWithoutSolar: calculationResults.totalCostWithoutSolar,
+        totalCostWithSolar: calculationResults.totalCostWithSolar,
+        savings: calculationResults.savings,
+        breakEvenYear: calculationResults.breakEvenYear,
+        installationSizeKw: calculationResults.installationSizeKw,
+        installationCostTotal: calculationResults.installationCostTotal,
+        energyCovered: calculationResults.energyCovered,
+        yearlyEnergyDcKwh: calculationResults.yearlyEnergyDcKwh,
+        maxYearlyEnergyDcKwh: calculationResults.maxYearlyEnergyDcKwh,
+      };
+    }
+    return null;
+  }, [calculationResults]);
+
   useEffect(() => {
-    onFinancialDataUpdate({
-      totalCostWithoutSolar: calculationResults.totalCostWithoutSolar,
-      totalCostWithSolar: calculationResults.totalCostWithSolar,
-      savings: calculationResults.savings,
-      breakEvenYear: calculationResults.breakEvenYear,
-      installationSizeKw: calculationResults.installationSizeKw,
-      installationCostTotal: calculationResults.installationCostTotal,
-      energyCovered: calculationResults.energyCovered,
-      yearlyEnergyDcKwh: calculationResults.yearlyEnergyDcKwh,
-      maxYearlyEnergyDcKwh: calculationResults.maxYearlyEnergyDcKwh,
-    });
-  }, [calculationResults, onFinancialDataUpdate]);
+    if (financialData) {
+      onFinancialDataUpdate(financialData);
+    }
+  }, [financialData, onFinancialDataUpdate]);
 
   const [showFinance, setShowFinance] = useState(false);
   const panelsPercentage = (panelCount / maxPanels) * 100;
@@ -255,4 +264,4 @@ const SolarStatsCard: React.FC<SolarStatsCardProps> = ({
   );
 };
 
-export default SolarStatsCard;
+export default React.memo(SolarStatsCard);
