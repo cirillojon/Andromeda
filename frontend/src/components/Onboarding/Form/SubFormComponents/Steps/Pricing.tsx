@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../../../ui/button";
+import { Button } from "@/components/ui/button";
 import { Bar, Pie } from "react-chartjs-2";
 import {
   Card,

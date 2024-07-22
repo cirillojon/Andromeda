@@ -6,11 +6,7 @@ import {
   Libraries,
 } from "@react-google-maps/api";
 import secureLocalStorage from "react-secure-storage";
-import {
-  createPalette,
-  normalize,
-  rgbToColor,
-} from "./SubFormComponents/Visualize";
+import { createPalette, normalize, rgbToColor } from "./Visualize";
 import { DataLayersResponse, SolarData } from "./SolarTypes";
 import { Layer, getHeatmap } from "@/utils/actions/getHeatmap";
 import { toast } from "sonner";

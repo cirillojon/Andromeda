@@ -1,5 +1,5 @@
-import { calculateSolarPotential } from "../SolarCalculations";
-import { SolarPanelConfig, SolarData } from "../SolarTypes";
+import { calculateSolarPotential } from "../Solar/SolarCalculations";
+import { SolarPanelConfig, SolarData } from "../Solar/SolarTypes";
 
 export function convertMetersToSqFeet(areaMeters2: number): number {
   const SQ_METERS_TO_SQ_FEET = 10.7639;

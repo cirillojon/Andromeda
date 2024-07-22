@@ -1,89 +1,90 @@
 import { GeoTiff } from "@/utils/actions/getHeatmap";
 
- 
 /**
-  * Creates an {r, g, b} color palette from a hex list of colors.
-  *
-  * Each {r, g, b} value is a number between 0 and 255.
-  * The created palette is always of size 256, regardless of the number of
-  * hex colors passed in. Inbetween values are interpolated.
-  *
-  * @param  {string[]} hexColors  List of hex colors for the palette.
-  * @return {{r, g, b}[]}         RGB values for the color palette.
-  */
- export function createPalette(hexColors: string[]): { r: number; g: number; b: number }[] {
-   // Map each hex color into an RGB value.
-   const rgb = hexColors.map(colorToRGB);
-   // Create a palette with 256 colors derived from our rgb colors.
-   const size = 256;
-   const step = (rgb.length - 1) / (size - 1);
-   return Array(size)
-     .fill(0)
-     .map((_, i) => {
-       // Get the lower and upper indices for each color.
-       const index = i * step;
-       const lower = Math.floor(index);
-       const upper = Math.ceil(index);
-       // Interpolate between the colors to get the shades.
-       return {
-         r: lerp(rgb[lower].r, rgb[upper].r, index - lower),
-         g: lerp(rgb[lower].g, rgb[upper].g, index - lower),
-         b: lerp(rgb[lower].b, rgb[upper].b, index - lower),
-       };
-     });
- }
- 
- /**
-  * Convert a hex color into an {r, g, b} color.
-  *
-  * @param  {string} color  Hex color like 0099FF or #0099FF.
-  * @return {{r, g, b}}     RGB values for that color.
-  */
- export function colorToRGB(color: string): { r: number; g: number; b: number } {
-   const hex = color.startsWith('#') ? color.slice(1) : color;
-   return {
-     r: parseInt(hex.substring(0, 2), 16),
-     g: parseInt(hex.substring(2, 4), 16),
-     b: parseInt(hex.substring(4, 6), 16),
-   };
- }
- 
- /**
-  * Normalizes a number to a given data range.
-  *
-  * @param  {number} x    Value of interest.
-  * @param  {number} max  Maximum value in data range, defaults to 1.
-  * @param  {number} min  Minimum value in data range, defaults to 0.
-  * @return {number}      Normalized value.
-  */
- export function normalize(x: number, max: number = 1, min: number = 0): number {
-   const y = (x - min) / (max - min);
-   return clamp(y, 0, 1);
- }
- 
- /**
-  * Calculates the linear interpolation for a value within a range.
-  *
-  * @param  {number} x  Lower value in the range, when `t` is 0.
-  * @param  {number} y  Upper value in the range, when `t` is 1.
-  * @param  {number} t  "Time" between 0 and 1.
-  * @return {number}    Inbetween value for that "time".
-  */
- export function lerp(x: number, y: number, t: number): number {
-   return x + t * (y - x);
- }
- 
- /**
-  * Clamps a value to always be within a range.
-  *
-  * @param  {number} x    Value to clamp.
-  * @param  {number} min  Minimum value in the range.
-  * @param  {number} max  Maximum value in the range.
-  * @return {number}      Clamped value.
-  */
- export function clamp(x: number, min: number, max: number): number {
-   return Math.min(Math.max(x, min), max);
- }
+ * Creates an {r, g, b} color palette from a hex list of colors.
+ *
+ * Each {r, g, b} value is a number between 0 and 255.
+ * The created palette is always of size 256, regardless of the number of
+ * hex colors passed in. Inbetween values are interpolated.
+ *
+ * @param  {string[]} hexColors  List of hex colors for the palette.
+ * @return {{r, g, b}[]}         RGB values for the color palette.
+ */
+export function createPalette(
+  hexColors: string[]
+): { r: number; g: number; b: number }[] {
+  // Map each hex color into an RGB value.
+  const rgb = hexColors.map(colorToRGB);
+  // Create a palette with 256 colors derived from our rgb colors.
+  const size = 256;
+  const step = (rgb.length - 1) / (size - 1);
+  return Array(size)
+    .fill(0)
+    .map((_, i) => {
+      // Get the lower and upper indices for each color.
+      const index = i * step;
+      const lower = Math.floor(index);
+      const upper = Math.ceil(index);
+      // Interpolate between the colors to get the shades.
+      return {
+        r: lerp(rgb[lower].r, rgb[upper].r, index - lower),
+        g: lerp(rgb[lower].g, rgb[upper].g, index - lower),
+        b: lerp(rgb[lower].b, rgb[upper].b, index - lower),
+      };
+    });
+}
+
+/**
+ * Convert a hex color into an {r, g, b} color.
+ *
+ * @param  {string} color  Hex color like 0099FF or #0099FF.
+ * @return {{r, g, b}}     RGB values for that color.
+ */
+export function colorToRGB(color: string): { r: number; g: number; b: number } {
+  const hex = color.startsWith("#") ? color.slice(1) : color;
+  return {
+    r: parseInt(hex.substring(0, 2), 16),
+    g: parseInt(hex.substring(2, 4), 16),
+    b: parseInt(hex.substring(4, 6), 16),
+  };
+}
+
+/**
+ * Normalizes a number to a given data range.
+ *
+ * @param  {number} x    Value of interest.
+ * @param  {number} max  Maximum value in data range, defaults to 1.
+ * @param  {number} min  Minimum value in data range, defaults to 0.
+ * @return {number}      Normalized value.
+ */
+export function normalize(x: number, max: number = 1, min: number = 0): number {
+  const y = (x - min) / (max - min);
+  return clamp(y, 0, 1);
+}
+
+/**
+ * Calculates the linear interpolation for a value within a range.
+ *
+ * @param  {number} x  Lower value in the range, when `t` is 0.
+ * @param  {number} y  Upper value in the range, when `t` is 1.
+ * @param  {number} t  "Time" between 0 and 1.
+ * @return {number}    Inbetween value for that "time".
+ */
+export function lerp(x: number, y: number, t: number): number {
+  return x + t * (y - x);
+}
+
+/**
+ * Clamps a value to always be within a range.
+ *
+ * @param  {number} x    Value to clamp.
+ * @param  {number} min  Minimum value in the range.
+ * @param  {number} max  Maximum value in the range.
+ * @return {number}      Clamped value.
+ */
+export function clamp(x: number, min: number, max: number): number {
+  return Math.min(Math.max(x, min), max);
+}
 
 // [START visualize_render_rgb]
 /**
@@ -99,7 +100,7 @@ import { GeoTiff } from "@/utils/actions/getHeatmap";
 export function renderRGB(rgb: GeoTiff, mask?: GeoTiff): HTMLCanvasElement {
   // Create an HTML canvas to draw the image.
   // https://www.w3schools.com/tags/canvas_createimagedata.asp
-  const canvas = document.createElement('canvas');
+  const canvas = document.createElement("canvas");
 
   // Set the canvas size to the mask size if it's available,
   // otherwise set it to the RGB data layer size.
@@ -116,7 +117,7 @@ export function renderRGB(rgb: GeoTiff, mask?: GeoTiff): HTMLCanvasElement {
   const dh = rgb.height / canvas.height;
 
   // Get the canvas image data buffer.
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext("2d")!;
   const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
   // Fill in every pixel in the canvas with the corresponding RGB layer value.
@@ -153,7 +154,7 @@ export function renderRGB(rgb: GeoTiff, mask?: GeoTiff): HTMLCanvasElement {
 }
 // [END visualize_render_rgb]
 
- // [START visualize_render_palette]
+// [START visualize_render_palette]
 /**
  * Renders a single value GeoTiff image into an HTML canvas.
  *
@@ -184,7 +185,7 @@ export function renderPalette({
   index?: number;
 }): HTMLCanvasElement {
   // First create a palette from a list of hex colors.
-  const palette = createPalette(colors ?? ['000000', 'ffffff']);
+  const palette = createPalette(colors ?? ["000000", "ffffff"]);
   // Normalize each value of our raster/band of interest into indices,
   // such that they always map into a value within the palette.
   const indices = data.rasters[index ?? 0]
@@ -200,15 +201,23 @@ export function renderPalette({
         indices.map((i: number) => palette[i].b),
       ],
     },
-    mask,
+    mask
   );
 }
- // [END visualize_render_palette]
- 
- export function rgbToColor({ r, g, b }: { r: number; g: number; b: number }): string {
-   const f = (x: number) => {
-     const hex = Math.round(x).toString(16);
-     return hex.length == 1 ? `0${hex}` : hex;
-   };
-   return `#${f(r)}${f(g)}${f(b)}`;
- }
+// [END visualize_render_palette]
+
+export function rgbToColor({
+  r,
+  g,
+  b,
+}: {
+  r: number;
+  g: number;
+  b: number;
+}): string {
+  const f = (x: number) => {
+    const hex = Math.round(x).toString(16);
+    return hex.length == 1 ? `0${hex}` : hex;
+  };
+  return `#${f(r)}${f(g)}${f(b)}`;
+}

@@ -1,10 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import "./FormPage.css";
-import SolarMap, { RoofSegment } from "./SolarMap";
+
 import secureLocalStorage from "react-secure-storage";
-import { calculateSolarPotential } from "./SolarCalculations";
 import {
   Chart as ChartJS,
   BarElement,
@@ -14,28 +12,38 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+
+import "./FormPage.css";
+
 import { Button } from "../../ui/button";
-import { RegisterLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import saveFormDataToCookies from "@/utils/actions/saveFormDataToCookies";
-import { SolarPanelConfig, SolarData } from "./SolarTypes";
-import FormTabs from "./SubFormComponents/FormTabs";
-import SolarStatsCard from "./SubFormComponents/SolarStatsCard";
-import FormInputs from "./SubFormComponents/FormInputs";
-import { InputValues } from "./SubFormComponents/FormInputs";
-import Link from "next/link";
-import DialogflowNameFlow from "./SubFormComponents/DialogflowNameFlow";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import FinishConfigurationButton from "./SubFormComponents/FinishConfigurationButton";
-import PricingPage from "./FormStepComponents/Pricing";
-import { FinancialData } from "./SubFormComponents/SolarStatsCard";
+
+import SolarMap, { RoofSegment } from "./SubFormComponents/Solar/SolarMap";
+import { calculateSolarPotential } from "./SubFormComponents/Solar/SolarCalculations";
+import {
+  SolarPanelConfig,
+  SolarData,
+} from "./SubFormComponents/Solar/SolarTypes";
+import SolarStatsCard from "./SubFormComponents/Solar/SolarStatsCard";
+import { FinancialData } from "./SubFormComponents/Solar/SolarStatsCard";
+
+import FormTabs from "./SubFormComponents/Common/FormTabs";
+import FormInputs, { InputValues } from "./SubFormComponents/Common/FormInputs";
+import FinishConfigurationButton from "./SubFormComponents/Common/FinishConfigurationButton";
+
+import DialogflowNameFlow from "./SubFormComponents/Diagflow/DialogflowNameFlow";
+
+import PricingPage from "./SubFormComponents/Steps/Pricing";
+
 import {
   getHouseSquareFootage,
   maximizeSavings,
-} from "./SubFormComponents/FormHelpers";
+} from "./SubFormComponents/Common/FormHelpers";
 
 ChartJS.register(
   BarElement,

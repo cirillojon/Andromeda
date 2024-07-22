@@ -4,15 +4,17 @@ const DialogflowNameFlow = () => {
   useEffect(() => {
     const dialogflowStyleLink = document.createElement("link");
     dialogflowStyleLink.rel = "stylesheet";
-    dialogflowStyleLink.href = "https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css";
+    dialogflowStyleLink.href =
+      "https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/themes/df-messenger-default.css";
     document.head.appendChild(dialogflowStyleLink);
 
     const dialogflowMessengerObject = document.createElement("script");
-    dialogflowMessengerObject.src = "https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js";
+    dialogflowMessengerObject.src =
+      "https://www.gstatic.com/dialogflow-console/fast/df-messenger/prod/v1/df-messenger.js";
     document.head.appendChild(dialogflowMessengerObject);
 
-    dialogflowMessengerObject.addEventListener('load', () => {
-      const style = document.createElement('style');
+    dialogflowMessengerObject.addEventListener("load", () => {
+      const style = document.createElement("style");
       style.innerHTML = `
         df-messenger {
           z-index: 999 !important;
